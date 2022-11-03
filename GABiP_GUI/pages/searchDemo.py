@@ -19,7 +19,12 @@ def load_references():
 dfFull=load_original()
 dfReferences = load_references()
 
-
+def refGeneratorTop(speciesInfo):
+    mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
+    #order references from most recent
+    sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    displaymergedRef = sortedYear[["Year","Reference", "Order"]]
+    return displaymergedRef.drop_duplicates()
 
 speciesdf= []
 def speciesSearchTest(option2):
@@ -59,6 +64,10 @@ def referDisplay():
     with tab3:
         st.write("Testing tab page 3")
 
+#testing method with streamlit with hard-coded values
+speciesInfo = dfFull.groupby("Species").get_group("inexpectatus")
+
+st.write(refGeneratorTop(speciesInfo))
 
 #generic method for searching
 def groupby(option1, option2):
