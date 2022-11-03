@@ -11,7 +11,15 @@ def load_original():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
     return dfFull
 
+@st.cache
+def load_references():
+    dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfReferences
+
 dfFull=load_original()
+dfReferences = load_references()
+
+
 
 speciesdf= []
 def speciesSearchTest(option2):
