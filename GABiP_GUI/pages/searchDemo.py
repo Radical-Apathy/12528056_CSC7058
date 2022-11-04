@@ -37,8 +37,7 @@ speciesdf= []
 def speciesSearchTest(option2):
     col1,col2=st.columns(2)
     col1.header(option2, " Species Summary:")
-    col1.markdown("![Image not Available](https://calphotos.berkeley.edu/imgs/128x192/0000_0000/0513/2641.jpeg)")
-    #st.image("amphibs.jpeg", width=200) #https://calphotos.berkeley.edu/cgi/img_query?where-taxon=Alsodes+hugoi&rel-taxon=begins+with&where-lifeform=specimen_tag&rel-lifeform=ne
+    col1.markdown("[![Image not Available](https://calphotos.berkeley.edu/imgs/128x192/0000_0000/0513/2641.jpeg)](https://calphotos.berkeley.edu/cgi/img_query?where-taxon=Alsodes+hugoi&rel-taxon=begins+with&where-lifeform=specimen_tag&rel-lifeform=ne)")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
     col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
     url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ option2 +"&rel-scientific_name=contains&include_synonymies=Yes"
