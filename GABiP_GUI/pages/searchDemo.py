@@ -51,24 +51,10 @@ def speciesSearchTest(option2):
     st.markdown(hide_row_no, unsafe_allow_html=True)
     col2.write(speciesdatadf)
     showMore = col2.checkbox("Show All")
+
     if showMore:
         speciesInfo.drop_duplicates()
         col2.write (speciesInfo)
-
-
-def referDisplay():
-    tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
-    with tab1:
-        st.write("Testing tab page 1")
-    with tab2:
-        st.write("Testing tab page 2")
-    
-
-#testing method with streamlit with hard-coded values
-speciesInfo = dfFull.groupby("Species").get_group("inexpectatus")
-
-st.write(refGeneratorTop(speciesInfo))
-
 
 #generic method for searching
 def groupby(option1, option2):
@@ -84,11 +70,7 @@ def groupby(option1, option2):
          st.markdown(hide_row_no, unsafe_allow_html=True)
 
          return search
-   
     
-
-
-
 st.title("Streamlit Search Ability Demo")
 st.image("amphibs.jpeg", width=200)
 singleOptions = st.selectbox("Dropdown allowing one choice, showing all columns", options=dfFull.columns)##"Subfamily","Genus","Species"
@@ -99,8 +81,14 @@ submitButton=st.button("Search")
 try:
  if submitButton:
   st.write("Results: ")
-  st.write(groupby(singleOptions, text_input))
-  referDisplay()
+  speciesInfo=groupby(singleOptions, text_input)
+  st.write(speciesInfo)
+  tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
+ with tab1:
+        refGeneratorTop(speciesInfo)
+ with tab2:
+        st.write("Testing tab page 2")
+  
 except:("Sorry, no results found. Try checking your category choice or spelling")
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
