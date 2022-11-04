@@ -24,7 +24,8 @@ def refGeneratorTop(speciesInfo):
     #order references from most recent
     sortedYear =mergedRef.sort_values(by='Year', ascending=False)
     displaymergedRef = sortedYear[["Year","Reference", "Order"]]
-    return displaymergedRef.drop_duplicates()
+    displaymergedRef.drop_duplicates()
+    return displaymergedRef.head()
 
 speciesdf= []
 def speciesSearchTest(option2):
@@ -56,18 +57,18 @@ def speciesSearchTest(option2):
 
 
 def referDisplay():
-    tab1, tab2, tab3 = st.tabs(["Page 1", "Page 2", "Page 3"])
+    tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
     with tab1:
         st.write("Testing tab page 1")
     with tab2:
         st.write("Testing tab page 2")
-    with tab3:
-        st.write("Testing tab page 3")
+    
 
 #testing method with streamlit with hard-coded values
 speciesInfo = dfFull.groupby("Species").get_group("inexpectatus")
 
 st.write(refGeneratorTop(speciesInfo))
+
 
 #generic method for searching
 def groupby(option1, option2):
