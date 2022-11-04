@@ -18,8 +18,10 @@ def speciesSearchTest(option2):
     col1,col2=st.columns(2)
     col1.header(option2, " Species Summary:")
     col1.image("amphibs.jpeg")
-    url="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ option2 +"&rel-scientific_name=contains&include_synonymies=Yes"
-    col1.write("Amphibian web link for "+ option2+  " [Amphibia Web Link](%s)" % url)
+    url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
+    col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
+    url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ option2 +"&rel-scientific_name=contains&include_synonymies=Yes"
+    col1.write("Amphibian web link for "+ option2+  " [Amphibia Web Link](%s)" % url2)
     col2.header("Column 2 header")
     speciesInfo = dfFull.groupby("Species").get_group(option2)
     speciesdf.append(speciesInfo["Genus"])
