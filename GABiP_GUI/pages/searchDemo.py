@@ -57,7 +57,7 @@ def speciesSearchTest(option2):
         col2.write (speciesInfo)
 
 #generic method for searching
-def groupby(option1, option2):
+def optionCheck(option1, option2):
     if option1=="Species":
         speciesSearchTest(option2)
     else:
@@ -81,11 +81,11 @@ submitButton=st.button("Search")
 try:
  if submitButton:
   st.write("Results: ")
-  speciesInfo=groupby(singleOptions, text_input)
+  speciesInfo=optionCheck(singleOptions, text_input)
   st.write(speciesInfo)
   tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
  with tab1:
-        refGeneratorTop(speciesInfo)
+       st.write(refGeneratorTop(speciesInfo)) 
  with tab2:
         st.write("Testing tab page 2")
   
