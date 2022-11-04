@@ -5,7 +5,6 @@ import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
-
 @st.cache
 def load_original():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
@@ -27,6 +26,13 @@ def refGeneratorTop(speciesInfo):
     displaymergedRef.drop_duplicates()
     return displaymergedRef.head()
 
+def refGeneratorAll(speciesInfo):
+    mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
+    #order references from most recent
+    sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    displaymergedRef = sortedYear[["Year","Reference", "Order"]]
+    return displaymergedRef.drop_duplicates()
+
 speciesdf= []
 def speciesSearchTest(option2):
     col1,col2=st.columns(2)
@@ -36,6 +42,12 @@ def speciesSearchTest(option2):
     col1.write("Amphibian web link for "+ option2+  " [Amphibia Web Link](%s)" % url)
     col2.header("Column 2 header")
     speciesInfo = dfFull.groupby("Species").get_group(option2)
+    #st.write(refGeneratorTop(speciesInfo)) # testing ref generator
+    tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
+    with tab1:
+       st.write(refGeneratorTop(speciesInfo)) 
+    with tab2:
+        st.write(refGeneratorAll(speciesInfo))
     speciesdf.append(speciesInfo["Genus"])
     speciesdf.append(speciesInfo["GeographicRegion"])
     speciesdf.append(speciesInfo["SVLMMx"])
@@ -83,12 +95,6 @@ try:
   st.write("Results: ")
   speciesInfo=optionCheck(singleOptions, text_input)
   st.write(speciesInfo)
-  tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
- with tab1:
-       st.write(refGeneratorTop(speciesInfo)) 
- with tab2:
-        st.write("Testing tab page 2")
-  
 except:("Sorry, no results found. Try checking your category choice or spelling")
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
