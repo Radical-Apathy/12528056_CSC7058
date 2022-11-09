@@ -125,7 +125,12 @@ if submitButton2:
     st.write(dfFull[multiOptions].drop_duplicates())
     #st.write(groupby(multiOptions, text_input))
 
+values = st.slider(
+    'Streamlit slider template',
+    0.0, 100.0, (50.0))
 
+
+#st.write('Values:', values)
 
 
 
