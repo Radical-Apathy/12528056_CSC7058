@@ -40,18 +40,28 @@ def refGeneratorAll(speciesInfo):
     displaymergedRef = sortedYear[["Year","Reference", "Order"]]
     return displaymergedRef.drop_duplicates()
 
+def displayImage(speciesInfo):
+    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    mergedInfo.drop_duplicates()
+    return mergedInfo["Display Image"].loc[0]
+
+def embeddedImage(speciesInfo):
+    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    mergedInfo.drop_duplicates()
+    return mergedInfo["Embedded Link"].loc[0]
+
 speciesdf= []
 def speciesSearchTest(option2):
     col1,col2=st.columns(2)
     col1.header(option2, " Species Summary:")
-    col1.markdown("[![Image not Available](https://calphotos.berkeley.edu/imgs/128x192/0000_0000/0513/2641.jpeg)](https://calphotos.berkeley.edu/cgi/img_query?where-taxon=Alsodes+hugoi&rel-taxon=begins+with&where-lifeform=specimen_tag&rel-lifeform=ne)")
+    speciesInfo = dfFull.groupby("Species").get_group(option2)
+    col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
     col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
     url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ option2 +"&rel-scientific_name=contains&include_synonymies=Yes"
     col1.write("Amphibian web link for "+ option2+  " [Amphibia Web Link](%s)" % url2)
-    col2.header("Column 2 header")
-    speciesInfo = dfFull.groupby("Species").get_group(option2)
-    #st.write(refGeneratorTop(speciesInfo)) # testing ref generator
+    col2.header("Species Summary")
+    
     tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
     with tab1:
        st.write(refGeneratorTop(speciesInfo)) 
@@ -108,7 +118,7 @@ try:
 except:("Sorry, no results found. Try checking your category choice or spelling")
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
-text_inputMulti = st.text_input("Enter your queries", "relicta")
+#text_inputMulti = st.text_input("Enter your queries", "relicta")
 submitButton2=st.button(" Multi Search")
 
 if submitButton2:
@@ -116,10 +126,12 @@ if submitButton2:
     #st.write(groupby(multiOptions, text_input))
 
 
-st.write("trying markdown")
 
-#st.markdown("[![Image not Available]("+Display Image+")]("+Embedded Link+")")
-st.markdown("[![Image not Available]("+dfImages["Display Image"].loc[14]+")]("+dfImages["Embedded Link"].loc[14]+")")
+
+
+
+
+
 
 
 
