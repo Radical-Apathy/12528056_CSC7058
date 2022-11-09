@@ -15,6 +15,12 @@ def load_references():
     dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
     return dfReferences
 
+@st.cache
+def load_original():
+    dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfFull
+
+
 dfFull=load_original()
 dfReferences = load_references()
 
