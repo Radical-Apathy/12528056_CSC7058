@@ -116,6 +116,12 @@ if submitButton2:
     #st.write(groupby(multiOptions, text_input))
 
 
+st.write("trying markdown")
+
+#st.markdown("[![Image not Available]("+Display Image+")]("+Embedded Link+")")
+st.markdown("[![Image not Available]("+dfImages["Display Image"].loc[14]+")]("+dfImages["Embedded Link"].loc[14]+")")
+
+
 
 
 
