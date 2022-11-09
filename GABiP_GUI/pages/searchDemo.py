@@ -16,13 +16,14 @@ def load_references():
     return dfReferences
 
 @st.cache
-def load_original():
+def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfFull
+    return dfImages
 
 
 dfFull=load_original()
 dfReferences = load_references()
+dfImages = load_images()
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
