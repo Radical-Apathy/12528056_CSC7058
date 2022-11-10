@@ -88,43 +88,65 @@ def speciesSearchTest(option2):
         col2.write (speciesInfo)
 
 #generic method for searching
-def optionCheck(option1, option2):
-    if option1=="Species":
-        speciesSearchTest(option2)
-    else:
-         search = dfFull.groupby(option1).get_group(option2)
-         search.drop_duplicates()
-         hide_row_no="""<style>
-            thead tr th:first-child {display:none}
-            tbody th {display:none}
-            </style>"""
-         st.markdown(hide_row_no, unsafe_allow_html=True)
+#def optionCheck(option1, option2):
+ #   if option1=="Species":
+  #      speciesSearchTest(option2)
+   # else:
+    #     search = dfFull.groupby(option1).get_group(option2)
+     #    search.drop_duplicates()
+      #   hide_row_no="""<style>
+       #     thead tr th:first-child {display:none}
+        #    tbody th {display:none}
+         #   </style>"""
+        # st.markdown(hide_row_no, unsafe_allow_html=True)
 
-         return search
+         #return search
     
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
-singleOptions = st.selectbox("Dropdown allowing one choice, showing all columns", options=dfFull.columns)##"Subfamily","Genus","Species"
-text_input = st.text_input("Enter your query", "relicta")
+#singleOptions = st.selectbox("Dropdown allowing one choice, showing all columns", options=dfFull.columns)##"Subfamily","Genus","Species"
+#text_input = st.text_input("Enter your query", "relicta")
 
-submitButton=st.button("Search")
+#submitButton=st.button("Search")
 
-try:
- if submitButton:
-  st.write("Results: ")
-  speciesInfo=optionCheck(singleOptions, text_input)
-  st.write(speciesInfo)
-except:("Sorry, no results found. Try checking your category choice or spelling")
+#try:
+ #if submitButton:
+  #st.write("Results: ")
+  #speciesInfo=optionCheck(singleOptions, text_input)
+  #st.write(speciesInfo)
+#except:("Sorry, no results found. Try checking your category choice or spelling")
+
+def multioptionCheck(options=[]):
+    for option in options:
+     if option=="Species" and text_inputMulti:
+        speciesSearchTest(text_inputMulti)
+     else:
+         search=dfFull[multiOptions].drop_duplicates()
+         search.drop_duplicates()
+        
+
+    st.write(search)
+
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
-#text_inputMulti = st.text_input("Enter your queries", "relicta")
+text_inputMulti = st.text_input("Enter your queries", "relicta")
 submitButton2=st.button(" Multi Search")
 
-if submitButton2:
-    st.write(dfFull[multiOptions].drop_duplicates())
-    #st.write(groupby(multiOptions, text_input))
+try:
+ if submitButton2:
+    st.write("Results for: ")
+    multioptionCheck(multiOptions)
+except:("Sorry, search term not recognised. Try checking your category choice or spelling")
+    
 
+
+#try:
+ #if submitButton:
+  #st.write("Results: ")
+  #speciesInfo=optionCheck(singleOptions, text_input)
+  #st.write(speciesInfo)
+#except:("Sorry, no results found. Try checking your category choice or spelling")
 values = st.slider(
     'Streamlit slider template',
     0.0, 100.0, (50.0))
