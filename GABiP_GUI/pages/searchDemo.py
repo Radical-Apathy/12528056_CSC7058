@@ -130,13 +130,15 @@ def multioptionCheck(options=[]):
 
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
-text_inputMulti = st.text_input("Enter your queries", "relicta")
+#text_inputMulti = st.text_input("Enter your queries", "relicta")
 submitButton2=st.button(" Multi Search")
 
 try:
  if submitButton2:
+    text_inputMulti = st.text_input("Enter your queries", "relicta")
     st.write("Results for: ")
     multioptionCheck(multiOptions)
+    
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
 
