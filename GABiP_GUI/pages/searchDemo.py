@@ -121,12 +121,21 @@ try:
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
 
-#values = st.slider(
- #   'Streamlit slider template',
-  #  0.0, 100.0, (50.0))
+
+#exploring dataframe styles
+#dfFull.style.set_properties(**{'background-color': 'black',
+                          # 'color': 'green'})
+st.write(dfFull["SVLMx"].head())
+
+#exploring slider on streamlit
+sliderPlay = st.slider('Clutch size?', 0, 130, 25)
+st.write('Values:', sliderPlay)
 
 
-#st.write('Values:', values)
+
+
+
+#st.write(bodysize.head())
 
 
 
