@@ -135,10 +135,6 @@ st.write('Values:', sliderPlay)
 
 
 
-#st.write(bodysize.head())
-
-
-
 
 
 
