@@ -55,7 +55,7 @@ def multioptionCheck(options=[]):
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
      if option=="Species":
-        ranges = st.slider('Clutch size?', 0, 130, 25)
+        ranges = st.slider('Clutch size range?', 0, 130, 25)
                                 
      else:
          search=dfFull[multiOptions].drop_duplicates()
