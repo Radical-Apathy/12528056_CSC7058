@@ -125,10 +125,32 @@ except:("Sorry, search term not recognised. Try checking your category choice or
 #exploring dataframe styles
 #dfFull.style.set_properties(**{'background-color': 'black',
                           # 'color': 'green'})
-st.write(dfFull["SVLMx"].head())
 
 #exploring slider on streamlit
-sliderPlay = st.slider('Clutch size?', 0, 130, 25)
+sliderPlay = st.slider('Clutch size?', 0.0, 100.0, (25.0,75.0))
+
+
+coreced=dfFull["SVLMMx"].head(11).apply(pd.to_numeric, errors='coerce')
+st.write(dfFull["SVLMx"].head(11))
+
+
+for i in coreced:
+     if coreced >= sliderPlay:
+        try:
+            st.write(i)
+        except:
+            st.write("not number")
+            pass
+
+#for i in coreced:
+#     if coreced[i] >= sliderPlay:
+ #       try:
+  #          st.write(i)
+   #     except:
+    #        st.write("not number")
+     #       pass
+
+
 st.write('Values:', sliderPlay)
 
 
