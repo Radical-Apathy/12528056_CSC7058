@@ -138,20 +138,25 @@ sliderPlay = st.slider('Clutch sizes?', 0.0, 100.0)
 
 
 #practiving building dataframe based on bodysize range
+rangeDataframe=[]
 def rangeBuilder(dataframe):
     coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
     for i in coreced:
         try:
           if i <= sliderPlay:
-        
-            st.write(i)
+            rangeDataframe.append(coreced["Genus"])
+            rangeDataframe.append(coreced["Family"])
+            rangeDataframe.append(coreced["Order"])
+            rangeDataframe.append(coreced["Species"])
+            rangeDataframe.append(coreced["SVLMMx"])
+            
         except:
            # print("not number")
             pass
+    st.write(rangeDataframe)
 
 
-
-
+rangeBuilder(dfFull)
 
 st.write('Values:', sliderPlay)
 
