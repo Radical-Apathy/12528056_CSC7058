@@ -55,14 +55,14 @@ def multioptionCheck(options=[]):
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
      if option=="Species":
-        ranges = st.radio('Search species by ranges ', ('BodySize', 'Clutch Size', 'Egg Diameter'))
-        for choice in ranges:
-            if choice=="BodySize":
-                    bodySize= st.slider('BodySize', 0.0, 100.0)
-            if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 100.0)
-            if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 100.0)
+        sliderGeneric = st.slider('Clutch size?', 0.0, 100.0)
+        #for choice in ranges:
+         #   if choice=="BodySize":
+          #          bodySize= st.slider('BodySize', 0.0, 100.0)
+           # if choice=="Clutch Size":
+            #        clutchSize= st.slider('Clutch Size', 0.0, 100.0)
+            #if choice=="Egg Diameter":
+             #       eggSize= st.slider('Egg Diameter', 0.0, 100.0)
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
@@ -134,22 +134,22 @@ except:("Sorry, search term not recognised. Try checking your category choice or
                           # 'color': 'green'})
 
 #exploring slider on streamlit
-sliderPlay = st.slider('Clutch size?', 0.0, 100.0)
+sliderPlay = st.slider('Clutch sizes?', 0.0, 100.0)
 
 
-coreced=dfFull["SVLMMx"].head(10).apply(pd.to_numeric, errors='coerce')
-
-#print(dfFull['SVLMMx'].head(10))
-
-for i in coreced:
-    try:
-     if i <= sliderPlay:
+#practiving building dataframe based on bodysize range
+def rangeBuilder(dataframe):
+    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
+    for i in coreced:
+        try:
+          if i <= sliderPlay:
         
             st.write(i)
-    except:
+        except:
            # print("not number")
             pass
-        
+
+
 
 
 
