@@ -130,25 +130,20 @@ except:("Sorry, search term not recognised. Try checking your category choice or
 sliderPlay = st.slider('Clutch size?', 0.0, 100.0, (25.0,75.0))
 
 
-coreced=dfFull["SVLMMx"].head(11).apply(pd.to_numeric, errors='coerce')
-st.write(dfFull["SVLMx"].head(11))
+coreced=dfFull["SVLMMx"].head(10).apply(pd.to_numeric, errors='coerce')
 
+#print(dfFull['SVLMMx'].head(10))
 
 for i in coreced:
-     if coreced >= sliderPlay:
-        try:
-            st.write(i)
-        except:
-            st.write("not number")
+    try:
+     if i <= 25:
+        
+            print(i)
+    except:
+            print("not number")
             pass
+        
 
-#for i in coreced:
-#     if coreced[i] >= sliderPlay:
- #       try:
-  #          st.write(i)
-   #     except:
-    #        st.write("not number")
-     #       pass
 
 
 st.write('Values:', sliderPlay)
