@@ -20,10 +20,16 @@ def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
 
+@st.cache
+def load_bodySize(dfFull):
+    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
+    return coreced
+    
 
 dfFull=load_original()
 dfReferences = load_references()
 dfImages = load_images()
+bodySize=load_bodySize(dfFull)
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -138,21 +144,22 @@ sliderPlay = st.slider('Clutch sizes?', 0.0, 100.0)
 
 
 #practiving building dataframe based on bodysize range
-
-def rangeBuilder(dataframe):
+rangeDataframe=[]
+def rangeBuilder(bodySize):
     coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
-    rangeDataframe=[]
+    
     for i in coreced:
         #try:
           #try:
           if i <= sliderPlay:
-            rangeDataframe.append(dfFull["Order"])
-            rangeDataframe.append(dfFull["Family"])
-            rangeDataframe.append(dfFull["Genus"])
-            rangeDataframe.append(dfFull["Species"])
-            rangeDataframe.append(dfFull["SVLMMx"])
+            #rangeDataframe.append(dfFull["Order"])
+            #rangeDataframe.append(dfFull["Family"])
+            #rangeDataframe.append(dfFull["Genus"])
+            rangeDataframe.append(dfFull["Species"]) #if coereced instead of dffull, errors thrown
+            #rangeDataframe.append(dfFull["SVLMMx"])
             rangeDataframedf=pd.DataFrame(rangeDataframe)
-    st.write(rangeDataframedf)
+            #return rangeDataframe
+            st.write(rangeDataframe)
             
         #except:
            # print("not number")
