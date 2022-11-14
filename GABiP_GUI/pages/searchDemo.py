@@ -142,21 +142,24 @@ rangeDataframe=[]
 def rangeBuilder(dataframe):
     coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
     for i in coreced:
-        try:
-          if i <= sliderPlay:
-            rangeDataframe.append(coreced["Genus"])
-            rangeDataframe.append(coreced["Family"])
-            rangeDataframe.append(coreced["Order"])
-            rangeDataframe.append(coreced["Species"])
-            rangeDataframe.append(coreced["SVLMMx"])
-            
-        except:
-           # print("not number")
-            pass
+        #try:
+          #try:
+          if i <= 25:
+            rangeDataframe.append(dfFull["Genus"])
+            rangeDataframe.append(dfFull["Family"])
+            rangeDataframe.append(dfFull["Order"])
+            rangeDataframe.append(dfFull["Species"])
+            rangeDataframe.append(dfFull["SVLMMx"])
+            rangeDataframedf=pd.DataFrame(rangeDataframe)
     st.write(rangeDataframe)
+            
+        #except:
+           # print("not number")
+           # pass
+    #st.write(rangeDataframe)
 
 
-rangeBuilder(dfFull)
+rangeBuilder(dfFull.head())
 
 st.write('Values:', sliderPlay)
 
