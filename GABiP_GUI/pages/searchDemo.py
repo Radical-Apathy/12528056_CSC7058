@@ -72,7 +72,8 @@ def multioptionCheck(options=[]):
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
      if option=="Species":
-        sliderGeneric = st.slider('Clutch size?', 0.0, 100.0)
+        sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
+        rangeSVLMx(dfFull, *sliderrange)
         #for choice in ranges:
          #   if choice=="BodySize":
           #          bodySize= st.slider('BodySize', 0.0, 100.0)
@@ -145,9 +146,9 @@ try:
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
 
-sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
 
-rangeSVLMx(dfFull)
+
+
 
 
 
