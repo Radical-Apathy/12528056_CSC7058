@@ -71,9 +71,10 @@ def multioptionCheck(options=[]):
     for option in options:
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
-     if option=="Species":
-        sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
-        rangeSVLMx(dfFull, *sliderrange)
+     #if option=="Species":
+        svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
+        rangeSVLMx(dfFull, svlmxRange)
+        
         #for choice in ranges:
          #   if choice=="BodySize":
           #          bodySize= st.slider('BodySize', 0.0, 100.0)
