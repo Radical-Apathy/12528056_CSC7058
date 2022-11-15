@@ -140,58 +140,21 @@ except:("Sorry, search term not recognised. Try checking your category choice or
     
 
 
-#exploring dataframe styles
-#dfFull.style.set_properties(**{'background-color': 'black',
-                          # 'color': 'green'})
-
-#exploring slider on streamlit
-sliderPlay = st.slider('SVLMx range', 0.0, 1700.0)
-mask=dfFull["SVLMx"] >= sliderPlay
-masked=dfFull[mask]
-maskeddf=masked[['Species', 'Genus', 'SVLMx']].copy()
-maskeddf=pd.DataFrame([masked.Species, masked.Genus, masked.SVLMx])
-st.write(maskeddf)
-
 #working with range values
 sliderrange= st.slider('SVLMx Range searching', 0.0, 100.0, (25.0, 75.0))
 maskRange=dfFull["SVLMx"].between(*sliderrange)
 maskedRange=dfFull[maskRange]
-maskedRangedf=masked[['Species', 'Genus', 'SVLMx']].copy()
+maskedRangedf=maskedRange[['Species', 'Genus', 'SVLMx']].copy()
 maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
 st.write(maskedRangedf)
 
-st.write('Values:', sliderPlay)
 st.write('range values', sliderrange)
 
 
 
 
 
-#practiving building dataframe based on bodysize range
-#rangeDataframe=[]
-#def rangeBuilder(bodySize):
- #   coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
-    
-  #  for i in coreced:
-        #try:
-          #try:
-   #       if i <= sliderPlay:
-            #rangeDataframe.append(dfFull["Order"])
-            #rangeDataframe.append(dfFull["Family"])
-            #rangeDataframe.append(dfFull["Genus"])
-    #        rangeDataframe.append(dfFull["Species"]) #if coereced instead of dffull, errors thrown
-            #rangeDataframe.append(dfFull["SVLMMx"])
-     #       rangeDataframedf=pd.DataFrame(rangeDataframe)
-            #return rangeDataframe
-      #      st.write(rangeDataframe)
-            
-        #except:
-           # print("not number")
-           # pass
-    #st.write(rangeDataframe)
 
-
-#rangeBuilder(dfFull.head())
 
 
 
