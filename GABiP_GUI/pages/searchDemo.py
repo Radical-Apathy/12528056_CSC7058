@@ -5,11 +5,15 @@ import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
-@st.cache
-def load_original():
-    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfFull
+#@st.cache
+#def load_original():
+#    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
+#    return dfFull
 
+@st.cache
+def load_cleaned():
+    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfFull
 @st.cache
 def load_references():
     dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
@@ -20,10 +24,17 @@ def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
 
+@st.cache
+def load_bodySize(dfFull):
+    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
+    return coreced
+    
 
-dfFull=load_original()
+#dfFull=load_original()
+dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
+bodySize=load_bodySize(dfFull)
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -49,6 +60,33 @@ def embeddedImage(speciesInfo):
     mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
     mergedInfo.drop_duplicates()
     return mergedInfo["Embedded Link"].loc[0]
+
+def rangeSVLMx(dataframe):
+    maskRange=dfFull["SVLMx"].between(*sliderrange)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+    st.write(maskedRangedf)
+
+def multioptionCheck(options=[]):
+    for option in options:
+     if option=="Species" and text_inputMulti:
+        speciesSearchTest(text_inputMulti)
+     if option=="Species":
+        sliderGeneric = st.slider('Clutch size?', 0.0, 100.0)
+        #for choice in ranges:
+         #   if choice=="BodySize":
+          #          bodySize= st.slider('BodySize', 0.0, 100.0)
+           # if choice=="Clutch Size":
+            #        clutchSize= st.slider('Clutch Size', 0.0, 100.0)
+            #if choice=="Egg Diameter":
+             #       eggSize= st.slider('Egg Diameter', 0.0, 100.0)
+
+     else:
+         search=dfFull[multiOptions].drop_duplicates()
+         search.drop_duplicates()
+        
+
+    st.write(search)
 
 speciesdf= []
 def speciesSearchTest(option2):
@@ -87,72 +125,37 @@ def speciesSearchTest(option2):
         speciesInfo.drop_duplicates()
         col2.write (speciesInfo)
 
-#generic method for searching
-#def optionCheck(option1, option2):
- #   if option1=="Species":
-  #      speciesSearchTest(option2)
-   # else:
-    #     search = dfFull.groupby(option1).get_group(option2)
-     #    search.drop_duplicates()
-      #   hide_row_no="""<style>
-       #     thead tr th:first-child {display:none}
-        #    tbody th {display:none}
-         #   </style>"""
-        # st.markdown(hide_row_no, unsafe_allow_html=True)
-
-         #return search
-    
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
-#singleOptions = st.selectbox("Dropdown allowing one choice, showing all columns", options=dfFull.columns)##"Subfamily","Genus","Species"
-#text_input = st.text_input("Enter your query", "relicta")
-
-#submitButton=st.button("Search")
-
-#try:
- #if submitButton:
-  #st.write("Results: ")
-  #speciesInfo=optionCheck(singleOptions, text_input)
-  #st.write(speciesInfo)
-#except:("Sorry, no results found. Try checking your category choice or spelling")
-
-def multioptionCheck(options=[]):
-    for option in options:
-     if option=="Species" and text_inputMulti:
-        speciesSearchTest(text_inputMulti)
-     else:
-         search=dfFull[multiOptions].drop_duplicates()
-         search.drop_duplicates()
-        
-
-    st.write(search)
 
 
-multiOptions = st.multiselect("choose a few ", options=dfFull.columns)##"Subfamily","Genus","Species"
+
+
+multiOptions = st.multiselect("choose a few ", options=dfFull.columns)
 text_inputMulti = st.text_input("Enter your queries", "relicta")
 submitButton2=st.button(" Multi Search")
 
 try:
  if submitButton2:
+    #text_inputMulti = st.text_input("Enter your queries")
     st.write("Results for: ")
     multioptionCheck(multiOptions)
+    
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
 
+sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
 
-#try:
- #if submitButton:
-  #st.write("Results: ")
-  #speciesInfo=optionCheck(singleOptions, text_input)
-  #st.write(speciesInfo)
-#except:("Sorry, no results found. Try checking your category choice or spelling")
-values = st.slider(
-    'Streamlit slider template',
-    0.0, 100.0, (50.0))
+rangeSVLMx(dfFull)
 
 
-#st.write('Values:', values)
+
+
+
+
+
+
 
 
 
