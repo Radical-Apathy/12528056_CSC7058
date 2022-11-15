@@ -145,26 +145,37 @@ except:("Sorry, search term not recognised. Try checking your category choice or
                           # 'color': 'green'})
 
 #exploring slider on streamlit
-sliderPlay = st.slider('Clutch sizes?', 0.0, 100.0)
+sliderPlay = st.slider('SVLMx range', 0.0, 1700.0)
+
+mask=dfFull["SVLMx"] >= sliderPlay
+masked=dfFull[mask]
+maskeddf=masked[['Species', 'Genus', 'SVLMx']].copy()
+maskeddf=pd.DataFrame([masked.Species, masked.Genus, masked.SVLMx])
+st.write(maskeddf)
+
+st.write('Values:', sliderPlay)
+
+
+
 
 
 #practiving building dataframe based on bodysize range
-rangeDataframe=[]
-def rangeBuilder(bodySize):
-    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
+#rangeDataframe=[]
+#def rangeBuilder(bodySize):
+ #   coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
     
-    for i in coreced:
+  #  for i in coreced:
         #try:
           #try:
-          if i <= sliderPlay:
+   #       if i <= sliderPlay:
             #rangeDataframe.append(dfFull["Order"])
             #rangeDataframe.append(dfFull["Family"])
             #rangeDataframe.append(dfFull["Genus"])
-            rangeDataframe.append(dfFull["Species"]) #if coereced instead of dffull, errors thrown
+    #        rangeDataframe.append(dfFull["Species"]) #if coereced instead of dffull, errors thrown
             #rangeDataframe.append(dfFull["SVLMMx"])
-            rangeDataframedf=pd.DataFrame(rangeDataframe)
+     #       rangeDataframedf=pd.DataFrame(rangeDataframe)
             #return rangeDataframe
-            st.write(rangeDataframe)
+      #      st.write(rangeDataframe)
             
         #except:
            # print("not number")
@@ -172,13 +183,7 @@ def rangeBuilder(bodySize):
     #st.write(rangeDataframe)
 
 
-rangeBuilder(dfFull.head())
-
-st.write('Values:', sliderPlay)
-
-
-
-
+#rangeBuilder(dfFull.head())
 
 
 
