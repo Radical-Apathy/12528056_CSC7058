@@ -146,14 +146,22 @@ except:("Sorry, search term not recognised. Try checking your category choice or
 
 #exploring slider on streamlit
 sliderPlay = st.slider('SVLMx range', 0.0, 1700.0)
-
 mask=dfFull["SVLMx"] >= sliderPlay
 masked=dfFull[mask]
 maskeddf=masked[['Species', 'Genus', 'SVLMx']].copy()
 maskeddf=pd.DataFrame([masked.Species, masked.Genus, masked.SVLMx])
 st.write(maskeddf)
 
+#working with range values
+sliderrange= st.slider('SVLMx Range searching', 0.0, 100.0, (25.0, 75.0))
+maskRange=dfFull["SVLMx"].between(*sliderrange)
+maskedRange=dfFull[maskRange]
+maskedRangedf=masked[['Species', 'Genus', 'SVLMx']].copy()
+maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+st.write(maskedRangedf)
+
 st.write('Values:', sliderPlay)
+st.write('range values', sliderrange)
 
 
 
