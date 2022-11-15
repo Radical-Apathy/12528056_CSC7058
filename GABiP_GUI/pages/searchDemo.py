@@ -61,6 +61,12 @@ def embeddedImage(speciesInfo):
     mergedInfo.drop_duplicates()
     return mergedInfo["Embedded Link"].loc[0]
 
+def rangeSVLMx(dataframe):
+    maskRange=dfFull["SVLMx"].between(*sliderrange)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+    st.write(maskedRangedf)
+
 def multioptionCheck(options=[]):
     for option in options:
      if option=="Species" and text_inputMulti:
@@ -139,16 +145,13 @@ try:
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
 
+sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
 
-#working with range values
-sliderrange= st.slider('SVLMx Range searching', 0.0, 100.0, (25.0, 75.0))
-maskRange=dfFull["SVLMx"].between(*sliderrange)
-maskedRange=dfFull[maskRange]
-maskedRangedf=maskedRange[['Species', 'Genus', 'SVLMx']].copy()
-maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
-st.write(maskedRangedf)
+rangeSVLMx(dfFull)
 
-st.write('range values', sliderrange)
+
+
+
 
 
 
