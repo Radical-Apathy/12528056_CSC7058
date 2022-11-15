@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
-
+"st.session_state_object:", st.session_state
 #@st.cache
 #def load_original():
 #    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
@@ -61,8 +61,8 @@ def embeddedImage(speciesInfo):
     mergedInfo.drop_duplicates()
     return mergedInfo["Embedded Link"].loc[0]
 
-def rangeSVLMx(dataframe):
-    maskRange=dfFull["SVLMx"].between(*sliderrange)
+def rangeSVLMx(dataframe, svlmxRange):
+    maskRange=dfFull["SVLMx"].between(*svlmxRange)
     maskedRange=dfFull[maskRange]
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
     st.write(maskedRangedf)
