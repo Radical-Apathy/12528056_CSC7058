@@ -120,8 +120,9 @@ def speciesSearchTest(option2):
             tbody th {display:none}
             </style>"""
     st.markdown(hide_row_no, unsafe_allow_html=True)
-    col2.write(speciesdatadf)
+    col2.write(speciesdatadf, key='species_info')
     showMore = col2.checkbox("Show All")
+    
 
     if showMore:
         speciesInfo.drop_duplicates()
