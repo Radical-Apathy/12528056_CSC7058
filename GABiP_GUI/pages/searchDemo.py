@@ -5,11 +5,15 @@ import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
-@st.cache
-def load_original():
-    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfFull
+#@st.cache
+#def load_original():
+#    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
+#    return dfFull
 
+@st.cache
+def load_cleaned():
+    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfFull
 @st.cache
 def load_references():
     dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
@@ -26,7 +30,8 @@ def load_bodySize(dfFull):
     return coreced
     
 
-dfFull=load_original()
+#dfFull=load_original()
+dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
 bodySize=load_bodySize(dfFull)
