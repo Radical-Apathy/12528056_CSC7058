@@ -44,7 +44,7 @@ if 'range_options' not in st.session_state:
 if 'BodySize_slider' not in st.session_state:
     st.session_state['BodySize_slider'] = (850.0, 1500.0)
 if 'slidercheck' not in st.session_state:
-    st.session_state['BodySize_slider'] = (70.0, 980.0)
+    st.session_state['slidercheck'] = (70.0, 980.0)
 #if 'speciesInfo' not in st.session_state:
  #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 for item in st.session_state.items():
