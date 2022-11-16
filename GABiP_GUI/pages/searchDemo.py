@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
-"st.session_state_object:", st.session_state
+
 #@st.cache
 #def load_original():
 #    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
@@ -35,6 +35,12 @@ dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
 bodySize=load_bodySize(dfFull)
+
+"st.session_state_object:", st.session_state
+#Initializing session state values
+
+if 'speciesInfo' not in st.session_state:
+    st.session_state['speciesInfo']=dfFull.groupby("Species").get_group("relicta")
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -131,6 +137,7 @@ def speciesSearchTest(option2):
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
+st.write("Sesion state tab keeping", st.session_state)
 
 
 
