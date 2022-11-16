@@ -24,17 +24,23 @@ def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
 
-@st.cache
-def load_bodySize(dfFull):
-    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
-    return coreced
-    
 
 #dfFull=load_original()
 dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
-bodySize=load_bodySize(dfFull)
+
+
+#creating session state object
+"st.session_state_object:", st.session_state
+
+#Initializing session state values
+if 'drop_option' not in st.session_state:
+    st.session_state['drop_option'] = "Species"
+if 'text_option' not in st.session_state:
+    st.session_state['text_option'] = "relicta"
+#if 'speciesInfo' not in st.session_state:
+ #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -61,8 +67,8 @@ def embeddedImage(speciesInfo):
     mergedInfo.drop_duplicates()
     return mergedInfo["Embedded Link"].loc[0]
 
-def rangeSVLMx(dataframe):
-    maskRange=dfFull["SVLMx"].between(*sliderrange)
+def rangeSVLMx(dataframe, svlmxRange):
+    maskRange=dfFull["SVLMx"].between(*svlmxRange)
     maskedRange=dfFull[maskRange]
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
     st.write(maskedRangedf)
@@ -71,15 +77,17 @@ def multioptionCheck(options=[]):
     for option in options:
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
-     if option=="Species":
-        sliderGeneric = st.slider('Clutch size?', 0.0, 100.0)
-        #for choice in ranges:
-         #   if choice=="BodySize":
-          #          bodySize= st.slider('BodySize', 0.0, 100.0)
-           # if choice=="Clutch Size":
-            #        clutchSize= st.slider('Clutch Size', 0.0, 100.0)
-            #if choice=="Egg Diameter":
-             #       eggSize= st.slider('Egg Diameter', 0.0, 100.0)
+     #if option=="Species":
+        svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
+        rangeSVLMx(dfFull, svlmxRange)
+        ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'])
+        for choice in ranges:
+            if choice=="BodySize":
+                    bodySize= st.slider('BodySize', 0.0, 1700.0, (850.0, 1500.0))
+            if choice=="Clutch Size":
+                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0))
+            if choice=="Egg Diameter":
+                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0))
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
@@ -88,11 +96,20 @@ def multioptionCheck(options=[]):
 
     st.write(search)
 
+
+def separateGroupby():
+    speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
+    st.write(speciesInfo)
+
+
 speciesdf= []
-def speciesSearchTest(option2):
+def speciesSearchTest(option2): # formally option2
     col1,col2=st.columns(2)
-    col1.header(option2, " Species Summary:")
-    speciesInfo = dfFull.groupby("Species").get_group(option2)
+    col1.header(st.session_state['text_option'], " Species Summary:")
+    #speciesInfo = dfFull.groupby("Species").get_group(st.session_state['text_option']) # only definition of the three speciesInfo that works
+    speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
+    #speciesInfo = st.session_state['drop_option']
+    #st.session_state.speciesInfo = speciesInfo
     col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
     col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
@@ -120,20 +137,25 @@ def speciesSearchTest(option2):
     st.markdown(hide_row_no, unsafe_allow_html=True)
     col2.write(speciesdatadf)
     showMore = col2.checkbox("Show All")
+    
 
     if showMore:
-        speciesInfo.drop_duplicates()
-        col2.write (speciesInfo)
+        separateGroupby()
+        #speciesSearchTest(st.session_state['text_option'])
+        #st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+        #speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
+        #st.write(speciesInfo)
+        #speciesInfo.drop_duplicates()
+        
+       # col2.write (separateGroupby())
 
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
 
 
-
-
-multiOptions = st.multiselect("choose a few ", options=dfFull.columns)
-text_inputMulti = st.text_input("Enter your queries", "relicta")
+multiOptions = st.multiselect("choose a few ", options=dfFull.columns, key='drop_option')
+text_inputMulti = st.text_input("Enter your queries", "relicta", key='text_option')
 submitButton2=st.button(" Multi Search")
 
 try:
@@ -144,10 +166,10 @@ try:
     
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
+st.write(separateGroupby())
 
-sliderrange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
 
-rangeSVLMx(dfFull)
+
 
 
 
