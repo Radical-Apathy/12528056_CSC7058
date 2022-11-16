@@ -166,7 +166,7 @@ try:
     
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
     
-
+st.write(separateGroupby())
 
 
 
