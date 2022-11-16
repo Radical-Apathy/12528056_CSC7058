@@ -39,6 +39,12 @@ if 'drop_option' not in st.session_state:
     st.session_state['drop_option'] = "Species"
 if 'text_option' not in st.session_state:
     st.session_state['text_option'] = "relicta"
+if 'range_options' not in st.session_state:
+    st.session_state['range_options'] = "BodySize_slider"
+if 'BodySize_slider' not in st.session_state:
+    st.session_state['BodySize_slider'] = (850.0, 1500.0)
+if 'slidercheck' not in st.session_state:
+    st.session_state['BodySize_slider'] = (70.0, 980.0)
 #if 'speciesInfo' not in st.session_state:
  #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 for item in st.session_state.items():
@@ -84,12 +90,12 @@ def multioptionCheck(options=[]):
         ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
         for choice in ranges:
            if choice == 'BodySize':
-                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0), key='BodySize slider')
+                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0), key='BodySize_slider')
                    rangeSVLMx(dfFull, svlmxRange)
            if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0), key='ClutchSize slider')
+                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0), key='ClutchSize_slider')
            if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0), key='EggDiameter slider')
+                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0), key='EggDiameter_slider')
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
@@ -170,7 +176,7 @@ except:("Sorry, search term not recognised. Try checking your category choice or
     
 st.write(separateGroupby())
 
-
+sliderCheck=st.slider('Slider display check', 0.0, 1700.0, (850.0, 1500.0), key='slidercheck')
 
 
 
