@@ -38,9 +38,9 @@ dfImages = load_images()
 if 'drop_option' not in st.session_state:
     st.session_state['drop_option'] = "Species"
 if 'text_option' not in st.session_state:
-    st.session_state['text_option'] = "text"
-if 'speciesInfo' not in st.session_state:
-    st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+    st.session_state['text_option'] = "relicta"
+#if 'speciesInfo' not in st.session_state:
+ #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -96,12 +96,19 @@ def multioptionCheck(options=[]):
 
     st.write(search)
 
+
+def separateGroupby():
+    speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
+    st.write(speciesInfo)
+
+
 speciesdf= []
-def speciesSearchTest(option2):
+def speciesSearchTest(option2): # formally option2
     col1,col2=st.columns(2)
-    col1.header(option2, " Species Summary:")
-    #speciesInfo = dfFull.groupby("Species").get_group(option2)
-    speciesInfo = st.session_state['speciesInfo']
+    col1.header(st.session_state['text_option'], " Species Summary:")
+    #speciesInfo = dfFull.groupby("Species").get_group(st.session_state['text_option']) # only definition of the three speciesInfo that works
+    speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
+    #speciesInfo = st.session_state['drop_option']
     #st.session_state.speciesInfo = speciesInfo
     col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
@@ -128,22 +135,23 @@ def speciesSearchTest(option2):
             tbody th {display:none}
             </style>"""
     st.markdown(hide_row_no, unsafe_allow_html=True)
-    col2.write(speciesdatadf, key='species_info')
+    col2.write(speciesdatadf)
     showMore = col2.checkbox("Show All")
     
 
     if showMore:
-        speciesInfo=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+        separateGroupby()
+        #speciesSearchTest(st.session_state['text_option'])
+        #st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+        #speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
         #st.write(speciesInfo)
-        speciesInfo.drop_duplicates()
-        col2.write (speciesInfo)
+        #speciesInfo.drop_duplicates()
+        
+       # col2.write (separateGroupby())
 
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
-st.write("Sesion state tab keeping", st.session_state)
-
-
 
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns, key='drop_option')
