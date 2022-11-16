@@ -41,7 +41,8 @@ if 'text_option' not in st.session_state:
     st.session_state['text_option'] = "relicta"
 #if 'speciesInfo' not in st.session_state:
  #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
-
+for item in st.session_state.items():
+    st.write("item: ", item)
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
     #order references from most recent
@@ -78,16 +79,17 @@ def multioptionCheck(options=[]):
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
      #if option=="Species":
-        svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
-        rangeSVLMx(dfFull, svlmxRange)
-        ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'])
+        #svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
+        #rangeSVLMx(dfFull, svlmxRange)
+        ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
         for choice in ranges:
-            if choice=="BodySize":
-                    bodySize= st.slider('BodySize', 0.0, 1700.0, (850.0, 1500.0))
-            if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0))
-            if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0))
+           if choice == 'BodySize':
+                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0), key='BodySize slider')
+                   rangeSVLMx(dfFull, svlmxRange)
+           if choice=="Clutch Size":
+                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0), key='ClutchSize slider')
+           if choice=="Egg Diameter":
+                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0), key='EggDiameter slider')
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
