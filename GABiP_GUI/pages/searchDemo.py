@@ -40,7 +40,7 @@ if 'drop_option' not in st.session_state:
 if 'text_option' not in st.session_state:
     st.session_state['text_option'] = "relicta"
 if 'range_options' not in st.session_state:
-    st.session_state['range_options'] = "BodySize_slider"
+    st.session_state['range_options'] = "BodySize"
 if 'BodySize_slider' not in st.session_state:
     st.session_state['BodySize_slider'] = (850.0, 1500.0)
 if 'slidercheck' not in st.session_state:
@@ -49,6 +49,9 @@ if 'slidercheck' not in st.session_state:
  #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 for item in st.session_state.items():
     st.write("item: ", item)
+for values in st.session_state.values():
+    st.write("session state value: ",values)
+
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
     #order references from most recent
@@ -84,13 +87,13 @@ def multioptionCheck(options=[]):
     for option in options:
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
-     #if option=="Species":
+     if option=="Species":
         #svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
         #rangeSVLMx(dfFull, svlmxRange)
         ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
         for choice in ranges:
            if choice == 'BodySize':
-                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0), key='BodySize_slider')
+                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (100.0, 1000.0), key='BodySize_slider')
                    rangeSVLMx(dfFull, svlmxRange)
            if choice=="Clutch Size":
                     clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0), key='ClutchSize_slider')
