@@ -24,17 +24,12 @@ def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
 
-@st.cache
-def load_bodySize(dfFull):
-    coreced=dfFull["SVLMMx"].apply(pd.to_numeric, errors='coerce')
-    return coreced
-    
 
 #dfFull=load_original()
 dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
-bodySize=load_bodySize(dfFull)
+
 
 #creating session state object
 "st.session_state_object:", st.session_state
@@ -43,9 +38,9 @@ bodySize=load_bodySize(dfFull)
 if 'drop_option' not in st.session_state:
     st.session_state['drop_option'] = "Species"
 if 'text_option' not in st.session_state:
-    st.session_state['text_option'] = "relicta"
+    st.session_state['text_option'] = "text"
 if 'speciesInfo' not in st.session_state:
-    st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group('text_option')
+    st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -85,14 +80,14 @@ def multioptionCheck(options=[]):
      #if option=="Species":
         svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
         rangeSVLMx(dfFull, svlmxRange)
-        
-        #for choice in ranges:
-         #   if choice=="BodySize":
-          #          bodySize= st.slider('BodySize', 0.0, 100.0)
-           # if choice=="Clutch Size":
-            #        clutchSize= st.slider('Clutch Size', 0.0, 100.0)
-            #if choice=="Egg Diameter":
-             #       eggSize= st.slider('Egg Diameter', 0.0, 100.0)
+        ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'])
+        for choice in ranges:
+            if choice=="BodySize":
+                    bodySize= st.slider('BodySize', 0.0, 1700.0, (850.0, 1500.0))
+            if choice=="Clutch Size":
+                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0))
+            if choice=="Egg Diameter":
+                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0))
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
@@ -138,8 +133,8 @@ def speciesSearchTest(option2):
     
 
     if showMore:
-        speciesInfo=st.session_state['speciesinfo']
-        st.write(speciesInfo)
+        speciesInfo=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+        #st.write(speciesInfo)
         speciesInfo.drop_duplicates()
         col2.write (speciesInfo)
 
