@@ -36,11 +36,16 @@ dfReferences = load_references()
 dfImages = load_images()
 bodySize=load_bodySize(dfFull)
 
+#creating session state object
 "st.session_state_object:", st.session_state
-#Initializing session state values
 
+#Initializing session state values
+if 'drop_option' not in st.session_state:
+    st.session_state['drop_option'] = "Species"
+if 'text_option' not in st.session_state:
+    st.session_state['text_option'] = "relicta"
 if 'speciesInfo' not in st.session_state:
-    st.session_state['speciesInfo']=dfFull.groupby("Species").get_group("relicta")
+    st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group('text_option')
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -100,7 +105,9 @@ speciesdf= []
 def speciesSearchTest(option2):
     col1,col2=st.columns(2)
     col1.header(option2, " Species Summary:")
-    speciesInfo = dfFull.groupby("Species").get_group(option2)
+    #speciesInfo = dfFull.groupby("Species").get_group(option2)
+    speciesInfo = st.session_state['speciesInfo']
+    #st.session_state.speciesInfo = speciesInfo
     col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
     col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
@@ -131,6 +138,8 @@ def speciesSearchTest(option2):
     
 
     if showMore:
+        speciesInfo=st.session_state['speciesinfo']
+        st.write(speciesInfo)
         speciesInfo.drop_duplicates()
         col2.write (speciesInfo)
 
@@ -142,8 +151,8 @@ st.write("Sesion state tab keeping", st.session_state)
 
 
 
-multiOptions = st.multiselect("choose a few ", options=dfFull.columns)
-text_inputMulti = st.text_input("Enter your queries", "relicta")
+multiOptions = st.multiselect("choose a few ", options=dfFull.columns, key='drop_option')
+text_inputMulti = st.text_input("Enter your queries", "relicta", key='text_option')
 submitButton2=st.button(" Multi Search")
 
 try:
