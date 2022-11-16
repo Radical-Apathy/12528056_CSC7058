@@ -43,6 +43,10 @@ if 'range_options' not in st.session_state:
     st.session_state['range_options'] = "BodySize"
 if 'BodySize_slider' not in st.session_state:
     st.session_state['BodySize_slider'] = (850.0, 1500.0)
+if 'ClutchSize_slider' not in st.session_state:
+    st.session_state['ClutchSize_slider'] = (850.0, 1500.0)
+if 'EggDiameter_slider' not in st.session_state:
+    st.session_state['EggDiameter_slider'] = (850.0, 1500.0)
 if 'slidercheck' not in st.session_state:
     st.session_state['slidercheck'] = (70.0, 980.0)
 #if 'speciesInfo' not in st.session_state:
@@ -96,9 +100,9 @@ def multioptionCheck(options=[]):
                    svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (100.0, 1000.0), key='BodySize_slider')
                    rangeSVLMx(dfFull, svlmxRange)
            if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0), key='ClutchSize_slider')
+                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (70.0, 35.0), key='ClutchSize_slider')
            if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0), key='EggDiameter_slider')
+                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (858.0, 1505.0), key='EggDiameter_slider')
 
      else:
          search=dfFull[multiOptions].drop_duplicates()
@@ -179,7 +183,7 @@ except:("Sorry, search term not recognised. Try checking your category choice or
     
 st.write(separateGroupby())
 
-sliderCheck=st.slider('Slider display check', 0.0, 1700.0, (850.0, 1500.0), key='slidercheck')
+#sliderCheck=st.slider('Slider display check', 0.0, 1700.0, (850.0, 1500.0), key='slidercheck')
 
 
 
