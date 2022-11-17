@@ -47,14 +47,14 @@ if 'ClutchSize_slider' not in st.session_state:
     st.session_state['ClutchSize_slider'] = (850.0, 1500.0)
 if 'EggDiameter_slider' not in st.session_state:
     st.session_state['EggDiameter_slider'] = (850.0, 1500.0)
-if 'slidercheck' not in st.session_state:
-    st.session_state['slidercheck'] = (70.0, 980.0)
+#if 'slidercheck' not in st.session_state:
+ #   st.session_state['slidercheck'] = (70.0, 980.0)
 #if 'speciesInfo' not in st.session_state:
  #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
-for item in st.session_state.items():
-    st.write("item: ", item)
-for values in st.session_state.values():
-    st.write("session state value: ",values)
+#for item in st.session_state.items():
+ #   st.write("item: ", item)
+#for values in st.session_state.values():
+ #   st.write("session state value: ",values)
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -91,20 +91,20 @@ def multioptionCheck(options=[]):
     for option in options:
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
+        
+        
      if option=="Species":
-        #svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
-        #rangeSVLMx(dfFull, svlmxRange)
         ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
-        for choice in ranges:
-           if choice == 'BodySize':
-                   svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (100.0, 1000.0), key='BodySize_slider')
-                   rangeSVLMx(dfFull, svlmxRange)
-           if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (70.0, 35.0), key='ClutchSize_slider')
-           if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (858.0, 1505.0), key='EggDiameter_slider')
+     if ranges == 'BodySize':
+            svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1700.0), key='BodySize_slider')
+            rangeSVLMx(dfFull, svlmxRange)
+     if ranges=="Clutch Size":
+            clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0), key='ClutchSize_slider')
+     if ranges=="Egg Diameter":
+            eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (858.0, 1700.0), key='EggDiameter_slider')        
+        
 
-     else:
+    else:
          search=dfFull[multiOptions].drop_duplicates()
          search.drop_duplicates()
         
@@ -183,13 +183,20 @@ except:("Sorry, search term not recognised. Try checking your category choice or
     
 st.write(separateGroupby())
 
-#sliderCheck=st.slider('Slider display check', 0.0, 1700.0, (850.0, 1500.0), key='slidercheck')
+
+st.write("radio buttons outside method")
 
 
-
-
-
-
+outranges=st.radio('Outside Range Search: ', ['BodySize2', 'Clutch Size2', 'Egg Diameter2'])# key='range_options2')
+if outranges == 'BodySize2':
+            svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1700.0))# key='BodySize_slider2')
+            rangeSVLMx(dfFull, svlmxRange)
+if outranges=="Clutch Size2":
+            clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0))# key='ClutchSize_slider')
+if outranges=="Egg Diameter2":
+            eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (858.0, 1700.0))# key='EggDiameter_slider')        
+        
+        
 
 
 
