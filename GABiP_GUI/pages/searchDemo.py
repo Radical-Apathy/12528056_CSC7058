@@ -38,7 +38,7 @@ dfImages = load_images()
 if 'drop_option' not in st.session_state:
     st.session_state['drop_option'] = "Family"
 if 'text_option' not in st.session_state:
-    st.session_state['text_option'] = "Default Text"
+    st.session_state['text_option'] = "relicta"
 if 'range_options' not in st.session_state:
     st.session_state['range_options'] = "BodySize"
 #if 'radio_options' not in st.session_state:
@@ -52,7 +52,7 @@ if 'ClutchSize_slider' not in st.session_state:
 if 'EggDiameter_slider' not in st.session_state:
     st.session_state['EggDiameter_slider'] = (850.0, 1500.0)
 if 'boolean' not in st.session_state:
-    st.session_state.boolean = True
+    st.session_state.boolean = False
 
 
 
@@ -160,13 +160,13 @@ def speciesSearchTest(option2): # formally option2
 
     if showMore:
         #separateGroupby()
-        speciesSearchTest(st.session_state['text_option'])
-        st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+        #speciesSearchTest(st.session_state['text_option'])
+        #st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
         #speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
-        st.write(speciesInfo)
-        speciesInfo.drop_duplicates()
+        col2.write(dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option']))
+        #speciesInfo.drop_duplicates()
         
-        col2.write (separateGroupby())
+        #col2.write (separateGroupby())
 
 st.title("Streamlit Search Ability Demo")
 
@@ -180,25 +180,25 @@ submitButton2=st.button("Multi Search")
 
 
 try:
- if submitButton2:
-    st.session_state.boolean ==True
+ if submitButton2 or st.session_state.boolean:
+    st.session_state.boolean =True
     #text_inputMulti = st.text_input("Enter your queries")
     #st.session_state.boolean=True
-    #st.write("Results for: ")
-    #multioptionCheck(multiOptions)
+    st.write("Results for: ")
+    multioptionCheck(multiOptions)
     
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
 
-if st.session_state.boolean == True:
-     st.write("Results for: ")
-     multioptionCheck(multiOptions)
+#if st.session_state.boolean == True:
+ #    st.write("Results for: ")
+  #   multioptionCheck(multiOptions)
     
 
 
-st.write(separateGroupby())
 
 
-st.write("radio buttons outside method")
+
+
 
       
         
