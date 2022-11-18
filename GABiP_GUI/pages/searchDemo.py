@@ -32,7 +32,7 @@ dfImages = load_images()
 
 
 #creating session state object
-"st.session_state_object:", st.session_state
+#"st.session_state_object:", st.session_state
 
 #Initializing session state values
 if 'drop_option' not in st.session_state:
