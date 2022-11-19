@@ -87,6 +87,20 @@ def rangeSVLMx(dataframe, svlmxRange):
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
     st.write(maskedRangedf)
 
+
+def clutchRange(dataframe,  clutchSize):
+    maskRange=dfFull["Clutch"].between(*clutchSize)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.Clutch])
+    st.write(maskedRangedf)
+
+def eggDiameterRange(dataframe,  eggSize):
+    maskRange=dfFull["EggDiameter"].between(*eggSize)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.EggDiameter])
+    st.write(maskedRangedf)
+
+
 def multioptionCheck(options=[]):
     ranges = ""
     for option in options:
@@ -99,9 +113,11 @@ def multioptionCheck(options=[]):
             svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1700.0), key='BodySize_slider')
             rangeSVLMx(dfFull, svlmxRange)
            if ranges=="Clutch Size":
-            clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0), key='ClutchSize_slider')
+              clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0), key='ClutchSize_slider')
+              clutchRange(dfFull, clutchSize)
            if ranges=="Egg Diameter":
-            eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (858.0, 1700.0), key='EggDiameter_slider')    
+            eggSize= st.slider('Egg Diameter', 0.0, 20.0, (10.0, 20.0), key='EggDiameter_slider') 
+            eggDiameterRange(dfFull, eggSize)   
     
         
         
