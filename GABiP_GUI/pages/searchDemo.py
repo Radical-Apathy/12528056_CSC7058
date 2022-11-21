@@ -84,7 +84,10 @@ def embeddedImage(speciesInfo):
 def rangeSVLMx(dataframe, svlmxRange):
     maskRange=dfFull["SVLMx"].between(*svlmxRange)
     maskedRange=dfFull[maskRange]
+    #maskedRange.sort_values(by='SVLMx', ascending=True)
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+   # maskedRangedf.sort_values(by='SVLMx', ascending=True)
+    #st.write(maskedRangedf.sort_values(by='SVLMx', ascending=True))
     st.write(maskedRangedf)
 
 
@@ -92,6 +95,7 @@ def clutchRange(dataframe,  clutchSize):
     maskRange=dfFull["Clutch"].between(*clutchSize)
     maskedRange=dfFull[maskRange]
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.Clutch])
+    #sortedYear =mergedRef.sort_values(by='Year', ascending=False)
     st.write(maskedRangedf)
 
 def eggDiameterRange(dataframe,  eggSize):
