@@ -32,15 +32,29 @@ dfImages = load_images()
 
 
 #creating session state object
-"st.session_state_object:", st.session_state
+#"st.session_state_object:", st.session_state
 
 #Initializing session state values
 if 'drop_option' not in st.session_state:
-    st.session_state['drop_option'] = "Species"
+    st.session_state['drop_option'] = "Family"
 if 'text_option' not in st.session_state:
     st.session_state['text_option'] = "relicta"
-#if 'speciesInfo' not in st.session_state:
- #  st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
+if 'range_options' not in st.session_state:
+    st.session_state['range_options'] = "BodySize"
+#if 'radio_options' not in st.session_state:
+ #   st.session_state['radio_options'] = "BodySize"
+#else:
+ #   st.session_state.radio_options = ['BodySize', 'Clutch Size', 'Egg Diameter'] 
+if 'BodySize_slider' not in st.session_state:
+    st.session_state['BodySize_slider'] = (850.0, 1500.0)
+if 'ClutchSize_slider' not in st.session_state:
+    st.session_state['ClutchSize_slider'] = (850.0, 1500.0)
+if 'EggDiameter_slider' not in st.session_state:
+    st.session_state['EggDiameter_slider'] = (850.0, 1500.0)
+if 'boolean' not in st.session_state:
+    st.session_state.boolean = False
+
+
 
 def refGeneratorTop(speciesInfo):
     mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
@@ -70,26 +84,51 @@ def embeddedImage(speciesInfo):
 def rangeSVLMx(dataframe, svlmxRange):
     maskRange=dfFull["SVLMx"].between(*svlmxRange)
     maskedRange=dfFull[maskRange]
+    #maskedRange.sort_values(by='SVLMx', ascending=True)
     maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+   # maskedRangedf.sort_values(by='SVLMx', ascending=True)
+    #st.write(maskedRangedf.sort_values(by='SVLMx', ascending=True))
     st.write(maskedRangedf)
 
+
+def clutchRange(dataframe,  clutchSize):
+    maskRange=dfFull["Clutch"].between(*clutchSize)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.Clutch])
+    #sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    st.write(maskedRangedf)
+
+def eggDiameterRange(dataframe,  eggSize):
+    maskRange=dfFull["EggDiameter"].between(*eggSize)
+    maskedRange=dfFull[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.EggDiameter])
+    st.write(maskedRangedf)
+
+
 def multioptionCheck(options=[]):
+    ranges = ""
     for option in options:
      if option=="Species" and text_inputMulti:
         speciesSearchTest(text_inputMulti)
-     #if option=="Species":
-        svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1500.0))
-        rangeSVLMx(dfFull, svlmxRange)
-        ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'])
-        for choice in ranges:
-            if choice=="BodySize":
-                    bodySize= st.slider('BodySize', 0.0, 1700.0, (850.0, 1500.0))
-            if choice=="Clutch Size":
-                    clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1500.0))
-            if choice=="Egg Diameter":
-                    eggSize= st.slider('Egg Diameter', 0.0, 1700.0, (850.0, 1500.0))
+     if option=="Species":
+           ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
+       # ranges=st.radio('Range Search: ', st.session_state.radio_options, key='radio_options')
+           if ranges == 'BodySize':
+            svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1700.0), key='BodySize_slider')
+            rangeSVLMx(dfFull, svlmxRange)
+           if ranges=="Clutch Size":
+              clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0), key='ClutchSize_slider')
+              clutchRange(dfFull, clutchSize)
+           if ranges=="Egg Diameter":
+            eggSize= st.slider('Egg Diameter', 0.0, 20.0, (10.0, 20.0), key='EggDiameter_slider') 
+            eggDiameterRange(dfFull, eggSize)   
+    
+        
+        
+         
+        
 
-     else:
+    else:
          search=dfFull[multiOptions].drop_duplicates()
          search.drop_duplicates()
         
@@ -140,14 +179,14 @@ def speciesSearchTest(option2): # formally option2
     
 
     if showMore:
-        separateGroupby()
+        #separateGroupby()
         #speciesSearchTest(st.session_state['text_option'])
         #st.session_state['speciesInfo']=dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option'])
         #speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
-        #st.write(speciesInfo)
+        col2.write(dfFull.groupby(st.session_state['drop_option']).get_group(st.session_state['text_option']))
         #speciesInfo.drop_duplicates()
         
-       # col2.write (separateGroupby())
+        #col2.write (separateGroupby())
 
 st.title("Streamlit Search Ability Demo")
 
@@ -156,25 +195,33 @@ st.image("amphibs.jpeg", width=200)
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns, key='drop_option')
 text_inputMulti = st.text_input("Enter your queries", "relicta", key='text_option')
-submitButton2=st.button(" Multi Search")
+submitButton2=st.button("Multi Search")
+#if st.session_state.get('button') != False:
+
 
 try:
- if submitButton2:
+ if submitButton2 or st.session_state.boolean:
+    st.session_state.boolean =True
     #text_inputMulti = st.text_input("Enter your queries")
+    #st.session_state.boolean=True
     st.write("Results for: ")
     multioptionCheck(multiOptions)
     
 except:("Sorry, search term not recognised. Try checking your category choice or spelling")
+
+#if st.session_state.boolean == True:
+ #    st.write("Results for: ")
+  #   multioptionCheck(multiOptions)
     
-st.write(separateGroupby())
 
 
 
 
 
 
-
-
+      
+        
+        
 
 
 
