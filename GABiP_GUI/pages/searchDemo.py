@@ -36,9 +36,9 @@ dfImages = load_images()
 
 #Initializing session state values
 if 'drop_option' not in st.session_state:
-    st.session_state['drop_option'] = "Family"
+    st.session_state['drop_option'] = "Order"
 if 'text_option' not in st.session_state:
-    st.session_state['text_option'] = "relicta"
+    st.session_state['text_option'] = ""
 if 'range_options' not in st.session_state:
     st.session_state['range_options'] = "BodySize"
 #if 'radio_options' not in st.session_state:
@@ -108,8 +108,6 @@ def eggDiameterRange(dataframe,  eggSize):
 def multioptionCheck(options=[]):
     ranges = ""
     for option in options:
-     if option=="Species" and text_inputMulti:
-        speciesSearchTest(text_inputMulti)
      if option=="Species":
            ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
        # ranges=st.radio('Range Search: ', st.session_state.radio_options, key='radio_options')
@@ -121,24 +119,25 @@ def multioptionCheck(options=[]):
               clutchRange(dfFull, clutchSize)
            if ranges=="Egg Diameter":
             eggSize= st.slider('Egg Diameter', 0.0, 20.0, (10.0, 20.0), key='EggDiameter_slider') 
-            eggDiameterRange(dfFull, eggSize)   
-    
-        
-        
-         
-        
+            eggDiameterRange(dfFull, eggSize)  
+     if option=="Order" and text_inputMulti:
+        orderSearch()
+     if option=="Species" and text_inputMulti:
+        speciesSearchTest(text_inputMulti)
+     if option=="Family" and text_inputMulti:
+        familySearch()
+     if option=="Genus" and text_inputMulti:
+        genusSearch()
+   
+                             
 
     else:
          search=dfFull[multiOptions].drop_duplicates()
+         #searchText=search.groupby(st.session_state.drop_option).get_group(st.session_state.text_option)
          search.drop_duplicates()
         
 
     st.write(search)
-
-
-def separateGroupby():
-    speciesInfo=dfFull.groupby("Species").get_group(st.session_state['text_option'])
-    st.write(speciesInfo)
 
 
 speciesdf= []
@@ -188,13 +187,44 @@ def speciesSearchTest(option2): # formally option2
         
         #col2.write (separateGroupby())
 
+familydf=[]
+def familySearch():
+     familyInfo=dfFull.groupby("Family").get_group(st.session_state['text_option'])
+     for option in multiOptions:
+        familydf.append(familyInfo[option])
+     
+
+     familydatadf=pd.DataFrame(familydf)
+     st.write(familydatadf)
+
+orderdf=[]
+def orderSearch():
+     orderInfo=dfFull.groupby("Order").get_group(st.session_state['text_option'])
+     for option in multiOptions:
+        orderdf.append(orderInfo[option])
+     
+
+     orderdatadf=pd.DataFrame(orderdf)
+     st.write(orderdatadf)
+
+genusdf=[]
+def genusSearch():
+     genusInfo=dfFull.groupby("Genus").get_group(st.session_state['text_option'])
+     for option in multiOptions:
+        genusdf.append(genusInfo[option])
+     
+
+     genusdatadf=pd.DataFrame(genusdf)
+     st.write(genusdatadf)
+
 st.title("Streamlit Search Ability Demo")
 
 st.image("amphibs.jpeg", width=200)
 
 
 multiOptions = st.multiselect("choose a few ", options=dfFull.columns, key='drop_option')
-text_inputMulti = st.text_input("Enter your queries", "relicta", key='text_option')
+#st.write(multiOptions)
+text_inputMulti = st.text_input("Enter your text search for " +multiOptions[0], multiOptions[0], key='text_option')
 submitButton2=st.button("Multi Search")
 #if st.session_state.get('button') != False:
 
