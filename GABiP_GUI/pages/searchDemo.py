@@ -151,9 +151,9 @@ def speciesSearchTest(option2): # formally option2
     #st.session_state.speciesInfo = speciesInfo
     col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
     url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+option2
-    col1.write("AMNH web link for "+ option2+  " [AMNH Link](%s)" % url)
-    url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ option2 +"&rel-scientific_name=contains&include_synonymies=Yes"
-    col1.write("Amphibian web link for "+ option2+  " [Amphibia Web Link](%s)" % url2)
+    col1.write("AMNH web link for "+ st.session_state['text_option']+  " [AMNH Link](%s)" % url)
+    url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ st.session_state['text_option'] +"&rel-scientific_name=contains&include_synonymies=Yes"
+    col1.write("Amphibian web link for "+ st.session_state['text_option']+  " [Amphibia Web Link](%s)" % url2)
     col2.header("Species Summary")
     
     tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
