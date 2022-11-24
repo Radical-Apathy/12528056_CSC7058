@@ -2,7 +2,7 @@ from re import search
 import streamlit as st
 import pandas as pd
 import numpy as np
-from st_aggrid import AgGrid, GridUpdateMode #gridupdate mode remebers edited entries
+from st_aggrid import AgGrid, GridUpdateMode, JsCode #gridupdate mode remebers edited entries
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 #use local css file
@@ -18,7 +18,6 @@ def load_to_edit():
 
 dfOriginal=load_cleaned()
 dfToEdit = load_to_edit()
-
 gd = GridOptionsBuilder.from_dataframe(dfToEdit)
 gd.configure_pagination(enabled=True)
 gd.configure_default_column(editable=True, groupable=True)
@@ -40,18 +39,37 @@ st.session_state
 
 css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/style/style.css")
 st.header("Form Exploring")
-st.write("Not using AG grid", dfToEdit.head())
 
-options=st.sidebar.radio("Options", ('Show Database','Add Entry', 'Update an Existing Entry', 'Delete an Entry'), key='current_option')
+
+options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')
+
+if options == 'HTML Form':
+    st.write("HMTL injected form")
+    html_form=("""<form action="https://formsubmit.co/your@email.com" method="POST">
+    <input type="text" name="name"  placeholder="Your name" required>
+    <input type="email" name="email" placeholder = "Your email" required>
+    <textarea name="message" placeholder="Details of your problem"></textarea>
+    <button type="submit">Send</button>
+    </form> 
+    """)
+    st.markdown(html_form, unsafe_allow_html=True)
+
+
 if options == 'Show Database':
-    st.write("Using AG grid, without gridoptionbuilder styling")
-    AgGrid(dfToEdit.head())
-if options == 'Add Entry':
-    st.header("Edit the Database")
-    st.write("Database head, displayed using AgGrid with gridoptionbuilder styling, checkboxes for editing")
+    st.write("Not using AG grid", dfToEdit.head())
+    st.write("Using AG grid, without gridoptionbuilder styling - material theme")
+    show_database_material=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='material')
+    st.write("Using AG grid, without gridoptionbuilder styling - alpine theme")
+    show_database_alpine=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='alpine')
+    st.write("Using AG grid, without gridoptionbuilder styling - balham theme")
+    show_database_balham=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='balham')
 
-    edit_table=AgGrid(dfToEdit.head(), gridOptions=gridStyle,) #theme='fresh')
-    #gridOptions = gb.build()
+if options == 'Add Entry':
+    st.header('Add Entry page')
+
+    
+if options == 'Update an Existing Entry':
+    st.header('Update Entry page')
 
 #st.dataframe(data=dfToEdit)
 
@@ -96,13 +114,5 @@ if options == 'Add Entry':
 
 
 
-#st.write("HMTL injected form")
-#html_form=("""<form action="https://formsubmit.co/your@email.com" method="POST">
-#<input type="text" name="name"  placeholder="Your name" required>
-#<input type="email" name="email" placeholder = "Your email" required>
-#<textarea name="message" placeholder="Details of your problem"></textarea>
-#<button type="submit">Send</button>
-#</form> 
-#""")
-#st.markdown(html_form, unsafe_allow_html=True)
+
 
