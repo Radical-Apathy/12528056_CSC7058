@@ -18,13 +18,7 @@ def load_to_edit():
 
 dfOriginal=load_cleaned()
 dfToEdit = load_to_edit()
-gd = GridOptionsBuilder.from_dataframe(dfToEdit)
-gd.configure_pagination(enabled=True)
-gd.configure_default_column(editable=True, groupable=True)
-sel_mode=st.radio('Selection Type', options=['Edit a Single Entry', 'Edit Multiple Entries'])
 
-gd.configure_selection( selection_mode=sel_mode, use_checkbox=True)
-gridStyle=gd.build()
 #styling dataframe using AG grid
 
 if 'current_option' not in st.session_state:
@@ -34,7 +28,7 @@ def css_file(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-st.session_state
+#st.session_state
 
 
 css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/style/style.css")
@@ -56,20 +50,60 @@ if options == 'HTML Form':
 
 
 if options == 'Show Database':
+    #col_opt = st.selectbox(label ='Select column',options = dfToEdit.columns)
+    gd=GridOptionsBuilder.from_dataframe(dfToEdit.head())   
+    gd.configure_pagination(enabled=True)
+    gd.configure_default_column(editable=True, groupable=True)
+    cell_js=JsCode("""
+        function(params){
+            if (params.value == 'Allophrynidae') {
+                return {
+                    'color': 'black',
+                    'backgroundColor' : 'orange'
+            }
+            }
+            if (params.value == 'Alsodes') {
+                return{
+                    'color'  : 'black',
+                    'backgroundColor' : 'red'
+                }
+            }
+            else{
+                return{
+                    'color': 'black',
+                    'backgroundColor': 'white'
+                }
+            }
+       
+    };
+    """)
+    gd.configure_columns(dfToEdit.columns, cellStyle=cell_js)
+    gridStyle=gd.build()
+    st.header("Showing different styles of showing database")
     st.write("Not using AG grid", dfToEdit.head())
-    st.write("Using AG grid, without gridoptionbuilder styling - material theme")
-    show_database_material=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='material')
-    st.write("Using AG grid, without gridoptionbuilder styling - alpine theme")
-    show_database_alpine=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='alpine')
-    st.write("Using AG grid, without gridoptionbuilder styling - balham theme")
-    show_database_balham=AgGrid(dfToEdit.head(), gridOptions=gridStyle, theme='balham')
+    show_table = AgGrid(dfToEdit.head(), gridOptions=gridStyle,
+                 enable_enterprise_modules=True,
+                 update_mode = GridUpdateMode.SELECTION_CHANGED,
+                 allow_unsafe_jscode=True)
+    
+      
+  
 
 if options == 'Add Entry':
     st.header('Add Entry page')
+    
 
     
 if options == 'Update an Existing Entry':
     st.header('Update Entry page')
+    gd=GridOptionsBuilder.from_dataframe(dfToEdit.head())   
+    gd.configure_pagination(enabled=True)
+    gd.configure_default_column(editable=True, groupable=True)
+    gd.configure_selection(use_checkbox=True)
+    gridStyle=gd.build()
+    edit_table = AgGrid(dfToEdit.head(), gridOptions=gridStyle,
+                 update_mode = GridUpdateMode.SELECTION_CHANGED,
+                 allow_unsafe_jscode=True)
 
 #st.dataframe(data=dfToEdit)
 
