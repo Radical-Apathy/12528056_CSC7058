@@ -222,7 +222,7 @@ def genusSearch():
      st.write(genusdatadf)
 
 st.title("Streamlit Search Ability Demo")
-st.session_state
+#st.session_state
 st.image("amphibs.jpeg", width=200)
 
 

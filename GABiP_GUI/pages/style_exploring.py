@@ -17,7 +17,7 @@ def css_file(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-st.session_state
+#st.session_state
 if 'Order' not in st.session_state:
     st.session_state['Order'] = "Order"
 if 'Family' not in st.session_state:
