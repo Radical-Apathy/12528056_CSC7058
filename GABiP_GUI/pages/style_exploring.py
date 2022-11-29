@@ -3,6 +3,8 @@ import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode, JsCode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
+
+
 # Functions
 
 @st.cache
@@ -15,8 +17,13 @@ def css_file(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-#st.session_state
-
+st.session_state
+if 'Order' not in st.session_state:
+    st.session_state['Order'] = "Order"
+if 'Family' not in st.session_state:
+    st.session_state['Family'] = "Family"
+if 'Genus' not in st.session_state:
+    st.session_state['Genus'] = "Genus"
 
 css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/style/style.css")
 st.header("Style Exploring")
@@ -44,4 +51,16 @@ html_form=("""<form action="google.com" method="POST">
 st.markdown(html_form, unsafe_allow_html=True)
 
 
-st.write("Streamlit version")
+st.write("Streamlit  modal")
+
+with st.form("my_form"):
+   st.write("Inside the form")
+   order =st.text_input("Order", key='Order')
+   family =st.text_input("Family", key='Family')
+   genus =st.text_input("Genus", key='Genus')
+ 
+
+   # Every form must have a submit button.
+   submitted = st.form_submit_button("Submit")
+   if submitted:
+       st.write(order, family, genus)
