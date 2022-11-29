@@ -26,8 +26,13 @@ names=['Claire Campbell', 'Jonny Calder']
 usernames = ['Claire','Jonny']
 file_path= Path(__file__).parent/"hashed_pws.pkl"
 
+
 with file_path.open("rb") as file:
   hashed_passwords = pk.load(file)
+  
+  
+authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
+    "sales_dashboard", "abcdef")
 
 #loginButton = st.button("Login")#, key='login_button')
 #st.write("Not got an account?")
@@ -40,8 +45,8 @@ credentials=st.radio("Login or Sign up", ('Login','Sign Up'), key='login_option'
 #abcdef is a random generated key used to hash cookie signature
 if credentials=="Login" :
     
-    authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
-    "sales_dashboard", "abcdef")
+    #authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
+    #"sales_dashboard", "abcdef")
 
     name, authentication_status, username = authenticator.login("Login", "main") #main here refers to position
 
@@ -121,14 +126,16 @@ if credentials=="Login" :
           edit_table = AgGrid(dfToEdit.head(), gridOptions=gridStyle,
                  update_mode = GridUpdateMode.SELECTION_CHANGED,
                  allow_unsafe_jscode=True)
+      if options == 'Update an Existing Entry':
+          st.header('Update Entry page')
 
       authenticator.logout("Logout", "sidebar")
-      if options == 'Update an Existing Entry':
-        st.write("Delete and entry page")    
+      if options == 'Delete an Entry':
+        st.write("Delete an entry page")    
 
       st.sidebar.title(f"Welcome {name}")
 if credentials=="Sign Up":
-  st.write("Let's put a sign up form here")
+  st.write("Sign up widget to go here")
 
 
 
