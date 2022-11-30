@@ -17,11 +17,14 @@ dfToEdit = load_to_edit()
 
 if 'login_option' not in st.session_state:
     st.session_state['login_option'] = "Login"
+
+#if 'logged_in' not in st.session_state:
+ #   st.session_state['logged_in'] = False
 #if 'login_button' not in st.session_state:
  #   st.session_state['login_button'] = True
 st.header("Authentication Behaviour Exploring")
 
-
+st.session_state
 names=['Claire Campbell', 'Jonny Calder']
 usernames = ['Claire','Jonny']
 file_path= Path(__file__).parent/"hashed_pws.pkl"
@@ -32,23 +35,20 @@ with file_path.open("rb") as file:
   
   
 authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
-    "sales_dashboard", "abcdef")
+    "change_database", "abcdef")
 
-#loginButton = st.button("Login")#, key='login_button')
-#st.write("Not got an account?")
-#signup = st.button("Register")
 
-#if signup:
- # st.write("let's register here")
 credentials=st.radio("Login or Sign up", ('Login','Sign Up'), key='login_option')
-#creating an authentication object
-#abcdef is a random generated key used to hash cookie signature
+ #creating an authentication object
+ #abcdef is a random generated key used to hash cookie signature
 if credentials=="Login" :
     
     #authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
     #"sales_dashboard", "abcdef")
 
     name, authentication_status, username = authenticator.login("Login", "main") #main here refers to position
+    #put code here to offer email for password reset
+    st.write("Password reset option to go here")
 
     if authentication_status == False:
       st.error("Username/password is not recognised")
@@ -57,7 +57,7 @@ if credentials=="Login" :
       st.warning("Please enter username and password")
 
     if authentication_status:
-      
+      #st.session_state['logged_in'] == True
   
       options=st.sidebar.radio("Options", ('Default Welcome Option','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')
   
@@ -135,7 +135,21 @@ if credentials=="Login" :
 
       st.sidebar.title(f"Welcome {name}")
 if credentials=="Sign Up":
-  st.write("Sign up widget to go here")
+   with st.form("my_form"):
+      st.write("Register")
+      username =st.text_input("Username", "Enter a username")#, key='Order')
+      password =st.text_input("Password", "Enter a Password", type='password')#key='Family')
+      confirmPassword =st.text_input("Re-type Password", "Re-Enter Password", type='password')# key='Genus')
+      #need to check if user exists  
+      submitted = st.form_submit_button("Register")
+      if submitted and password == confirmPassword:
+          st.write(username, password, confirmPassword)
+          #send an email alert to new users informing them that an dmin will be in touch
+          #send an email alert to admin with the new users details i.e. first name, last name, email, message 
+      else:
+          st.write("passwords do not match")
+          st.write(username, password, confirmPassword)
+
 
 
 
