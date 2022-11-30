@@ -33,8 +33,9 @@ dfToEdit = data_upload()
 # st.dataframe(data=df)
 # st.info(len(df))
 
-st.write("HTML injected form")
 
+st.success("This is a streamlit success message i.e. st.success ('Text')")
+st.write("HTML injected form")
 
 html_form=("""<form action="google.com" method="POST">
     <h3 id = "header"><strong>Order<strong></h3>
