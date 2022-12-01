@@ -24,7 +24,7 @@ if 'login_option' not in st.session_state:
  #   st.session_state['login_button'] = True
 st.header("Authentication Behaviour Exploring")
 
-st.session_state
+#st.session_state
 names=['Claire Campbell', 'Jonny Calder']
 usernames = ['Claire','Jonny']
 file_path= Path(__file__).parent/"hashed_pws.pkl"
