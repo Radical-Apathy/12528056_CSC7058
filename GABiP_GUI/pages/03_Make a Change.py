@@ -7,6 +7,11 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 import streamlit_authenticator as stauth
 import pickle as pk
 from pathlib import Path
+import smtplib
+import ssl
+from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
+from email.mime.multipart import MIMEMultipart
+
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
@@ -16,6 +21,56 @@ def load_to_edit():
     return dfFull
 
 dfToEdit = load_to_edit()
+#email_address
+if 'email_address' not in st.session_state:
+    st.session_state['email_address'] = ""
+
+#email_receiver = 'radical_apathy@outlook.com'
+#st.session_state['email_address']
+def sendEmail(email_receiver):
+  email_sender='amphib.app@gmail.com'
+  email_password = 'mfqk hxrk qtpp qqdp'
+  message = MIMEMultipart("alternative")
+  message["Subject"] = "Password Reset Request"
+  message["From"] = email_sender
+  message["To"] = email_sender
+
+ #plain text and html versions of message for comparison
+  text = """
+  Hi AmphibiFan it's text,
+  Please click on the link below to reset your password:
+  https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/
+
+  Requested password in error? No worries, continue logging in using your previous password.
+
+  """
+  html = """
+  <html>
+    <body>
+      <p>Hi AmphibiFan it's from streamlit,<br>
+        Please click on the link below to reset your password:<br>
+        <a href="https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/">Reset Password</a> 
+        
+        Requested password in error? No worries, continue logging in using your previous password.
+      </p>
+    </body>
+  </html>
+  """
+
+  # Turn these into plain/html MIMEText objects
+  part1 = MIMEText(text, "plain")
+  part2 = MIMEText(html, "html")
+
+  # Add HTML/plain-text parts to MIMEMultipart message
+  # The email client will try to render the last part first
+  message.attach(part1)
+  message.attach(part2)
+  context = ssl.create_default_context()
+  with smtplib.SMTP_SSL('smtp.gmail.com', 465, context= context) as smtp:
+    smtp.login(email_sender, email_password)
+    smtp.sendmail(email_sender, email_receiver, message.as_string())
+    
+
 
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :lower_left_paintbrush: :lower_left_crayon: Change GABiP")
 
@@ -33,11 +88,7 @@ authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
     "change_database", "abcdef")
 
 name, authentication_status, username = authenticator.login("Login", "main") #main here refers to position
-    #put code here to offer email for password reset
-st.write("Forgotten username/password?")
-reminder = st.button("Send Reset Link")
-if reminder:
-        emailAddress=st.text_input("Enter your email address and we'll send you a link")
+
 
 if authentication_status == False:
       st.error("Username/password is not recognised")
@@ -121,3 +172,60 @@ if authentication_status:
         st.write("Delete an entry page")    
 
     st.sidebar.title(f"Welcome {name}")
+st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+email_receiver=st.text_input("Email Address")
+remindme=st.button("send a reminder")
+if remindme:
+    sendEmail(email_receiver)
+
+
+
+
+#------------Attempts at button and text for send email...parking it for now
+
+
+#formTest=st.button("Using a form")
+
+#if formTest:
+ #   with st.form("my_form"):
+ #    st.write("Inside the form")
+ #    email_address =st.text_input("Enter email address")
+ #    submitted = st.form_submit_button("Show email")
+ #    if submitted:
+  #     st.write(submitted)
+   # emailForm=st.form("my_form")
+   
+  #  email_address =emailForm.text_input("Email Address")
+
+   # sendit = emailForm.form_submit_button("Send")
+   # if sendit:
+    #    sendEmail(email_address)
+  
+ 
+   # Every form must have a submit button.
+   
+
+#testing=st.button("hard coded email address")
+#if testing:
+ #   st.write("Calling email method")
+ #   email_receiver = 'radical_apathy@outlook.com'
+ #   sendEmail(email_receiver)
+
+
+
+#reminder = st.button("Send Reset Link")
+#if reminder:
+#       email_receiver=st.text_input("Enter your email address and we'll send you a link")#, key='email_address')
+#       if email_receiver:
+         #st.write(email_receiver)
+#         sendEmail(email_receiver)
+
+#reminder2 = st.button("Trying session state")
+#if reminder2:
+#       email_receiver=st.text_input("Enter your email address and we'll send you a link", key='email_address')
+
+#       sendit=st.button("Send now")
+#       if email_receiver and sendit:
+#          sendEmail(st.session_state['email_address'])      
+                 
+        
