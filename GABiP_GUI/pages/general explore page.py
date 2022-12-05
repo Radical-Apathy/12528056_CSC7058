@@ -8,6 +8,8 @@ import streamlit_authenticator as stauth
 import pickle as pk
 from pathlib import Path
 
+st.set_page_config(page_icon='amphibs.jpeg')
+
 @st.cache
 def load_to_edit():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean _towrite.csv', encoding= 'unicode_escape', low_memory=False)
@@ -22,9 +24,9 @@ if 'login_option' not in st.session_state:
  #   st.session_state['logged_in'] = False
 #if 'login_button' not in st.session_state:
  #   st.session_state['login_button'] = True
-st.header("Authentication Behaviour Exploring")
+st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :lower_left_paintbrush: :lower_left_crayon: Change GABiP")
 
-st.session_state
+#st.session_state
 names=['Claire Campbell', 'Jonny Calder']
 usernames = ['Claire','Jonny']
 file_path= Path(__file__).parent/"hashed_pws.pkl"
@@ -48,7 +50,15 @@ if credentials=="Login" :
 
     name, authentication_status, username = authenticator.login("Login", "main") #main here refers to position
     #put code here to offer email for password reset
-    st.write("Password reset option to go here")
+    st.write("Forgotten username/password?")
+    reminder = st.button("Send Reset Link")
+    if reminder:
+        emailAddress=st.text_input("Enter your email address and we'll send you a link")
+       #make a method that checks the email array/db
+
+
+
+
 
     if authentication_status == False:
       st.error("Username/password is not recognised")
