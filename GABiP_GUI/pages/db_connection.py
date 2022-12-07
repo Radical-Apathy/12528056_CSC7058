@@ -3,9 +3,10 @@ import os
 from dotenv import load_dotenv
 
 #need to figure out folder hierarchy so db key can be stored in this .env file
-load_dotenv(".env")
-#deta_key=os.getenv("deta_key")
-deta_key='a0se6run_nNcePVbuF6evHfxEp5gWMm9sWjWRaVm9'
+# C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt
+load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
+deta_key=os.getenv("deta_key")
+
 
 #initialising a deta object
 deta_connection= Deta(deta_key)
@@ -24,12 +25,6 @@ def get_all_users():
     res = db.fetch()
     print(res.items) #using return here gives an address
 
-#get_all_users()
-#print(get_users("j_calder"))
-
-#testing insert_user method
-#insert_user("email@email2.com", "ccampbell", "claire", "campbell2", "True", "True", "password01")
-
 #get_user returns none for some reason
 #relies on the key being passed instead of username, that's why...
 def get_user(email):
@@ -43,8 +38,9 @@ def delete_user(email):
     return db.delete(email)
 
 
+get_all_users()
 #get_user("ccampbell")
 
 #update_user("email@email2.com", updates={"username":"ccampbellUpdated"})
 
-delete_user("email@email2.com")
+#delete_user("email@email2.com")
