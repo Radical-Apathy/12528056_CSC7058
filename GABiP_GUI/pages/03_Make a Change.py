@@ -7,10 +7,11 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 import streamlit_authenticator as stauth
 import smtplib
 import ssl
+#import pickle
+#from pathlib import Path
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
 from email.mime.multipart import MIMEMultipart
-import db_insertion as db
-import db_connection as db2
+import db_connection as db
 
 
 st.set_page_config(page_icon='amphibs.jpeg')
@@ -74,18 +75,6 @@ def sendEmail(email_receiver):
 
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :lower_left_paintbrush: :lower_left_crayon: Change GABiP")
 
-users = db2.get_users()
-email=[users["username"] for users in users]
-name=[users["firstname"] for users in users]
-#password = [users["password"] for users in users]
-surname= [users["surname"] for users in users]
-username = [users["username"] for users in users]
-#surname= ['Campbell', 'Calder']
-#username = ['Claire','Jonny']
-password=[users["password"] for users in users]
-#admin= ['True', 'False']
-
-
 #st.session_state
 #email=['radical_apathy@outlook.com','j_calder@outlook.com']
 #firstname=['radical_apathy', 'j_calder']
@@ -98,9 +87,20 @@ password=[users["password"] for users in users]
 
 #with file_path.open("rb") as file:
  # hashed_passwords = pk.load(file)
+
+#getting all users from db
+
+
+users=db.get_all_users() #returns users as dictionary of key value pairs
+
+#converting to list comprehension so it can be passed into the authenticator
+#specifically converting values we want for the login part
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+
   
-  
-authenticator = stauth.Authenticate(username, password,
+authenticator = stauth.Authenticate(username, hashed_passwords,
     "change_database", "abcdef")
 
 username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position
@@ -187,7 +187,7 @@ if authentication_status:
     if options == 'Delete an Entry':
         st.write("Delete an entry page")    
 
-    st.sidebar.title(f"Welcome {name}")
+    st.sidebar.title(f"Welcome {username}")
 st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
 email_receiver=st.text_input("Email Address")
 remindme=st.button("send a reminder")

@@ -23,7 +23,8 @@ def insert_user(email, username, firstname, surname, admin, approved, hashed_pas
 
 def get_all_users():
     res = db.fetch()
-    print(res.items) #using return here gives an address
+    #print(res.items) #using return here gives an address
+    return res.items
 
 #get_user returns none for some reason
 #relies on the key being passed instead of username, that's why...
@@ -38,7 +39,7 @@ def delete_user(email):
     return db.delete(email)
 
 
-get_all_users()
+#get_all_users()
 #get_user("ccampbell")
 
 #update_user("email@email2.com", updates={"username":"ccampbellUpdated"})
