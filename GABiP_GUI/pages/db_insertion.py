@@ -3,10 +3,10 @@ import streamlit_authenticator as stauth
 import db_connection as db
 
 email=['admin@email.com','notadmin@email.com','notapproved@email.com']
-username=['admin1', 'notadmin', 'notapproved']
+username=['admin', 'notadmin', 'notapproved']
 firstname = ['Claire','Jonny', 'Request']
 surname= ['Campbell', 'Calder', 'Request']
-password=['abc123', 'def456', 'password']
+password=['password', 'password', 'password']
 admin= ['True', 'False', 'False']
 approved=['True','True','False']
 hashed_password= stauth.Hasher(password).generate()

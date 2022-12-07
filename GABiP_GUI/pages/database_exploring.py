@@ -31,6 +31,13 @@ def get_all_users():
     #print(res.items) #using return here gives an address
     return res.items
 
+def get_current_user(email):
+    print (db.get(email))
+
+if 'username' not in st.session_state:
+    st.session_state['username'] = 'guest'
+
+st.session_state   
 users=get_all_users() #returns users as dictionary of key value pairs
 
 #converting to list comprehension so it can be passed into the authenticator
@@ -38,7 +45,11 @@ users=get_all_users() #returns users as dictionary of key value pairs
 email=[user["key"] for user in users]
 username=[user["username"] for user in users]
 firstname=[user["firstname"] for user in users]
+surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
+isApproved=[user["approved"]for user in users]
+isAdmin=[user["admin"] for user in users]
+
 
   
 authenticator = stauth.Authenticate(email, username, hashed_passwords,
@@ -54,8 +65,42 @@ if authentication_status == None:
       st.warning("Please enter username and password")
 
 if authentication_status:
-      st.success("you're loggin in ")
-     # st.sidebar.title(f"Welcome {st.session_state[username]}")
+    for user in users:
+        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
+            st.write(f"Welcome ",user["firstname"], " you have Admin status")          
+        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
+            st.write(f"Welcome ",user["firstname"], " you're a trusted member")
+        if user["username"] == st.session_state['username'] and user["approved"] == "False":
+            st.write(f"Welcome ",user["firstname"], " you're access request is pending approval. We'll send you an e-mail alert to inform you of the status")
+    #else:
+     #   st.write(f"Welcome: ", user["surname"])
+      #  st.warning("Your access request is pending approval")
+      #st.sidebar.title(f"Welcome {st.session_state['username']}") 
+      #st.write(users)
+      #st.write(isApproved[2])
+      
+
+#st.write("Testing getting all user info with email i.e. what's set as the key in the db")
+#for user in users:
+ #   if user["username"] == st.session_state['username']:
+  #      st.write(f"Welcome: ", user["firstname"])
+
+#st.write("Checking only printing firstname is user is approved")
+#for user in users:
+ #   if user["username"] == st.session_state['username'] and user["approved"] == "True":
+  #      st.write(f"Welcome: ", user["firstname"])
+   # else:
+    #    st.write(f"Welcome: ", user["surname"],)
+
+
+
+
+
+
+
+
+
+
 
 #st.write(users)
 

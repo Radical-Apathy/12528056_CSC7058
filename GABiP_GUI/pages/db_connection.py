@@ -28,7 +28,7 @@ def get_all_users():
 
 #get_user returns none for some reason
 #relies on the key being passed instead of username, that's why...
-def get_user(email):
+def get_current_user(email):
     print (db.get(email))
 
 def update_user(email, updates):
@@ -45,3 +45,8 @@ def delete_user(email):
 #update_user("email@email2.com", updates={"username":"ccampbellUpdated"})
 
 #delete_user("email@email2.com")
+
+
+#get_current_user('admin@email.com')
+
+get_current_user('admin@email.com')
