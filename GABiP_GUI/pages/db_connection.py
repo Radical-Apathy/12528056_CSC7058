@@ -31,7 +31,7 @@ def get_all_users():
 #insert_user("email@email2.com", "ccampbell", "claire", "campbell2", "True", "True", "password01")
 
 #get_user returns none for some reason
-#relies on the key being passed instead of username...
+#relies on the key being passed instead of username, that's why...
 def get_user(email):
     print (db.get(email))
 
