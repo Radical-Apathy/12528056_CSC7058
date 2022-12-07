@@ -1,3 +1,5 @@
+
+"""
 import streamlit_authenticator as stauth
 
 import db_connection as db
@@ -16,3 +18,4 @@ hashed_password= stauth.Hasher(password).generate()
  #  db.insert_user(email, username, firstname, surname, admin, approved, hashed_password)
 
 #print(db.get_all_users())
+"""

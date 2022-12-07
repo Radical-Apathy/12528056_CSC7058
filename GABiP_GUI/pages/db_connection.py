@@ -49,4 +49,4 @@ def delete_user(email):
 
 #get_current_user('admin@email.com')
 
-get_current_user('admin@email.com')
+#get_current_user('admin@email.com')

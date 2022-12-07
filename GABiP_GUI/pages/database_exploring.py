@@ -71,7 +71,7 @@ if authentication_status:
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
             st.write(f"Welcome ",user["firstname"], " you're a trusted member")
         if user["username"] == st.session_state['username'] and user["approved"] == "False":
-            st.write(f"Welcome ",user["firstname"], " you're access request is pending approval. We'll send you an e-mail alert to inform you of the status")
+            st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
     #else:
      #   st.write(f"Welcome: ", user["surname"])
       #  st.warning("Your access request is pending approval")
