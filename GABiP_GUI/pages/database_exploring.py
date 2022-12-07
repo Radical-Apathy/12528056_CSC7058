@@ -36,6 +36,7 @@ users=get_all_users() #returns users as dictionary of key value pairs
 #specifically converting values we want for the login part
 email=[user["key"] for user in users]
 username=[user["username"] for user in users]
+firstname=[user["firstname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 
   
@@ -53,6 +54,8 @@ if authentication_status == None:
 
 if authentication_status:
       st.success("you're loggin in ")
-      st.sidebar.title(f"Welcome {email}")
+      st.sidebar.title(f"Welcome {firstname}")
+
+st.write(users)
 
 authenticator.logout("Logout", "main")

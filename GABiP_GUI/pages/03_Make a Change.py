@@ -7,8 +7,6 @@ from st_aggrid.grid_options_builder import GridOptionsBuilder
 import streamlit_authenticator as stauth
 import smtplib
 import ssl
-#import pickle
-#from pathlib import Path
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
 from email.mime.multipart import MIMEMultipart
 import db_connection as db
@@ -90,8 +88,12 @@ st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :lower_left_pain
 
 #getting all users from db
 
+def get_all_users():
+    res = db.fetch()
+    #print(res.items) #using return here gives an address
+    return res.items
 
-users=db.get_all_users() #returns users as dictionary of key value pairs
+users=get_all_users() #returns users as dictionary of key value pairs
 
 #converting to list comprehension so it can be passed into the authenticator
 #specifically converting values we want for the login part
