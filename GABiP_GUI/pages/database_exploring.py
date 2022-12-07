@@ -17,6 +17,7 @@ deta_connection= Deta(deta_key)
 
 db=deta_connection.Base("users_db")
 
+#st.session_state
 #names=['Claire Campbell', 'Jonny Calder']
 #usernames = ['Claire','Jonny']
 
@@ -54,8 +55,8 @@ if authentication_status == None:
 
 if authentication_status:
       st.success("you're loggin in ")
-      st.sidebar.title(f"Welcome {firstname}")
+     # st.sidebar.title(f"Welcome {st.session_state[username]}")
 
-st.write(users)
+#st.write(users)
 
 authenticator.logout("Logout", "main")
