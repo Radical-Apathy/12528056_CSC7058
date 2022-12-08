@@ -40,6 +40,20 @@ hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
+
+#method to check that email and username are unique
+def duplication_check(usertext):
+    for user in users:
+        if user["key"] == usertext:
+         st.write("email in use")    
+         pass
+    
+        #st.write("email available")
+        if user["username"] ==usertext:
+         st.write("username in use")
+         pass
+        #st.write("username available")
+
 #---------------------------------------Sign up form.............................................#
 
 signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>Sign Up</strong></p>'

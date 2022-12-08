@@ -33,13 +33,49 @@ isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
 
-def check_email(email):
-    for user in users:
-        
 
+
+
+
+
+
+def if_in_method_email(usertext):
+    for user in users:
+        if usertext in user["key"]:
+            st.write("email already exists with this email")
+        #else:
+         #   st.write("email address available")
+        
 st.title("db exploring")
 
-st.write("combining get all users and list conversion")
+
+st.write("using check_email with break")
+
+def check_email(emailSignup):
+    for user in users:
+        if user["key"] == emailSignup:
+         st.write("email in use")    
+         break
+    else:
+        st.write("email available")
+    
+
+#check_email("admin2@email.com")
 
 
+st.write("trying an all duplication check with pass")
 
+def duplication_check(usertext):
+    for user in users:
+        if user["key"] == usertext:
+         st.write("email in use")    
+         pass
+    
+        #st.write("email available")
+        if user["username"] ==usertext:
+         st.write("username in use")
+         pass
+        #st.write("username available")
+    
+
+duplication_check("admin")
