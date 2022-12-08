@@ -37,7 +37,7 @@ def get_current_user(email):
 if 'username' not in st.session_state:
     st.session_state['username'] = 'guest'
 
-st.session_state   
+#st.session_state   
 users=get_all_users() #returns users as dictionary of key value pairs
 
 #converting to list comprehension so it can be passed into the authenticator
@@ -91,16 +91,6 @@ if authentication_status:
   #      st.write(f"Welcome: ", user["firstname"])
    # else:
     #    st.write(f"Welcome: ", user["surname"],)
-
-
-
-
-
-
-
-
-
-
 
 #st.write(users)
 
