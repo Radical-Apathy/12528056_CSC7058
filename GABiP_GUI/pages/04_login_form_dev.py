@@ -1,7 +1,10 @@
 import streamlit_authenticator as stauth
 import streamlit as st
 #import db_connection as db
-
+import smtplib
+import ssl
+from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
+from email.mime.multipart import MIMEMultipart
 from deta import Deta
 import os
 from dotenv import load_dotenv
@@ -34,13 +37,57 @@ def get_all_users():
 def get_current_user(email):
     print (db.get(email))
 
+def sendEmail(email_receiver):
+  email_sender='amphib.app@gmail.com'
+  email_password = 'mfqk hxrk qtpp qqdp'
+  message = MIMEMultipart("alternative")
+  message["Subject"] = "Password Reset Request"
+  message["From"] = email_sender
+  message["To"] = email_sender
+
+ #plain text and html versions of message for comparison
+  text = """
+  Hi AmphibiFan it's text,
+  Please click on the link below to reset your password:
+  https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/
+
+  Requested password in error? No worries, continue logging in using your previous password.
+
+  """
+  html = """
+  <html>
+    <body>
+      <p>Hi AmphibiFan it's from streamlit,<br>
+        Please click on the link below to reset your password:<br>
+        <a href="https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/">Reset Password</a> 
+        
+        Requested password in error? No worries, continue logging in using your previous password.
+      </p>
+    </body>
+  </html>
+  """
+
+  # Turn these into plain/html MIMEText objects
+  part1 = MIMEText(text, "plain")
+  part2 = MIMEText(html, "html")
+
+  # Add HTML/plain-text parts to MIMEMultipart message
+  # The email client will try to render the last part first
+  message.attach(part1)
+  message.attach(part2)
+  context = ssl.create_default_context()
+  with smtplib.SMTP_SSL('smtp.gmail.com', 465, context= context) as smtp:
+    smtp.login(email_sender, email_password)
+    smtp.sendmail(email_sender, email_receiver, message.as_string())
+    
+
 if 'username' not in st.session_state:
     st.session_state['username'] = 'guest'
 
 #st.session_state   
 users=get_all_users() #returns users as dictionary of key value pairs
 
-#converting to list comprehension so it can be passed into the authenticator
+#-----------------------converting to list comprehension so it can be passed into the authenticator-----------------------#
 #specifically converting values we want for the login part
 email=[user["key"] for user in users]
 username=[user["username"] for user in users]
@@ -95,3 +142,14 @@ if authentication_status:
 #st.write(users)
 
 authenticator.logout("Logout", "main")
+
+st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+email_receiver=st.text_input("Email Address")
+remindme=st.button("send a reminder")
+if remindme:
+    sendEmail(email_receiver)
+
+
+
+
+

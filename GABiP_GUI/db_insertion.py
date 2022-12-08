@@ -11,5 +11,5 @@ admin= ['True', 'False']
 hashed_password= stauth.Hasher(password).generate()
 
 
-for (email, firstname, surname, username, hashed_password, admin) in zip(email, firstname, surname, username, password, admin):
-    db.create_user(email, firstname, surname, username, hashed_password, admin)
+#for (email, firstname, surname, username, hashed_password, admin) in zip(email, firstname, surname, username, password, admin):
+ #   db.create_user(email, firstname, surname, username, hashed_password, admin)
