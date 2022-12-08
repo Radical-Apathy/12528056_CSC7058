@@ -5,12 +5,11 @@ import numpy as np
 from st_aggrid import AgGrid, GridUpdateMode, JsCode #gridupdate mode remebers edited entries
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import streamlit_authenticator as stauth
-import pickle as pk
-from pathlib import Path
 import smtplib
 import ssl
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
 from email.mime.multipart import MIMEMultipart
+import db_connection as db
 
 
 st.set_page_config(page_icon='amphibs.jpeg')
@@ -75,19 +74,38 @@ def sendEmail(email_receiver):
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :lower_left_paintbrush: :lower_left_crayon: Change GABiP")
 
 #st.session_state
-names=['Claire Campbell', 'Jonny Calder']
-usernames = ['Claire','Jonny']
-file_path= Path(__file__).parent/"hashed_pws.pkl"
+#email=['radical_apathy@outlook.com','j_calder@outlook.com']
+#firstname=['radical_apathy', 'j_calder']
+#surname= ['Campbell', 'Calder']
+#username = ['Claire','Jonny']
+#password=['abc123', 'def456']
+#admin= ['True', 'False']
+#file_path= Path(__file__).parent/"hashed_pws.pkl"
 
 
-with file_path.open("rb") as file:
-  hashed_passwords = pk.load(file)
+#with file_path.open("rb") as file:
+ # hashed_passwords = pk.load(file)
+
+#getting all users from db
+
+def get_all_users():
+    res = db.fetch()
+    #print(res.items) #using return here gives an address
+    return res.items
+
+users=get_all_users() #returns users as dictionary of key value pairs
+
+#converting to list comprehension so it can be passed into the authenticator
+#specifically converting values we want for the login part
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+
   
-  
-authenticator = stauth.Authenticate(names, usernames, hashed_passwords,
+authenticator = stauth.Authenticate(username, hashed_passwords,
     "change_database", "abcdef")
 
-name, authentication_status, username = authenticator.login("Login", "main") #main here refers to position
+username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position
 
 
 if authentication_status == False:
@@ -171,7 +189,7 @@ if authentication_status:
     if options == 'Delete an Entry':
         st.write("Delete an entry page")    
 
-    st.sidebar.title(f"Welcome {name}")
+    st.sidebar.title(f"Welcome {username}")
 st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
 email_receiver=st.text_input("Email Address")
 remindme=st.button("send a reminder")
