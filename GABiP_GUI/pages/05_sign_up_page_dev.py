@@ -24,25 +24,43 @@ def insert_user(email, username, firstname, surname, admin, approved, hashed_pas
     #defining the email as the key
     return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
 
+def get_all_users():
+    res = db.fetch()
+    #print(res.items) #using return here gives an address
+    return res.items
+
+#-----------------------converting to list comprehension so it can be passed into the authenticator-----------------------#
+#specifically converting values we want for the login part
+users=get_all_users()
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+firstname=[user["firstname"] for user in users]
+surname = [user["surname"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+isApproved=[user["approved"]for user in users]
+isAdmin=[user["admin"] for user in users]
 
 #---------------------------------------Sign up form.............................................#
 
 signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>Sign Up</strong></p>'
 
 st.markdown(signup_title_style, unsafe_allow_html=True) 
-st.title(":lizard: :frog:")
+st.title(":lock: :lizard: :unlock:")
 
 with st.form("my_form"):
-      st.write("Register")
-      username =st.text_input("Username", "Enter a username")#, key='Order')
-      password =st.text_input("Password", "Enter a Password", type='password')#key='Family')
-      confirmPassword =st.text_input("Re-type Password", "Re-Enter Password", type='password')# key='Genus')
+      email =st.text_input("email", "Enter your email address")
+      firstname =st.text_input("firstname", "Enter your forename")#, key='Order')
+      surname =st.text_input("surname", "Enter your surname")#, key='Order')
+      username= st.text_input("username", "Enter a username")
+      usernameCaption=st.caption("Please enter a unique username...this will be used to login")
+      password =st.text_input("password", type='password')#key='Family')
+      confirmPassword =st.text_input("Re-type Password",  type='password')# key='Genus')
       #need to check if user exists  
-      submitted = st.form_submit_button("Register")
+      submitted = st.form_submit_button("Submit Request")
       if submitted and password == confirmPassword:
-          st.write(username, password, confirmPassword)
+          st.write(email, firstname, surname, username, password, confirmPassword)
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
       else:
-          st.write("passwords do not match")
-          st.write(username, password, confirmPassword)
+          st.write("passwords do not match, please re-type")
+         
