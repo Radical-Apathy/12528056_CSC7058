@@ -25,3 +25,24 @@ def insert_user(email, username, firstname, surname, admin, approved, hashed_pas
     return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
 
 
+#---------------------------------------Sign up form.............................................#
+
+signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>Sign Up</strong></p>'
+
+st.markdown(signup_title_style, unsafe_allow_html=True) 
+st.title(":lizard: :frog:")
+
+with st.form("my_form"):
+      st.write("Register")
+      username =st.text_input("Username", "Enter a username")#, key='Order')
+      password =st.text_input("Password", "Enter a Password", type='password')#key='Family')
+      confirmPassword =st.text_input("Re-type Password", "Re-Enter Password", type='password')# key='Genus')
+      #need to check if user exists  
+      submitted = st.form_submit_button("Register")
+      if submitted and password == confirmPassword:
+          st.write(username, password, confirmPassword)
+          #send an email alert to new users informing them that an dmin will be in touch
+          #send an email alert to admin with the new users details i.e. first name, last name, email, message 
+      else:
+          st.write("passwords do not match")
+          st.write(username, password, confirmPassword)
