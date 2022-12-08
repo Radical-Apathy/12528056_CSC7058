@@ -42,18 +42,26 @@ isAdmin=[user["admin"] for user in users]
 
 
 #method to check that email and username are unique
-def duplication_check(usertext):
+def duplication_alert(usertext):
     for user in users:
         if user["key"] == usertext:
-         st.write("email in use")    
+         st.warning("email already in use...please choose an alternative or await verification email")    
          pass
     
         #st.write("email available")
         if user["username"] ==usertext:
-         st.write("username in use")
+         st.warning("username in use, please choose another")
          pass
         #st.write("username available")
 
+#final alert to user of duplicate username and or email to prevent insertion into the database
+def final_warning(userInput):
+    for user in users:
+        if user["key"]   == userInput:
+         return True
+        if user["username"] == userInput:
+         return True
+         
 #---------------------------------------Sign up form.............................................#
 
 signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>Sign Up</strong></p>'
@@ -61,16 +69,25 @@ signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 
 st.markdown(signup_title_style, unsafe_allow_html=True) 
 st.title(":lock: :lizard: :unlock:")
 
+st.write("Trying with a standard form")
 with st.form("my_form"):
       email =st.text_input("email", "Enter your email address")
+      duplication_alert(email)
       firstname =st.text_input("firstname", "Enter your forename")#, key='Order')
       surname =st.text_input("surname", "Enter your surname")#, key='Order')
       username= st.text_input("username", "Enter a username")
+      duplication_alert(username)
       usernameCaption=st.caption("Please enter a unique username...this will be used to login")
       password =st.text_input("password", type='password')#key='Family')
       confirmPassword =st.text_input("Re-type Password",  type='password')# key='Genus')
       #need to check if user exists  
       submitted = st.form_submit_button("Submit Request")
+      
+
+      if submitted and final_warning(email) :
+        st.error("email address already in use")
+      if submitted and final_warning(username) :
+        st.error("username address already in use")
       if submitted and password == confirmPassword:
           st.write(email, firstname, surname, username, password, confirmPassword)
           #send an email alert to new users informing them that an dmin will be in touch

@@ -78,4 +78,20 @@ def duplication_check(usertext):
         #st.write("username available")
     
 
-duplication_check("admin")
+#duplication_check("admin")
+
+st.write("Trying a email check with return statement")
+
+def final_warning(userInput):
+    for user in users:
+        if user["key"]   == userInput:
+         return True
+        if user["username"] == userInput:
+         return True
+         
+    
+
+if final_warning("admin@email2.com"):
+    st.write("Email or username already in use, please correct before submitting")
+else:
+    st.write("Good to go!")
