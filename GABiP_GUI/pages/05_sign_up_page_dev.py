@@ -93,5 +93,5 @@ with st.form("my_form"):
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
       else:
-          st.write("passwords do not match, please re-type")
+          st.warning("passwords do not match, please re-type")
          
