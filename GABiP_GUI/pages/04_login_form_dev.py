@@ -98,7 +98,9 @@ isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
 
-  
+#----------------------------page title-------------------------------------------------------------------------------#
+st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
+#----------------------------creating authenticator object.............................................................# 
 authenticator = stauth.Authenticate(email, username, hashed_passwords,
     "change_database", "abcdef")
 
