@@ -85,7 +85,8 @@ with st.form("my_form"):
 
       admin="False"
       approved="True"
-      hashed_password= stauth.Hasher(password).generate()
+      passwordArry=[password]
+      hashed_password= stauth.Hasher(passwordArry).generate()
 
       if submitted and final_warning(email) :
         st.error("email address already in use")
@@ -96,7 +97,7 @@ with st.form("my_form"):
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
       if submitted:
-          insert_user(email, username, firstname, surname, admin, approved, password)
+          insert_user(email, username, firstname, surname, admin, approved, hashed_password)
           st.write("we've submitted your request...an admin will be in touch soon via email")
           #def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
 
