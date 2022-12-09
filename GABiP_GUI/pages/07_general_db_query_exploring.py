@@ -2,6 +2,7 @@ from deta import Deta
 import os
 from dotenv import load_dotenv
 import streamlit as st
+import streamlit_authenticator as stauth
 #-----------------database connection and method to insert a user-----------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
@@ -31,13 +32,6 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
-
-
-
-
-
-
-
 
 def if_in_method_email(usertext):
     for user in users:
@@ -95,3 +89,14 @@ if final_warning("admin@email2.com"):
     st.write("Email or username already in use, please correct before submitting")
 else:
     st.write("Good to go!")
+
+email='dbqueryexploring@email.com'
+firstname='firstname'
+surname= 'surname'
+username = 'dbusername'
+password='password'
+approved='True'
+admin= 'False'
+#hashed_password= stauth.Hasher(password).generate()
+
+insert_user(email, username, firstname, surname, admin, approved, password)

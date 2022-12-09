@@ -68,30 +68,40 @@ signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 
 
 st.markdown(signup_title_style, unsafe_allow_html=True) 
 st.title(":lock: :lizard: :unlock:")
-
+st.write(users)
 st.write("Trying with a standard form")
 with st.form("my_form"):
-      email =st.text_input("email", "Enter your email address")
+      email =st.text_input("Email", "Enter your email address")
       duplication_alert(email)
-      firstname =st.text_input("firstname", "Enter your forename")#, key='Order')
-      surname =st.text_input("surname", "Enter your surname")#, key='Order')
-      username= st.text_input("username", "Enter a username")
+      firstname =st.text_input("Firstname", "Enter your forename")#, key='Order')
+      surname =st.text_input("Surname", "Enter your surname")#, key='Order')
+      username= st.text_input("Username", "Enter a username")
       duplication_alert(username)
       usernameCaption=st.caption("Please enter a unique username...this will be used to login")
       password =st.text_input("password", type='password')#key='Family')
       confirmPassword =st.text_input("Re-type Password",  type='password')# key='Genus')
       #need to check if user exists  
       submitted = st.form_submit_button("Submit Request")
-      
+
+      admin="False"
+      approved="True"
+      hashed_password= stauth.Hasher(password).generate()
 
       if submitted and final_warning(email) :
         st.error("email address already in use")
       if submitted and final_warning(username) :
         st.error("username address already in use")
-      if submitted and password == confirmPassword:
-          st.write(email, firstname, surname, username, password, confirmPassword)
+      if submitted and password != confirmPassword:
+          st.write("passwords do not match")
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
-      else:
-          st.warning("passwords do not match, please re-type")
+      if submitted:
+          insert_user(email, username, firstname, surname, admin, approved, password)
+          st.write("we've submitted your request...an admin will be in touch soon via email")
+          #def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
+
          
+#def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
+    #"""adding user"""
+    #defining the email as the key
+    #return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
