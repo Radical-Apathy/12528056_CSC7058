@@ -97,7 +97,7 @@ hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
-st.write(users)
+#st.write(users)
 #----------------------------page title-------------------------------------------------------------------------------#
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
 #----------------------------creating authenticator object.............................................................# 
