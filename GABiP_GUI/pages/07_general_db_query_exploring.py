@@ -24,6 +24,7 @@ def get_all_users():
     return res.items
 
 
+
 users=get_all_users()
 email=[user["key"] for user in users]
 username=[user["username"] for user in users]
@@ -85,18 +86,23 @@ def final_warning(userInput):
          
     
 
-if final_warning("admin@email2.com"):
-    st.write("Email or username already in use, please correct before submitting")
-else:
-    st.write("Good to go!")
+#if final_warning("admin@email2.com"):
+ #   st.write("Email or username already in use, please correct before submitting")
+#else:
+ #   st.write("Good to go!")
 
-email='dbqueryexploring@email.com'
-firstname='firstname'
-surname= 'surname'
-username = 'dbusername'
-password='password'
-approved='True'
-admin= 'False'
-#hashed_password= stauth.Hasher(password).generate()
+email1=['hashedpassword@email.com']
+firstname1=['firstname']
+surname1= ['surname']
+username1 = ['dbusername']
+password1=['password']
+approved1=['True']
+admin1= ['False']
+hashed_password1= stauth.Hasher(password1).generate()
 
-insert_user(email, username, firstname, surname, admin, approved, password)
+st.write("password hashing stuff")
+#insert_user(email, username, firstname, surname, admin, approved, password)
+#for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
+insert_user(email1, username1, firstname1, surname1, admin1, approved1, hashed_password1)
+
+st.write("member inserted")

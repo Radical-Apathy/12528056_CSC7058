@@ -68,7 +68,7 @@ signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 
 
 st.markdown(signup_title_style, unsafe_allow_html=True) 
 st.title(":lock: :lizard: :unlock:")
-st.write(users)
+#st.write(users)
 st.write("Trying with a standard form")
 with st.form("my_form"):
       email =st.text_input("Email", "Enter your email address")
@@ -84,9 +84,8 @@ with st.form("my_form"):
       submitted = st.form_submit_button("Submit Request")
 
       admin="False"
-      approved="True"
-      passwordArry=[password]
-      hashed_password= stauth.Hasher(passwordArry).generate()
+      approved="False"
+      hashed_password= stauth.Hasher(password).generate()
 
       if submitted and final_warning(email) :
         st.error("email address already in use")
@@ -98,8 +97,11 @@ with st.form("my_form"):
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
       if submitted:
             # look at db insertion 
-          insert_user(email, username, firstname, surname, admin, approved, hashed_password)
-          st.write("we've submitted your request...an admin will be in touch soon via email")
-          #def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
+          #insert_user(email, username, firstname, surname, admin, approved, hashed_password)
+          
+         # for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
+        insert_user(email,username, firstname, surname, admin, approved, hashed_password)
+        st.write("we've submitted your request...an admin will be in touch soon via email")
+
 
          
