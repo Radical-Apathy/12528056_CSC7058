@@ -97,12 +97,9 @@ with st.form("my_form"):
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
       if submitted:
+            # look at db insertion 
           insert_user(email, username, firstname, surname, admin, approved, hashed_password)
           st.write("we've submitted your request...an admin will be in touch soon via email")
           #def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
 
          
-#def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
-    #"""adding user"""
-    #defining the email as the key
-    #return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
