@@ -85,7 +85,12 @@ with st.form("my_form"):
 
       admin="False"
       approved="False"
-      hashed_password= stauth.Hasher(password).generate()
+      bracketPass=[password]
+      hashed_password= stauth.Hasher(bracketPass).generate()
+      strPass=str(hashed_password)
+      removeopenbrack=strPass.replace("[", "")
+      removeclosebrack=removeopenbrack.replace("]", "")
+      finalPass=removeclosebrack.replace("'","")
 
       if submitted and final_warning(email) :
         st.error("email address already in use")
@@ -100,7 +105,7 @@ with st.form("my_form"):
           #insert_user(email, username, firstname, surname, admin, approved, hashed_password)
           
          # for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
-        insert_user(email,username, firstname, surname, admin, approved, hashed_password)
+        insert_user(email,username, firstname, surname, admin, approved, finalPass)
         st.write("we've submitted your request...an admin will be in touch soon via email")
 
 

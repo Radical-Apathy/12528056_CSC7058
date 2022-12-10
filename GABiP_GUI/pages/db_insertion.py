@@ -3,10 +3,42 @@
 import streamlit_authenticator as stauth
 
 import db_connection as db
-#------------------------------------------------------------------------------#
 
-email='arrayhashed@email.com'
-username='arrayhashed'
+def add_user_bracket(email, username, firstname, surname, admin, approved, hashed_password):
+    """adding user"""
+    #defining the email as the key
+    return db.put({"key":[email], "username": [username], "firstname": [firstname], "surname":[surname], "admin":[admin], "approved": [approved],"password": [hashed_password] })
+
+
+
+#------------------------------------------------------------------------------#
+import json
+
+email='strpassaddbrack@email.com'
+username='strpassaddbrack'
+firstname = 'replacedstr4brack'
+surname= 'hashed'
+password='1234'
+bracketPass=[password]
+admin= 'True'
+approved='True'
+hashed_password= stauth.Hasher(bracketPass).generate()
+#str_hashed_password = json.dumps(hashed_password)
+strPass=str(hashed_password)
+removeopenbrack=strPass.replace("[", "")
+removeclosebrack=removeopenbrack.replace("]", "")
+final=removeclosebrack.replace("'","")
+#print((str_hashed_email))
+#for (email, username, firstname, surname, admin, approved, hashed_password) in zip(email, username, firstname, surname, admin, approved, zip_hashed_array):
+
+#db.insert_user(email, username, firstname, surname, admin, approved, hashed_password[0])
+db.insert_user(email, username, firstname, surname, admin, approved, final)
+
+
+#------------------------------------------------------------------------------#
+"""
+email='adduserpassword@email.com'
+username='addusermethod'
 firstname = 'zipbracket'
 surname= 'hashed'
 password='password'
@@ -18,11 +50,15 @@ arrhashed_password=[hashed_password]
 zipped= zip(arrhashed_password)
 
 #print(zipped)
-
+"""
+"""
+def add_user_password(email, username, firstname, surname, admin, approved, hashed_password):
+    return db.insert(email, username, firstname, surname, admin, approved, hashed_password)
+    """
 #for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
   #db.insert_user(email, username, firstname, surname, admin, approved, hashed_password)
 
-db.insert_user(email, username, firstname, surname, admin, approved, zipped)
+
 
 
 
