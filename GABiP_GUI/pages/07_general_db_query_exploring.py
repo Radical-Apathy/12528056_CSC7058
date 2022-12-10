@@ -103,6 +103,6 @@ hashed_password1= stauth.Hasher(password1).generate()
 st.write("password hashing stuff")
 #insert_user(email, username, firstname, surname, admin, approved, password)
 #for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
-insert_user(email1, username1, firstname1, surname1, admin1, approved1, hashed_password1)
+#insert_user(email1, username1, firstname1, surname1, admin1, approved1, hashed_password1)
 
 st.write("member inserted")
