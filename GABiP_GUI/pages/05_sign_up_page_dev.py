@@ -98,13 +98,11 @@ with st.form("my_form"):
         st.error("username address already in use")
       if submitted and password != confirmPassword:
           st.write("passwords do not match")
+      if submitted and password =="":# or confirmPassword=="":
+        st.warning("Fields can not be left blank") 
           #send an email alert to new users informing them that an dmin will be in touch
           #send an email alert to admin with the new users details i.e. first name, last name, email, message 
-      if submitted:
-            # look at db insertion 
-          #insert_user(email, username, firstname, surname, admin, approved, hashed_password)
-          
-         # for (email, username, firstname, surname, admin, approved, hashed_password  ) in zip(email, username, firstname, surname, admin, approved, hashed_password):
+      if submitted and len(password)>0 and len(confirmPassword)>0: 
         insert_user(email,username, firstname, surname, admin, approved, finalPass)
         st.write("we've submitted your request...an admin will be in touch soon via email")
 
