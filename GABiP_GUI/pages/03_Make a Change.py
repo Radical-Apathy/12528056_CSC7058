@@ -9,7 +9,7 @@ import smtplib
 import ssl
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
 from email.mime.multipart import MIMEMultipart
-import db_connection as db
+#import db_connection as db
 
 
 st.set_page_config(page_icon='amphibs.jpeg')

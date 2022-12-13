@@ -14,11 +14,12 @@ db=deta_connection.Base("users_db")
 #names=['Claire Campbell', 'Jonny Calder']
 #usernames = ['Claire','Jonny']
 
-def create_user(email,firstname, surname,username, password, admin):
+def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
     """adding user"""
-    return db.put({"Key": email, "firstname":firstname, "surname":surname, "username": username, "password": password, "admin":admin })
+    #defining the email as the key
+    return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
 
-create_user("radical_apathy@outlook.com", "Claire","Campbell", "Radical-Apathy", "abc123", "True")
+#create_user("radical_apathy@outlook.com", "Claire","Campbell", "Radical-Apathy", "abc123", "True")
 
 def get_users():
     members=db.fetch()
