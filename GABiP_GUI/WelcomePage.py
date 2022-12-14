@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
+from methods_main import hello
 
 st.header("Welcome Page")
+
+hello.streamlit_hello()
 #st.sidebar.header("Sections")
 #st.sidebar.image('amphibs.jpeg', width=500)
 

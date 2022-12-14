@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import streamlit as st
 import streamlit_authenticator as stauth
 #-----------------database connection and method to insert a user-----------------------------#
-load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
+load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
 
