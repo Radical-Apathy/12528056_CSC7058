@@ -9,8 +9,8 @@ from deta import Deta
 import os
 from dotenv import load_dotenv
 
-#need to figure out folder hierarchy so db key can be stored in this .env file
-# C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt
+
+#------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
@@ -20,9 +20,7 @@ deta_connection= Deta(deta_key)
 
 db=deta_connection.Base("users_db")
 
-#st.session_state
-#names=['Claire Campbell', 'Jonny Calder']
-#usernames = ['Claire','Jonny']
+#--------------------------------------------------------------DATABASE METHODS------------------------------------------------------------------------------------------------------------------------#
 
 def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
     """adding user"""
@@ -37,6 +35,16 @@ def get_all_users():
 def get_current_user(email):
     print (db.get(email))
 
+#converts each individual values for users to a their own list using list comprehension
+users=get_all_users()
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+firstname=[user["firstname"] for user in users]
+surname = [user["surname"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+isApproved=[user["approved"]for user in users]
+isAdmin=[user["admin"] for user in users]
+#--------------------------------------------------------------SEND EMAIL FUNCTIONALITY------------------------------------------------------------------------------------------------------------------------#
 def sendEmail(email_receiver):
   email_sender='amphib.app@gmail.com'
   email_password = 'mfqk hxrk qtpp qqdp'
@@ -80,27 +88,16 @@ def sendEmail(email_receiver):
     smtp.login(email_sender, email_password)
     smtp.sendmail(email_sender, email_receiver, message.as_string())
     
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 if 'username' not in st.session_state:
     st.session_state['username'] = 'guest'
 
-#st.session_state   
-users=get_all_users() #returns users as dictionary of key value pairs
 
-#-----------------------converting to list comprehension so it can be passed into the authenticator-----------------------#
-#specifically converting values we want for the login part
-email=[user["key"] for user in users]
-username=[user["username"] for user in users]
-firstname=[user["firstname"] for user in users]
-surname = [user["surname"] for user in users]
-hashed_passwords=[user ["password"] for user in users]
-isApproved=[user["approved"]for user in users]
-isAdmin=[user["admin"] for user in users]
-
-#st.write(users)
-#----------------------------page title-------------------------------------------------------------------------------#
+#------------------------------------------------------------PAGE SECTIION---------------------------------------------------------------------------------------------------------------------#
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
-#----------------------------creating authenticator object.............................................................#
+
+
 
 authenticator = stauth.Authenticate(email, username, hashed_passwords,
     "change_database", "abcdef")
@@ -146,11 +143,32 @@ if authentication_status:
 
 authenticator.logout("Logout", "main")
 
+#------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#
+
 st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
-email_receiver=st.text_input("Email Address")
-remindme=st.button("send a reminder")
-if remindme:
-    sendEmail(email_receiver)
+#email_receiver=st.text_input("Email Address")
+#remindme=st.button("send a reminder")
+#if remindme:
+#    sendEmail(email_receiver)
+sendReminder = st.checkbox("Send Password Reminder")
+if sendReminder:
+    email=st.text_input("Email address")
+    sendbutton=st.button("Send reminder")
+    if sendbutton and email:
+        sendEmail(email)
+        st.success("Email sent...please check your inbox for a password reset link")
+    elif sendbutton:
+        st.warning("Please enter an email address")
+    
+
+
+#if sendReminder:
+ #   with st.form("Email Address"):
+  #      email=st.text_input("Email")
+   #     confirm=st.form_submit_button("Send me a Reminder")
+    #    if email and confirm:
+     #       st.write(email)
+      #      sendEmail(email)
 
 
 
