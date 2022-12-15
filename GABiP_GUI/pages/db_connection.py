@@ -39,7 +39,7 @@ def delete_user(email):
     return db.delete(email)
 
 
-#get_all_users()
+#print(get_all_users())
 #get_user("ccampbell")
 
 #update_user("email@email2.com", updates={"username":"ccampbellUpdated"})
