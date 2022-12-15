@@ -187,3 +187,18 @@ if authentication_status:
 
 authenticator.logout("Logout", "sidebar")
 
+
+
+#------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#
+
+st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+
+sendReminder = st.checkbox("Send Password Reminder")
+if sendReminder:
+    email=st.text_input("Email address")
+    sendbutton=st.button("Send reminder")
+    if sendbutton and email:
+        sendEmail(email)
+        st.success("Email sent...please check your inbox for a password reset link")
+    elif sendbutton:
+        st.warning("Please enter an email address")

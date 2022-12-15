@@ -44,6 +44,51 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
+
+#updates user to approved. Action attached to checkbox in display_pending_users()
+def approve_user(username, updates):
+    return db.update(updates, username)
+
+
+
+#gets and displays users pending approval
+def display_pending_users():
+    st.markdown("***")
+    for user in users:
+     if user["approved"]=="False":
+       with st.form(user["username"]):
+        st.markdown(f"""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>***********{user["username"]}'s Request**********</strong></p>""" , unsafe_allow_html=True)
+        st.text(f"Username : " +user["username"])
+        st.text(f"Firstname : " +user["firstname"])
+        st.text(f"Surname : " +user["surname"])
+        st.text(f"Email : " +user["key"])
+        checkbox1 = st.checkbox(f"Allow " + user["firstname"] + " access")
+        checkbox2 = st.checkbox(f"Place " +user["firstname"] +" in review list")
+        confirmForm = st.form_submit_button(f"Submit Decision for  : " + user["username"])
+        if checkbox1 and checkbox2 and confirmForm:
+            st.error("Warning! Both options have been selected. Please review decision")
+        elif checkbox1 and confirmForm:
+            approve_user(user["key"], updates={"approved": "True"})
+            st.success(f"Accepted! "+user["username"]+ " can now access the GABiP. You can revoke access at any time using the View Approved user's option")
+        elif checkbox2 and confirmForm:
+            st.warning(f"User now place in to review section. " +user["username"]+ " 's access can be decided upon another date" )
+      
+        st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
+        st.write("***")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #--------------------------------------------------------------SEND EMAIL FUNCTIONALITY------------------------------------------------------------------------------------------------------------------------#
 def sendEmail(email_receiver):
   email_sender='amphib.app@gmail.com'
