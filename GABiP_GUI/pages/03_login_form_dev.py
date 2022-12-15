@@ -88,13 +88,13 @@ def sendEmail(email_receiver):
     smtp.login(email_sender, email_password)
     smtp.sendmail(email_sender, email_receiver, message.as_string())
     
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------SESSION STATE VARIABLES----------------------------------------------------------------------------------------------------------------------------------#
 
 if 'username' not in st.session_state:
     st.session_state['username'] = 'guest'
 
 
-#------------------------------------------------------------PAGE SECTIION---------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------PAGE SECTION---------------------------------------------------------------------------------------------------------------------#
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
 
 
@@ -112,6 +112,7 @@ if authentication_status == None:
       st.warning("Please enter username and password")
 
 if authentication_status:
+    options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'))#, key='current_option')
     for user in users:
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
             st.write(f"Welcome ",user["firstname"], " you have Admin status")          
