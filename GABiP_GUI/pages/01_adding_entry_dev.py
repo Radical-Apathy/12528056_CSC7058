@@ -5,16 +5,55 @@ import numpy as np
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
-#def css_file(file_name):
- #   with open(file_name) as f:
-  #      st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-#css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/style/style.css")
-#@st.cache
-#def load_original():
-#    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
-#    return dfFull
+
+
+#-------------------------------DATABASE CONNECTION------------------------------------#
+
+
+
+
+
+
+
+
+
+#------------------------------------METHODS--------------------------------------------#
+#check for the most recent approved csv version
+
+
+#add user's entries to csv 
+
+
 
 @st.cache
 def load_cleaned():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
     return dfFull
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------MAIN PAGE--------------------------------------------#
+st.header('Add Entry page')
+
+with st.form("my_form"):
+          st.write("Inside the form")
+          order =st.text_input("Order","Order - e.g. Anura", key='Order')
+          family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
+          genus =st.text_input("Genus", "Genus - e.g. Allophryne", key='Genus')
+          species =st.text_input("Species","Species - e.g. Relicta", key='Species')
+          submitted = st.form_submit_button("Submit")
+          if submitted:
+            st.write(order, family, genus, species)
