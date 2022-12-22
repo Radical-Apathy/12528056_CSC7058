@@ -2,8 +2,7 @@ from deta import Deta
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-#need to figure out folder hierarchy so db key can be stored in this .env file
-# C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt
+
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
@@ -53,9 +52,11 @@ def get_latest():
     return(database["File_Path"])
 
 
+
+
 path=get_latest()
 
-print (path)
+print(path)
 
 #for database in databases:
 #    for i in date_time:
