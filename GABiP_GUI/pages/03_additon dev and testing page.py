@@ -54,7 +54,7 @@ st.write("editednewDB")
 st.write(df3)
 
 #------------------------------------------------------------COMPARING CSVS-----------------------------------------------------------------------------------------#
-st.header("Using Pandas")
+st.header("Using Pandas for comparing testDB to newDB (newDB has row added)")
 #using isin()
 
 resultisin=df1[df1.apply(tuple,1).isin(df2.apply(tuple,1))]
