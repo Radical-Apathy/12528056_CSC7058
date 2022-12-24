@@ -12,14 +12,14 @@ deta_connection= Deta(deta_key)
 
 metaData=deta_connection.Base("database_versions")
 
-def insert_csv(date_time, file_Path, edit_type, username, status):
+def insert_csv(date_time, file_Path, edit_type, username, status, value):
     """adding user"""
     #defining the email as the key
-    return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status })
+    return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status, "Another_Column":value })
 
 
 now=datetime.now()
-#insert_csv(str(now),"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "Deletion", "CCampbell", "Approved")
+#insert_csv(str(now),"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "Deletion", "CCampbell", "Pending", "a value")
 
 #testing sorting method
 def get_all_paths():

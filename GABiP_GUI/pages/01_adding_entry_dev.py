@@ -100,7 +100,7 @@ with st.form("my_form"):
 new_dataframe=({"Order":[order], "Family":[family], "Genus":[genus], "Species":[species]})
 
 new_dataframe=pd.DataFrame(new_dataframe)
-
+st.write("values added "+ new_dataframe)
 #st.write(new_dataframe)
 #st.write(new_dataframe)
 updatedDataframe=(add_changes(current_db, new_dataframe))
@@ -111,7 +111,7 @@ now=str(datetime.now())
 #new_path=path_prefix+now+".csv"
 
 #st.write(new_path)
-#updatedDataframe.to_csv(f"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/newDB.csv", index=False)
+#new_dataframe.to_csv(f"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changes.csv", index=False)
 
 #updatedDataframe.to_csv(new_path)
 
