@@ -181,7 +181,7 @@ def construct_complete_dataframe_columns(userinfo, columns=current_db.columns):
 def submit_changes():
     populate_userinfo()
     new_dataframe=pd.DataFrame(userInfo, dbColumns)
-    new_dataframe.to_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv")
+    #new_dataframe.to_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv")
 
 review_information=st.button("Review Information")
 
@@ -202,8 +202,8 @@ def create_list(dbcolumns, userInfo):
 
 if review_information:
     populate_userinfo()
-    create_list(current_db.columns, userInfo)
-    #construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
+    #create_list(current_db.columns, userInfo)
+    construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
     
 
 commit_changes=st.button("Submit for review")
