@@ -53,9 +53,9 @@ def insert_csv(date_time, file_Path, edit_type, username, status):
 
 #append user's edit to current csv
 
-def add_changes(dataframe, dataframe2):
-    updated=dataframe.append(dataframe2, ignore_index = True)
-    return updated
+#def add_changes(dataframe, dataframe2):
+#    updated=dataframe.append(dataframe2, ignore_index = True)
+#    return updated
 
 
 def create_new_csv(new_dataframe, path):
@@ -80,7 +80,7 @@ current_db=load_latest()
 #if 'SVLMMx' not in st.session_state:
  #   st.session_state['SVLMMx'] = "SVLMMx"
 
-st.session_state
+#st.session_state
 
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 st.header('Add Entry page')
@@ -165,6 +165,7 @@ if more_options:
 def populate_userinfo():
     for column in dbColumns:
         userInfo.append(st.session_state[column])
+    #newdf=pd.DataFrame(userInfo)
     #st.write(userInfo)
 
 
@@ -180,40 +181,68 @@ def construct_complete_dataframe_columns(userinfo, columns=current_db.columns):
 
 def submit_changes():
     populate_userinfo()
-    new_dataframe=pd.DataFrame(userInfo, dbColumns)
+    new_dataframe=pd.DataFrame(userInfo, columns=dbColumns)
     #new_dataframe.to_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv")
 
 review_information=st.button("Review Information")
 
-#def add_changes(dataframe, dataframe2):
-#    updated=dataframe.append(dataframe2, ignore_index = True)
-#    return updated
+def add_changes(dataframe, dataframe2):
+    updated=dataframe.append(dataframe2, ignore_index = True)
+    return updated
 
-def create_list(dbcolumns, userInfo):
-    userdf=[]
-    for column in dbcolumns:
-        for value in userInfo:
-            data={column:value}
-            
-        userdf=pd.DataFrame(data, index=False)
+def append_row(current_db, userinfo):
+    userInfodf=pd.DataFrame(userInfo)
+    appended=current_db.append(pd.Series(userInfodf, index=current_db.columns))
+    st.write(appended)
     
-    st.write(userdf)
 
 
 if review_information:
+    
     populate_userinfo()
-    #create_list(current_db.columns, userInfo)
-    construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
+    st.write("Trying concat")   
+    userdf=construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
+    
+    #new_db=current_db.append(userInfo,ignore_index=True)
+    #st.write(new_db)
     
 
 commit_changes=st.button("Submit for review")
 
-if commit_changes:
-    #submit_changes()
-    st.write("Changes submitted")
    
+def create_dic(userinfo):
+     for column in dbColumns:
+        userInfo.append(st.session_state[column])
+
+def load_changes():
+    changed_db = pd.read_csv('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv', encoding= 'unicode_escape', low_memory=False)
+    return changed_db
+
+if commit_changes:
+    populate_userinfo()
+    columnrow=current_db.columns
+    for column in dbColumns:
+        userInfo.append(st.session_state[column])
+    inforow=userInfo
+    changed_db=load_changes()
+    st.write(changed_db)
+
+    appended=current_db.append(changed_db, ignore_index = True)
+    st.write("appended")
+    st.write(appended)
+
+
+    #with open('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv',  'w', encoding= 'unicode_escape', newline='') as f:
+    #    writer=csv.writer(f)
+    #    writer.writerow(columnrow)
+    #    writer.writerow(inforow)
+    #st.write("changes submitted")
+  
+
+
+
     #st.success("Additons submitted for review")
-#changes=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv", encoding= 'unicode_escape', low_memory=False)
+#changes=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv", encoding= 'unicode_escape', low_memory=False)
 #st.write("You selected", more_options)
 
  #def construct_complete_dataframe(userinfo, dbcolumns):
