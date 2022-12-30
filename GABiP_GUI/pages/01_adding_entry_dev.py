@@ -218,18 +218,34 @@ def load_changes():
     changed_db = pd.read_csv('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv', encoding= 'unicode_escape', low_memory=False)
     return changed_db
 
+#data = {'col_1': [3, 2, 1, 0], 'col_2': ['a', 'b', 'c', 'd']}
+#pd.DataFrame.from_dict(data)
+
+
+#def populate_userinfo():
+#    for column in dbColumns:
+#        userInfo.append(st.session_state[column])
+    #newdf=pd.DataFrame(userInfo)
+
+def dict_creator(dbColumns,userInfo):
+    datadf=[]
+    for column in dbColumns:
+        for value in userInfo:
+            data={column:value}
+            datadf=datadf.append(data)
+    return pd.DataFrame.from_dict([data])
+
+
+
 if commit_changes:
     populate_userinfo()
+    #st.write("dictionary")
+    #st.write(dict_creator(dbColumns, userInfo))
     columnrow=current_db.columns
     for column in dbColumns:
         userInfo.append(st.session_state[column])
     inforow=userInfo
-    changed_db=load_changes()
-    st.write(changed_db)
-
-    appended=current_db.append(changed_db, ignore_index = True)
-    st.write("appended")
-    st.write(appended)
+   
 
 
     #with open('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv',  'w', encoding= 'unicode_escape', newline='') as f:
@@ -237,6 +253,13 @@ if commit_changes:
     #    writer.writerow(columnrow)
     #    writer.writerow(inforow)
     #st.write("changes submitted")
+
+    changed_db=load_changes()
+    st.write(changed_db)
+
+    appended=current_db.append(changed_db, ignore_index = True)
+    st.write("appended")
+    st.write(appended)
   
 
 
