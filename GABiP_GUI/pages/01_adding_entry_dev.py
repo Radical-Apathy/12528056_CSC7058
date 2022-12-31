@@ -57,10 +57,6 @@ def insert_csv(date_time, file_Path, edit_type, username, status):
 #    updated=dataframe.append(dataframe2, ignore_index = True)
 #    return updated
 
-
-def create_new_csv(new_dataframe, path):
-    new_dataframe.to_csv(path,index=False)
-
 path=get_latest()
 
 @st.cache
@@ -104,23 +100,6 @@ def create_session_states(dbColumns):
         
 
 create_session_states(dbColumns)
-#for column in dbColumns:
- #   st.write(column)
-
-
-#create_session_states(dbColumns)
-
-#add entry using form
-
-#with st.form("my_form"):
-#          st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***       Mandatory Fields         ***</strong></p>', unsafe_allow_html=True)
-#          order =st.text_input("Order","Order - e.g. Anura", key='Order')
-#          family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
-#          genus =st.text_input("Genus", "Genus - e.g. Allophryne", key='Genus')
-#          species =st.text_input("Species","Species - e.g. Relicta", key='Species')
-#          submitted = st.form_submit_button("Show more options")
-#          if submitted:
-#            st.write(order, family, genus, species)
 
 userInfo=[]
 #without a form
@@ -137,7 +116,7 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 more_options=st.multiselect("Add more Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
                              'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
                              'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
-# Activity,	Microhabitat, GeographicRegion,	IUCN,	PopTrend,	RangeSize	ElevationMin	ElevationMax	Elevation], label_visibility="visible")
+
 
 
 def display_extra_fields():
@@ -153,9 +132,7 @@ def get_extra_userinfo():
          st.session_state[option] == userText
         elif not userText :
             st.session_state[option]==""
-       # userInfo.append(userText)
-
-
+      
 
 
 if more_options:
@@ -196,7 +173,6 @@ def append_row(current_db, userinfo):
     st.write(appended)
     
 
-
 if review_information:
     
     populate_userinfo()
@@ -235,12 +211,14 @@ def dict_creator(dbColumns,userInfo):
             datadf=datadf.append(data)
     return pd.DataFrame.from_dict([data])
 
+now=datetime.now()
 
+def create_csv(dataframe):
+    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
+    path_end = now.strftime("%d/%m/%Y %H:%M:%S")
 
 if commit_changes:
     populate_userinfo()
-    #st.write("dictionary")
-    #st.write(dict_creator(dbColumns, userInfo))
     columnrow=current_db.columns
     for column in dbColumns:
         userInfo.append(st.session_state[column])
