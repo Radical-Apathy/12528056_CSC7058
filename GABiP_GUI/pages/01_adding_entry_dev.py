@@ -73,30 +73,20 @@ current_db=load_latest()
 
 
 #------------------------------------------------------------SESSION STATE VALUES-----------------------------------------------------------------------------------------#
-#if 'SVLMMx' not in st.session_state:
- #   st.session_state['SVLMMx'] = "SVLMMx"
-
-#st.session_state
 
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 st.header('Add Entry page')
 
 st.write(current_db)
-#changed=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv",encoding= 'unicode_escape', low_memory=False)
 path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
 dbColumns=current_db.columns
-#st.write(changed)
-#style_template = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>More Options</strong></p>'
-
-#columns: SVLMMx, SVLFMx, SVLMx, Longevity, NestingSite, ClutchMin,	ClutchMax,	Clutch,	ParityMode,	EggDiameter,	
-# Activity,	Microhabitat, GeographicRegion,	IUCN,	PopTrend,	RangeSize	ElevationMin	ElevationMax	Elevation	
 
 def create_session_states(dbColumns):
     for column in dbColumns:
         if column not in st.session_state:
            st.session_state[column] =""
 
-        #st.session_state[column] == column
+        
         
 
 create_session_states(dbColumns)
@@ -159,8 +149,7 @@ def construct_complete_dataframe_columns(userinfo, columns=current_db.columns):
 def submit_changes():
     populate_userinfo()
     new_dataframe=pd.DataFrame(userInfo, columns=dbColumns)
-    #new_dataframe.to_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromaddpage.csv")
-
+    
 review_information=st.button("Review Information")
 
 def add_changes(dataframe, dataframe2):
@@ -179,8 +168,7 @@ if review_information:
     st.write("Trying concat")   
     userdf=construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
     
-    #new_db=current_db.append(userInfo,ignore_index=True)
-    #st.write(new_db)
+ 
     
 
 commit_changes=st.button("Submit for review")
@@ -190,32 +178,23 @@ def create_dic(userinfo):
      for column in dbColumns:
         userInfo.append(st.session_state[column])
 
-def load_changes():
-    changed_db = pd.read_csv('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv', encoding= 'unicode_escape', low_memory=False)
-    return changed_db
-
-#data = {'col_1': [3, 2, 1, 0], 'col_2': ['a', 'b', 'c', 'd']}
-#pd.DataFrame.from_dict(data)
-
-
-#def populate_userinfo():
-#    for column in dbColumns:
-#        userInfo.append(st.session_state[column])
-    #newdf=pd.DataFrame(userInfo)
-
-def dict_creator(dbColumns,userInfo):
-    datadf=[]
-    for column in dbColumns:
-        for value in userInfo:
-            data={column:value}
-            datadf=datadf.append(data)
-    return pd.DataFrame.from_dict([data])
 
 now=datetime.now()
-
-def create_csv(dataframe):
-    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
-    path_end = now.strftime("%d/%m/%Y %H:%M:%S")
+#
+timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+st.write(now)
+newPath=""
+def create_csv(columnrow, inforow):
+    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/"
+    path_end = timeStamp
+    newPath=path_prefix+path_end+".csv"
+ 
+    with open(newPath,  'w', encoding= 'UTF8', newline='') as f:
+        writer=csv.writer(f)
+        writer.writerow(columnrow)
+        writer.writerow(inforow)
+    return newPath
+        
 
 if commit_changes:
     populate_userinfo()
@@ -223,72 +202,17 @@ if commit_changes:
     for column in dbColumns:
         userInfo.append(st.session_state[column])
     inforow=userInfo
-   
-
-
-    #with open('C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv',  'w', encoding= 'unicode_escape', newline='') as f:
-    #    writer=csv.writer(f)
-    #    writer.writerow(columnrow)
-    #    writer.writerow(inforow)
-    #st.write("changes submitted")
-
-    changed_db=load_changes()
-    st.write(changed_db)
-
-    appended=current_db.append(changed_db, ignore_index = True)
-    st.write("appended")
-    st.write(appended)
+    
+    create_csv(columnrow, inforow)
+   # changed_db = pd.read_csv(newPath, encoding= 'unicode_escape', low_memory=False)
+    #appended=current_db.append(changed_db, ignore_index = True)
+    #st.write("appended")
+    #st.write(appended)
+    
+    st.write("Changes submitted")
   
 
 
 
-    #st.success("Additons submitted for review")
-#changes=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changesfromadd.csv", encoding= 'unicode_escape', low_memory=False)
-#st.write("You selected", more_options)
+ 
 
- #def construct_complete_dataframe(userinfo, dbcolumns):
-#    completed = pd.DataFrame(userInfo, dbColumns)
-#    return completed
-
-
-#dropdown_button=st.button("Submit values")
-
-
-
-
-#    st.write(userInfo) 
-
-
-
-
-
-
-
-
-
-#new_dataframe=({"Order":[order], "Family":[family], "Genus":[genus], "Species":[species]})
-
-#new_dataframe=pd.DataFrame(new_dataframe)
-#st.write("values added "+ new_dataframe)
-
-#updatedDataframe=(add_changes(current_db, new_dataframe))
-#st.write(updatedDataframe)
-
-#path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
-#now=str(datetime.now())
-#new_path=path_prefix+now+".csv"
-
-#st.write(new_path)
-#new_dataframe.to_csv(f"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changes.csv", index=False)
-
-#updatedDataframe.to_csv(new_path)
-
-#def create_new_csv(dataframe, path):
- #   new_dataframe.to_csv(path,index=False)
-
-#def insert_csv(date_time, file_Path, edit_type, username, status):
-#    """adding user"""
-    #defining the email as the key
-#    return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status })
-
-#insert_csv(now, "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/newDB.csv", "Addition","To Compare", "Pending Approval")
