@@ -20,7 +20,7 @@ metaData=deta_connection.Base("database_versions")
 
 
 #st.session_state['username']
-#------------------------------------------------------------METHODS-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------ DATABASE METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
 def get_all_paths():
@@ -44,12 +44,10 @@ def get_latest():
         break
     return(database["File_Path"])
 
-
 #add user's entries to csv 
 def insert_csv(date_time, file_Path, edit_type, username, status):
     """adding user"""
     return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status })
-
 
 #append user's edit to current csv
 
@@ -72,7 +70,15 @@ current_db=load_latest()
 
 
 
-#------------------------------------------------------------SESSION STATE VALUES-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------SESSION STATE INITIATION-----------------------------------------------------------------------------------------#
+
+#st.session_state
+
+def create_session_states(dbColumns):
+    for column in dbColumns:
+        if column not in st.session_state:
+           st.session_state[column] =""
+         
 
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 st.header('Add Entry page')
@@ -81,26 +87,27 @@ st.write(current_db)
 path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
 dbColumns=current_db.columns
 
-def create_session_states(dbColumns):
-    for column in dbColumns:
-        if column not in st.session_state:
-           st.session_state[column] =""
-
-        
-        
-
+#creating session state variables for csv columns
 create_session_states(dbColumns)
+
+def blank_validation(states=['order','family','genus','species']):
+    for i in states:
+     if i=="":
+        st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
 userInfo=[]
 #without a form
 st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***       Mandatory Fields         ***</strong></p>', unsafe_allow_html=True)
 order =st.text_input("Order","Order - e.g. Anura", key='Order') 
+
 family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
+
 genus =st.text_input("Genus", "Genus - e.g. Allophryne", key='Genus')
+
 species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
 
-#--------------------------------------------------------------------------------------------MANAGING ADDITIONAL FIELDS DEV-------------------------------------------------------#
+#--------------------------------------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
 st.markdown('***')
 st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
 more_options=st.multiselect("Add more Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
@@ -113,6 +120,7 @@ def display_extra_fields():
     for option in more_options:
         userText=st.text_input(option, key=option)
         st.session_state[option] == userText
+    
 
 def get_extra_userinfo():
     for option in more_options:
@@ -132,8 +140,7 @@ if more_options:
 def populate_userinfo():
     for column in dbColumns:
         userInfo.append(st.session_state[column])
-    #newdf=pd.DataFrame(userInfo)
-    #st.write(userInfo)
+   
 
 
 def construct_complete_dataframe(userinfo, dbcolumns):
@@ -155,17 +162,19 @@ review_information=st.button("Review Information")
 def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
-
-def append_row(current_db, userinfo):
-    userInfodf=pd.DataFrame(userInfo)
-    appended=current_db.append(pd.Series(userInfodf, index=current_db.columns))
-    st.write(appended)
+    
+#checking that both the genus and species submitted don't exist on current csv    
+def check_current_db(genus, species):
+    if genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
+        st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
+   
     
 
 if review_information:
     
     populate_userinfo()
-    st.write("Trying concat")   
+    blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+    check_current_db(st.session_state['Genus'], st.session_state['Species']) 
     userdf=construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
     
  
@@ -173,10 +182,7 @@ if review_information:
 
 commit_changes=st.button("Submit for review")
 
-   
-def create_dic(userinfo):
-     for column in dbColumns:
-        userInfo.append(st.session_state[column])
+
 
 
 now=datetime.now()
@@ -187,7 +193,7 @@ newPath=""
 def create_csv(columnrow, inforow):
     path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/"
     path_end = timeStamp
-    newPath=path_prefix+path_end+".csv"
+    newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
  
     with open(newPath,  'w', encoding= 'UTF8', newline='') as f:
         writer=csv.writer(f)
@@ -199,15 +205,9 @@ def create_csv(columnrow, inforow):
 if commit_changes:
     populate_userinfo()
     columnrow=current_db.columns
-    for column in dbColumns:
-        userInfo.append(st.session_state[column])
     inforow=userInfo
     
     create_csv(columnrow, inforow)
-   # changed_db = pd.read_csv(newPath, encoding= 'unicode_escape', low_memory=False)
-    #appended=current_db.append(changed_db, ignore_index = True)
-    #st.write("appended")
-    #st.write(appended)
     
     st.write("Changes submitted")
   
