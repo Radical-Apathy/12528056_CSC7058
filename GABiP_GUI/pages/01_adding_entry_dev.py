@@ -194,13 +194,13 @@ def create_csv(columnrow, inforow):
         
 
 if commit_changes and user_message:
+    
     populate_userinfo()
     columnrow=current_db.columns
     inforow=userInfo
-    
     create_csv(columnrow, inforow)
-    
-    st.markdown("Changes submitted")
+    st.markdown("Changes submitted") 
+
 elif commit_changes and user_message=="":
     st.error("Please add a source")
   
