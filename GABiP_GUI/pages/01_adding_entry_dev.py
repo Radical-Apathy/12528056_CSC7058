@@ -1,9 +1,8 @@
-from re import search
 import streamlit as st
 import pandas as pd
 import numpy as np
-from deta import Deta
 import os
+from deta import Deta
 import csv
 from dotenv import load_dotenv
 from datetime import datetime
@@ -19,7 +18,6 @@ deta_connection= Deta(deta_key)
 metaData=deta_connection.Base("database_versions")
 
 
-#st.session_state['username']
 #------------------------------------------------------------ DATABASE METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
@@ -49,11 +47,6 @@ def insert_csv(date_time, file_Path, edit_type, username, status):
     """adding user"""
     return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status })
 
-#append user's edit to current csv
-
-#def add_changes(dataframe, dataframe2):
-#    updated=dataframe.append(dataframe2, ignore_index = True)
-#    return updated
 
 path=get_latest()
 
@@ -65,21 +58,17 @@ def load_latest():
 
 current_db=load_latest()
 
-
-
-
-
-
 #------------------------------------------------------------SESSION STATE INITIATION-----------------------------------------------------------------------------------------#
 
-#st.session_state
+if 'comment' not in st.session_state:
+    st.session_state['comment']=""
 
 def create_session_states(dbColumns):
     for column in dbColumns:
         if column not in st.session_state:
            st.session_state[column] =""
          
-
+st.session_state['comment']
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 st.header('Add Entry page')
 
@@ -97,7 +86,8 @@ def blank_validation(states=['order','family','genus','species']):
 
 userInfo=[]
 #without a form
-st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***       Mandatory Fields         ***</strong></p>', unsafe_allow_html=True)
+
+st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
 order =st.text_input("Order","Order - e.g. Anura", key='Order') 
 
 family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
@@ -177,7 +167,8 @@ if review_information:
     check_current_db(st.session_state['Genus'], st.session_state['Species']) 
     userdf=construct_complete_dataframe_columns(userInfo, columns=current_db.columns)
     
- 
+
+user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
     
 
 commit_changes=st.button("Submit for review")
@@ -202,14 +193,16 @@ def create_csv(columnrow, inforow):
     return newPath
         
 
-if commit_changes:
+if commit_changes and user_message:
     populate_userinfo()
     columnrow=current_db.columns
     inforow=userInfo
     
     create_csv(columnrow, inforow)
     
-    st.write("Changes submitted")
+    st.markdown("Changes submitted")
+elif commit_changes and user_message=="":
+    st.error("Please add a source")
   
 
 
