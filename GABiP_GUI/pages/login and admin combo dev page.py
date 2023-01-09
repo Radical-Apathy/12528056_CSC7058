@@ -18,10 +18,10 @@ deta_key=os.getenv("deta_key")
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-db=deta_connection.Base("users_db")
+users_db=deta_connection.Base("users_db")
 
 def get_all_users():
-    res = db.fetch()
+    res = users_db.fetch()
     #print(res.items) #using return here gives an address
     return res.items
 
@@ -39,13 +39,13 @@ isAdmin=[user["admin"] for user in users]
 def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
     """adding user"""
     #defining the email as the key
-    return db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
+    return users_db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
 
 def get_current_user(email):
-    print (db.get(email))
+    print (users_db.get(email))
 
 def approve_user(username, updates):
-    return db.update(updates, username)
+    return users_db.update(updates, username)
 
 #gets and displays users pending approval
 def display_pending_users():
