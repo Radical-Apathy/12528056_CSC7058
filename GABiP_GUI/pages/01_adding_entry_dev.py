@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 st.set_page_config(page_icon='amphibs.jpeg')
 
-#------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------DATABASE_METADATA DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
@@ -18,7 +18,7 @@ deta_connection= Deta(deta_key)
 database_metadata=deta_connection.Base("database_metadata")
 
 
-#------------------------------------------------------------ METADATABASE METHODS-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------ DATABASE_METADATA DATABASE METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
 def get_all_paths():

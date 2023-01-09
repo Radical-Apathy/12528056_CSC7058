@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 
 
-#------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
