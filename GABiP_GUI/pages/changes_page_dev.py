@@ -35,7 +35,7 @@ css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pa
 st.header("Form Exploring")
 
 
-options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')
+options=st.sidebar.radio("Options", ('Show Full Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')
 
 if options == 'HTML Form':
     st.write("HMTL injected form")
