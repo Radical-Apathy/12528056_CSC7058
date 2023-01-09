@@ -34,7 +34,7 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
-#-------------------------------------------------------------ADMIN ONLY METHODS--------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------USERS_DB METHODS--------------------------------------------------------------------------------------------#
 
 def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
     """adding user"""
