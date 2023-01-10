@@ -39,7 +39,7 @@ def get_latest():
         
       if database["key"]== i and database["Status"] =="Approved":
         break
-    return(database["File_Path"])
+    return(database["Current Dataset"])
 
 path=get_latest()
 
