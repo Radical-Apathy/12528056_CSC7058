@@ -8,21 +8,21 @@ from dotenv import load_dotenv
 from datetime import datetime
 st.set_page_config(page_icon='amphibs.jpeg')
 
-#------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------DATABASE_METADATA DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-metaData=deta_connection.Base("database_metadata")
+database_metadata=deta_connection.Base("database_metadata")
 
 
-#------------------------------------------------------------ DATABASE METHODS-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------ DATABASE_METADATA DATABASE METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
 def get_all_paths():
-    res = metaData.fetch()
+    res = database_metadata.fetch()
     return res.items
 
 
@@ -46,7 +46,7 @@ def get_latest():
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
     """adding user"""
     #defining the email as the key
-    return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
+    return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
 
 
 path=get_latest()
@@ -72,7 +72,7 @@ def create_session_states(dbColumns):
          
 #st.session_state["username"]
 
-#------------------------------------------------------------METHODS----------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------ADDITION ENTRY METHODS----------------------------------------------------------------------------------------------------------#
 
 #enforcing mandatory fields
 def blank_validation(states=['order','family','genus','species']):
@@ -121,7 +121,7 @@ def create_csv(columnrow, inforow):
 #------------------------------------------------------------MAIN PAGE--------------------------------------------------------------------------------------------------------#
 st.header('Add Entry page')
 
-st.write(current_db)
+#st.write(current_db)
 path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
 dbColumns=current_db.columns
 
