@@ -15,7 +15,7 @@ deta_key=os.getenv("deta_key")
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-metaData=deta_connection.Base("database_versions")
+metaData=deta_connection.Base("database_metadata")
 
 #------------------------------------------------------------METHODS-----------------------------------------------------------------------------------------#
 
@@ -30,7 +30,7 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=[database["Status"] for database in databases]
-path = [database["File_Path"] for database in databases]
+path = [database["Current Dataset"] for database in databases]
 
 #getting the most recent approved csv file
 def get_latest():
@@ -43,7 +43,7 @@ def get_latest():
 
 path=get_latest()
 
-
+@st.cache
 def load_latest():
     current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
     return current_db

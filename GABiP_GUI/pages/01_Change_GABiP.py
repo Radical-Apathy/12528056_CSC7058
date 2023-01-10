@@ -41,41 +41,6 @@ isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 #-------------------------------------------------------------USERS_DB METHODS--------------------------------------------------------------------------------------------#
 
-def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
-    """adding user"""
-    #defining the email as the key
-    return users_db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
-
-def get_current_user(email):
-    print (users_db.get(email))
-
-def approve_user(username, updates):
-    return users_db.update(updates, username)
-
-#gets and displays users pending approval
-def display_pending_users():
-    st.markdown("***")
-    for user in users:
-     if user["approved"]=="False":
-       with st.form(user["username"]):
-        st.markdown(f"""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>***********{user["username"]}'s Request**********</strong></p>""" , unsafe_allow_html=True)
-        st.text(f"Username : " +user["username"])
-        st.text(f"Firstname : " +user["firstname"])
-        st.text(f"Surname : " +user["surname"])
-        st.text(f"Email : " +user["key"])
-        checkbox1 = st.checkbox(f"Allow " + user["firstname"] + " access")
-        checkbox2 = st.checkbox(f"Place " +user["firstname"] +" in review list")
-        confirmForm = st.form_submit_button(f"Submit Decision for  : " + user["username"])
-        if checkbox1 and checkbox2 and confirmForm:
-            st.error("Warning! Both options have been selected. Please review decision")
-        elif checkbox1 and confirmForm:
-            approve_user(user["key"], updates={"approved": "True"})
-            st.success(f"Accepted! "+user["username"]+ " can now access the GABiP. You can revoke access at any time using the View Approved user's option")
-        elif checkbox2 and confirmForm:
-            st.warning(f"User now place in to review section. " +user["username"]+ " 's access can be decided upon another date" )
-      
-        st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
-        st.write("***")
 
 #------------------------------------------------------------DATABASE_METADATA DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
@@ -143,18 +108,6 @@ def create_session_states(dbColumns):
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
     st.image("amphibs.jpeg", width=200)
-
-def admin_welcome_screen():
-    st.header("**************************:lock:Admin Section:lock_with_ink_pen:**************************")
-    st.subheader("Welcome to the Admin Area.")
-
-    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View approved users','See pending changes'  ])
-    if adminOptions=="Click here to see Admin options":
-        welcome_screen()
-    if adminOptions=="View Access Requests":
-         display_pending_users()
-
-    #st.markdown("***")
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
@@ -386,7 +339,7 @@ if authentication_status:
         if user["username"] == st.session_state['username'] and user["approved"] == "False":
             st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-            admin_welcome_screen(), show_options()         
+            welcome_screen(), show_options()         
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
             st.write(f"Welcome ",user["firstname"], " you're a trusted member")
             welcome_screen(), show_options()
