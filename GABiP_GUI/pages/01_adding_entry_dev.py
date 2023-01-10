@@ -72,7 +72,7 @@ def create_session_states(dbColumns):
          
 #st.session_state["username"]
 
-#------------------------------------------------------------METHODS----------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------ADDITION ENTRY METHODS----------------------------------------------------------------------------------------------------------#
 
 #enforcing mandatory fields
 def blank_validation(states=['order','family','genus','species']):
@@ -121,7 +121,7 @@ def create_csv(columnrow, inforow):
 #------------------------------------------------------------MAIN PAGE--------------------------------------------------------------------------------------------------------#
 st.header('Add Entry page')
 
-st.write(current_db)
+#st.write(current_db)
 path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
 dbColumns=current_db.columns
 

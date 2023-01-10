@@ -15,3 +15,243 @@ from datetime import datetime
 st.set_page_config(page_icon='amphibs.jpeg')
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
+deta_key=os.getenv("deta_key")
+
+
+#initialising a deta object
+deta_connection= Deta(deta_key)
+
+users_db=deta_connection.Base("users_db")
+
+def get_all_users():
+    res = users_db.fetch()
+    #print(res.items) #using return here gives an address
+    return res.items
+
+#converts each individual values for users to a their own list using list comprehension
+users=get_all_users()
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+firstname=[user["firstname"] for user in users]
+surname = [user["surname"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+isApproved=[user["approved"]for user in users]
+isAdmin=[user["admin"] for user in users]
+#-------------------------------------------------------------USERS_DB METHODS--------------------------------------------------------------------------------------------#
+
+def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
+    """adding user"""
+    #defining the email as the key
+    return users_db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
+
+def get_current_user(email):
+    print (users_db.get(email))
+
+def approve_user(username, updates):
+    return users_db.update(updates, username)
+
+#gets and displays users pending approval
+def display_pending_users():
+    st.markdown("***")
+    for user in users:
+     if user["approved"]=="False":
+       with st.form(user["username"]):
+        st.markdown(f"""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>***********{user["username"]}'s Request**********</strong></p>""" , unsafe_allow_html=True)
+        st.text(f"Username : " +user["username"])
+        st.text(f"Firstname : " +user["firstname"])
+        st.text(f"Surname : " +user["surname"])
+        st.text(f"Email : " +user["key"])
+        checkbox1 = st.checkbox(f"Allow " + user["firstname"] + " access")
+        checkbox2 = st.checkbox(f"Place " +user["firstname"] +" in review list")
+        confirmForm = st.form_submit_button(f"Submit Decision for  : " + user["username"])
+        if checkbox1 and checkbox2 and confirmForm:
+            st.error("Warning! Both options have been selected. Please review decision")
+        elif checkbox1 and confirmForm:
+            approve_user(user["key"], updates={"approved": "True"})
+            st.success(f"Accepted! "+user["username"]+ " can now access the GABiP. You can revoke access at any time using the View Approved user's option")
+        elif checkbox2 and confirmForm:
+            st.warning(f"User now place in to review section. " +user["username"]+ " 's access can be decided upon another date" )
+      
+        st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
+        st.write("***")
+
+#------------------------------------------------------------DATABASE_METADATA DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
+deta_key=os.getenv("deta_key")
+
+#initialising a deta object
+deta_connection= Deta(deta_key)
+
+database_metadata=deta_connection.Base("database_metadata")
+
+#------------------------------------------------------------ DATABASE_METADATA DATABASE METHODS-----------------------------------------------------------------------------------------#
+
+#fetching info from the database
+def get_all_paths():
+    res = database_metadata.fetch()
+    return res.items
+
+
+#calling method and creating a list comprehension
+databases=get_all_paths()
+
+date_time= sorted([database["key"] for database in databases], reverse=True)
+status=[database["Status"] for database in databases]
+path = [database["Current Dataset"] for database in databases]
+
+#getting the most recent approved csv file
+def get_latest():
+    for database in databases:
+     for i in date_time:
+        
+      if database["key"]== i and database["Status"] =="Approved":
+        break
+    return(database["Current Dataset"])
+
+#add user's entries to csv 
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
+    """adding user"""
+    #defining the email as the key
+    return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
+
+
+path=get_latest()
+
+@st.cache
+def load_latest():
+    current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
+    return current_db
+
+
+current_db=load_latest()
+
+#------------------------------------------------------------SESSION STATE INITIATION--------------------------------------------------------------------------------------------#
+
+if 'comment' not in st.session_state:
+    st.session_state['comment']=""
+
+#creating session state variables for each column in dataset
+def create_session_states(dbColumns):
+    for column in dbColumns:
+        if column not in st.session_state:
+           st.session_state[column] =""
+         
+#st.session_state["username"]
+
+#-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
+def welcome_screen():
+    st.image("amphibs.jpeg", width=200)
+
+def admin_welcome_screen():
+    st.header("**************************:lock:Admin Section:lock_with_ink_pen:**************************")
+    st.subheader("Welcome to the Admin Area.")
+
+    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View approved users','See pending changes'  ])
+    if adminOptions=="Click here to see Admin options":
+        welcome_screen()
+    if adminOptions=="View Access Requests":
+         display_pending_users()
+
+    #st.markdown("***")
+
+#--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
+def show_options():
+    options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')     
+
+#-------------------------------------------------------------------------SEND EMAIL METHOD---------------------------------------------------------------------------#
+def sendEmail(email_receiver):
+  email_sender='amphib.app@gmail.com'
+  email_password = 'mfqk hxrk qtpp qqdp'
+  message = MIMEMultipart("alternative")
+  message["Subject"] = "Password Reset Request"
+  message["From"] = email_sender
+  message["To"] = email_sender
+
+ #plain text and html versions of message for comparison
+  text = """
+  Hi AmphibiFan it's text,
+  Please click on the link below to reset your password:
+  https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/
+
+  Requested password in error? No worries, continue logging in using your previous password.
+
+  """
+  html = """
+  <html>
+    <body>
+      <p>Hi AmphibiFan it's from streamlit,<br>
+        Please click on the link below to reset your password:<br>
+        <a href="https://radical-apathy-deployment-practice-forgotten-password-lu3mqh.streamlit.app/">Reset Password</a> 
+        
+        Requested password in error? No worries, continue logging in using your previous password.
+      </p>
+    </body>
+  </html>
+  """
+
+  # Turn these into plain/html MIMEText objects
+  part1 = MIMEText(text, "plain")
+  part2 = MIMEText(html, "html")
+
+  # Add HTML/plain-text parts to MIMEMultipart message
+  # The email client will try to render the last part first
+  message.attach(part1)
+  message.attach(part2)
+  context = ssl.create_default_context()
+  with smtplib.SMTP_SSL('smtp.gmail.com', 465, context= context) as smtp:
+    smtp.login(email_sender, email_password)
+    smtp.sendmail(email_sender, email_receiver, message.as_string())
+
+
+#-----------------------------------------------------------------------HOME PAGE-----------------------------------------------------------------------------------------------------------------------------#  
+
+st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
+
+
+
+authenticator = stauth.Authenticate(email, username, hashed_passwords,
+    "change_database", "abcdef")
+
+username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position
+
+
+if authentication_status == False:
+      st.error("Username/password is not recognised")
+
+if authentication_status == None:
+      st.warning("Please enter username and password")
+
+       
+
+
+if authentication_status:
+        
+    for user in users:
+        if user["username"] == st.session_state['username'] and user["approved"] == "False":
+            st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
+        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
+            admin_welcome_screen(), show_options()         
+        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
+            st.write(f"Welcome ",user["firstname"], " you're a trusted member")
+            welcome_screen(), show_options()
+        
+
+authenticator.logout("Logout", "sidebar")
+
+
+
+#------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#
+
+st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+
+sendReminder = st.checkbox("Send Password Reminder")
+if sendReminder:
+    email=st.text_input("Email address")
+    sendbutton=st.button("Send reminder")
+    if sendbutton and email:
+        sendEmail(email)
+        st.success("Email sent...please check your inbox for a password reset link")
+    elif sendbutton:
+        st.warning("Please enter an email address")
