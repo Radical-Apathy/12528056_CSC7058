@@ -138,7 +138,7 @@ def create_session_states(dbColumns):
         if column not in st.session_state:
            st.session_state[column] =""
          
-#st.session_state["username"]
+#st.session_state
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
@@ -156,9 +156,163 @@ def admin_welcome_screen():
 
     #st.markdown("***")
 
+
+#--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
+
+def show_db():
+    st.write(current_db)
+
+#--------------------------------------------------------------------------ADD ENTRY PAGE------------------------------------------------------------------------------------#
+
+def add_entry_page():
+    #-----------------Methods for adding an entry---------------------------#
+#enforcing mandatory fields
+    def blank_validation(states=['order','family','genus','species']):
+        for i in states:
+         if i=="":
+            st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
+
+    #displays text fields for optional information
+    def display_extra_fields():
+        for option in more_options:
+            userText=st.text_input(option, key=option)
+            st.session_state[option] == userText
+
+    #sets session state values for optional extra fields
+    def get_extra_userinfo():
+     for option in more_options:
+        
+        userText=st.text_input(option, key=option)
+        if userText:
+         st.session_state[option] == userText
+        elif not userText :
+            st.session_state[option]==""
+
+
+    #stores user info in an array      
+    def populate_userinfo():
+        for column in dbColumns:
+            userInfo.append(st.session_state[column])
+
+    #checking that both the genus and species submitted don't exist on current csv    
+    def check_current_db(genus, species):
+        if genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
+            st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
+
+    #contructs a dataframe for user to see summary of their addition
+    def construct_review_dataframe(userinfo, columns=current_db.columns):
+        completed = pd.DataFrame(userInfo, current_db.columns)
+        #st.write(completed)
+        st.dataframe(completed, width=300) 
+
+    #creates a csv file with users addition
+    def create_csv(columnrow, inforow):
+        with open(newPath,  'w', encoding= 'UTF8', newline='') as f:
+            writer=csv.writer(f)
+            writer.writerow(columnrow)
+            writer.writerow(inforow)
+
+
+    
+
+ #st.write(current_db)
+    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
+    dbColumns=current_db.columns
+
+ #creating session state variables for csv columns
+    create_session_states(dbColumns)
+
+
+    userInfo=[]
+
+    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
+    order =st.text_input("Order","Order - e.g. Anura", key='Order') 
+
+    family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
+
+    genus =st.text_input("Genus", "Genus - e.g. Allophryne", key='Genus')
+
+    species =st.text_input("Species","Species - e.g. Relicta", key='Species')
+
+
+ #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
+    st.markdown('***')
+    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
+    more_options=st.multiselect("Add more Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
+                             'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
+                             'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
+
+
+    if more_options:
+     get_extra_userinfo()
+
+
+   
+    review_information=st.button("Review Information")
+       
+
+    if review_information:
+    
+     populate_userinfo()
+     blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+     check_current_db(st.session_state['Genus'], st.session_state['Species']) 
+     userdf=construct_review_dataframe(userInfo, columns=current_db.columns)
+    
+
+    user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
+    
+
+    commit_changes=st.button("Submit for review")
+
+    now=datetime.now()
+    timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
+    path_end = timeStamp
+    newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
+
+
+
+    
+    
+    if commit_changes and user_message=="":  
+     st.error("Please add a source")
+    if commit_changes and genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
+     st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
+    elif commit_changes and user_message:
+      populate_userinfo()
+      columnrow=current_db.columns
+      inforow=userInfo
+      create_csv(columnrow, inforow)
+      add_to_database(str(now), newPath, get_latest(), "Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_latest())
+      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
+
+    
+    
+    
+    
+
+
+
+
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
-    options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')     
+    options=st.sidebar.radio("Options", ('Show Full Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')     
+    
+    if options == "Show Full Database":
+        show_db()
+    if options == "Add Entry":
+        add_entry_page()
+
+
+
+
+
+
+
+
+
+
+
 
 #-------------------------------------------------------------------------SEND EMAIL METHOD---------------------------------------------------------------------------#
 def sendEmail(email_receiver):
