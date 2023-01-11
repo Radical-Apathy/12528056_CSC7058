@@ -54,23 +54,12 @@ def add_changes(dataframe, dataframe2):
 
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
-st.header("Addition")
+st.header("Amin New Species Addition dev")
 
 st.write("Current Database")
 current=load_latest()
 currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
 st.write(current)
 
-st.write("changes file example ")
-changes=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changes.csv", encoding= 'unicode_escape', low_memory=False)
-highlighted=changes.style.set_properties(**{'background-color':'yellow', 'color':'black'})
-st.write(highlighted)
-st.subheader("DB updated with changes")
 
-st.write("User comments")
-st.write("User source citation")
-
-st.subheader("Current db with changes added")
-updated=add_changes(current, changes)
-st.write(updated)
 

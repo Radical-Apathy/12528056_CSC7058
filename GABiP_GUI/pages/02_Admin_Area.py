@@ -101,15 +101,21 @@ def display_pending_users():
 
 def welcome_screen():
     st.image("amphibs.jpeg", width=200)
+
+def admin_edit_options():
+    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')     
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View approved users','See pending changes'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":
          display_pending_users()
+    if adminOptions == "See edit requests":
+        admin_edit_options()
+
 
     #st.markdown("***")
 
