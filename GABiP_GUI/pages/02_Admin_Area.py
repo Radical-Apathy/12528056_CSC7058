@@ -5,10 +5,40 @@ import smtplib
 import ssl
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
 from email.mime.multipart import MIMEMultipart
-from deta import Deta
+import pandas as pd
+import numpy as np
 import os
+from deta import Deta
+import csv
 from dotenv import load_dotenv
+from datetime import datetime
+st.set_page_config(page_icon='amphibs.jpeg')
 
+#------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
+#------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
+deta_key=os.getenv("deta_key")
+
+
+#initialising a deta object
+deta_connection= Deta(deta_key)
+
+users_db=deta_connection.Base("users_db")
+
+def get_all_users():
+    res = users_db.fetch()
+    #print(res.items) #using return here gives an address
+    return res.items
+
+#converts each individual values for users to a their own list using list comprehension
+users=get_all_users()
+email=[user["key"] for user in users]
+username=[user["username"] for user in users]
+firstname=[user["firstname"] for user in users]
+surname = [user["surname"] for user in users]
+hashed_passwords=[user ["password"] for user in users]
+isApproved=[user["approved"]for user in users]
+isAdmin=[user["admin"] for user in users]
 
 #------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
@@ -34,12 +64,7 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
-#-------------------------------------------------------------USERS_DB METHODS--------------------------------------------------------------------------------------------#
-
-def insert_user(email, username, firstname, surname, admin, approved, hashed_password):
-    """adding user"""
-    #defining the email as the key
-    return users_db.put({"key":email, "username": username, "firstname": firstname, "surname":surname, "admin":admin, "approved": approved,"password": hashed_password })
+#-------------------------------------------------------------ADMIN USERS_DB METHODS--------------------------------------------------------------------------------------------#
 
 def get_current_user(email):
     print (users_db.get(email))
@@ -72,26 +97,28 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
+#-----------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
 
-#-------------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
     st.image("amphibs.jpeg", width=200)
 
+def admin_edit_options():
+    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')     
 def admin_welcome_screen():
-    st.header("**************************:lock:Admin Section:lock_with_ink_pen:**************************")
+    
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View approved users','See pending changes'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":
          display_pending_users()
+    if adminOptions == "See edit requests":
+        admin_edit_options()
+
 
     #st.markdown("***")
 
-#--------------------------------------------------------------------------GABiP EDIT OPTIONS-------------------------------------------------------------------------#
-def show_options():
-    options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'), key='current_option')     
 #-------------------------------------------------------------------------SEND EMAIL METHOD---------------------------------------------------------------------------#
 def sendEmail(email_receiver):
   email_sender='amphib.app@gmail.com'
@@ -136,13 +163,9 @@ def sendEmail(email_receiver):
     smtp.login(email_sender, email_password)
     smtp.sendmail(email_sender, email_receiver, message.as_string())
 
+#-----------------------------------------------------------------------HOME PAGE-----------------------------------------------------------------------------------------------------------------------------#  
 
-
-#-----------------------------------------------------------------------SESSIONT STATE VARIABLES-------------------------------------------------------------------------------------------------------------#
-#st.session_state['username']
-#-----------------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------------------------------------------#  
-
-st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
+st.header("**************************:lock:Admin Section:lock_with_ink_pen:**************************")
 
 
 
@@ -158,35 +181,22 @@ if authentication_status == False:
 if authentication_status == None:
       st.warning("Please enter username and password")
 
-#if authentication_status:
-#    options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'))#, key='current_option')
-#    for user in users:
-#        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-#            admin_welcome_screen()         
-#        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-#            st.write(f"Welcome ",user["firstname"], " you're a trusted member")
-#        if user["username"] == st.session_state['username'] and user["approved"] == "False":
-#            st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
-
-
-        
+       
 
 
 if authentication_status:
-    
-    #options=st.sidebar.radio("Options", ('HTML Form','Show Database','Add Entry', 'Update an Existing Entry',  'Delete an Entry'))#, key='current_option')
+        
     for user in users:
         if user["username"] == st.session_state['username'] and user["approved"] == "False":
             st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-            admin_welcome_screen(), show_options()         
+            admin_welcome_screen()        
         if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-            st.write(f"Welcome ",user["firstname"], " you're a trusted member")
-            welcome_screen(), show_options()
+            st.write(f"Welcome ",user["firstname"], " you're a trusted member. However, This section is for members with admin status only. You may request admin status")
+          
         
 
 authenticator.logout("Logout", "sidebar")
-
 
 
 #------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#

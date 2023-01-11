@@ -15,7 +15,7 @@ deta_key=os.getenv("deta_key")
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-metaData=deta_connection.Base("database_versions")
+metaData=deta_connection.Base("database_metadata")
 
 #------------------------------------------------------------METHODS-----------------------------------------------------------------------------------------#
 
@@ -30,7 +30,7 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=[database["Status"] for database in databases]
-path = [database["File_Path"] for database in databases]
+path = [database["Current Dataset"] for database in databases]
 
 #getting the most recent approved csv file
 def get_latest():
@@ -39,11 +39,11 @@ def get_latest():
         
       if database["key"]== i and database["Status"] =="Approved":
         break
-    return(database["File_Path"])
+    return(database["Current Dataset"])
 
 path=get_latest()
 
-
+@st.cache
 def load_latest():
     current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
     return current_db
@@ -54,23 +54,12 @@ def add_changes(dataframe, dataframe2):
 
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
-st.header("Addition")
+st.header("Amin New Species Addition dev")
 
 st.write("Current Database")
 current=load_latest()
 currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
 st.write(current)
 
-st.write("changes file example ")
-changes=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/changes.csv", encoding= 'unicode_escape', low_memory=False)
-highlighted=changes.style.set_properties(**{'background-color':'yellow', 'color':'black'})
-st.write(highlighted)
-st.subheader("DB updated with changes")
 
-st.write("User comments")
-st.write("User source citation")
-
-st.subheader("Current db with changes added")
-updated=add_changes(current, changes)
-st.write(updated)
 
