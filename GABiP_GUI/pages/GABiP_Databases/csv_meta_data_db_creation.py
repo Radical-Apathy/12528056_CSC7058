@@ -13,10 +13,6 @@ deta_connection= Deta(deta_key)
 #metaData=deta_connection.Base("database_versions")
 metaData=deta_connection.Base("database_metadata")
 
-#def insert_csv(date_time, file_Path, edit_type, username, status, value):
-#    """adding user"""
-#    #defining the email as the key
-#    return metaData.put({"key":date_time, "File_Path": file_Path, "Edit_Type": edit_type, "Edited_By":username, "Status":status, "Another_Column":value })
 def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
     """adding user"""
     #defining the email as the key
@@ -26,10 +22,10 @@ def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, spec
 now=datetime.now()
 #insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
 
-#testing sorting method
+
 def get_all_paths():
     res = metaData.fetch()
-    #print(res.items) #using return here gives an address
+    
     return res.items
 
 databases=get_all_paths()
@@ -37,16 +33,10 @@ databases=get_all_paths()
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
 path = sorted([database["Current Dataset"] for database in databases])
-#print(status)
-#print(date_time)
-
+edit_type=[database["Edit_Type"] for database in databases]
+changes=[database["Changes"] for database in databases]
 
 approved=[]
-
-
-#def get_current(databases):
-#databasesorted=sorted([database["key"] for database in databases], reverse=True)
-
 
 
 def get_latest():
@@ -57,30 +47,37 @@ def get_latest():
         break
     return(database["Current Dataset"])
 
-
-
-
 path=get_latest()
 
-print(path)
+#method to get pending approvals for new species addition
 
-#for database in databases:
-#    for i in date_time:
-        #for database["key"] in databases:
-#      if database["key"]== i and database["Status"] =="Approved":
-#        break
-#print(database["File_Path"])
+pending=[]
 
+#gets dates for new species additions needing approval
+def get_pending():
+    for database in databases:
+        
+            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                
+             pending.append(database["key"])
 
-#for database in databases:
-    
-#    if database["Status"]=="Approved":
-#        break
-#print(database["File_Path"])
+get_pending()
+ordered=sorted(pending,reverse=True)
 
+#get user info for each date in pending
+latest=ordered[0]
+print(latest)
 
+def get_user_info(date):
+    for database in databases:
+        if database["key"]==date:
+            print(database["Edited_By"])
 
+get_user_info(latest)
 
+def get_changes_csv(date):
+    for database in databases:
+        if database["key"]==date:
+            print(database["Changes"])
 
-       
-
+get_changes_csv(latest)

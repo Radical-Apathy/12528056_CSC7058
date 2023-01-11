@@ -236,7 +236,7 @@ def add_entry_page():
       columnrow=current_db.columns
       inforow=userInfo
       create_csv(columnrow, inforow)
-      add_to_database(str(now), newPath, get_latest(), "Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_latest())
+      add_to_database(str(now), newPath, get_latest(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_latest())
       st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
 
     
