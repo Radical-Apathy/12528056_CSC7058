@@ -29,8 +29,8 @@ def get_all_paths():
 databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
-status=[database["Status"] for database in databases]
-path = [database["Current Dataset"] for database in databases]
+status=sorted([database["Status"] for database in databases])
+path = sorted([database["Current Dataset"] for database in databases])
 
 #getting the most recent approved csv file
 def get_latest():
@@ -43,7 +43,7 @@ def get_latest():
 
 path=get_latest()
 
-@st.cache
+
 def load_latest():
     current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
     return current_db
@@ -123,7 +123,7 @@ ordered=sorted(pending,reverse=True)
 st.write("Using selectbox to show pending new species edits in chronological order")
 
 
-datesubtmitted = st.selectbox(
+datesubmitted = st.selectbox(
     'Date submitted',
     (ordered))
 
@@ -139,7 +139,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Species Added", "User Info", "User Source", "
 
 #tab1 methods
 for database in databases:
-        if database["key"]==datesubtmitted:
+        if database["key"]==datesubmitted:
             path=database["Changes"]
 user_changes = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
 tab1.write(user_changes)
@@ -150,7 +150,7 @@ tab1.dataframe(user_changes.iloc[0], width=300)
 
 #tab2 methods
 for database in databases:
-        if database["key"]==datesubtmitted:
+        if database["key"]==datesubmitted:
             author=database["Edited_By"]
             authorComment=database["User_Comment"]
 for user in users:
@@ -181,7 +181,55 @@ def preview_addition(df1,df2):
     proposed=df1.append(df2, ignore_index=True)
     last_row=proposed.iloc[-1]
     st.dataframe(proposed.style.applymap(lambda _: 'background-color: yellow', subset=pd.IndexSlice[last_row.name, :]))
-    
+
+
+
+now=datetime.now()
+version=now.strftime("%d.%m.%Y-%H.%M.%S")
+path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
+#path_end = version
+newPath=path_prefix+version+"-"+st.session_state['username']+"-approved"+".csv"
+
+#def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, 
+# species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
+ #   """adding user"""
+    #defining the email as the key
+  #  return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, 
+  # "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
+
+def create_new_dataset():
+    newDataset=current.append(user_changes, ignore_index=True)
+    newDataset.to_csv(newPath, index=False)
+   
+#updates the status, 
+def update_GABiP():
+    updates = {"Status":"Approved", "Reason_Denied":"n/a", "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":newPath  }
+    metaData.update(updates, datesubmitted)
 
 if preview:
-    preview_addition(current, user_changes)
+    newDataset=preview_addition(current, user_changes)
+    col1,col2=st.columns(2)
+
+    accept=col1.button("Approve Addition")
+    reject=col2.button("Deny Addition")
+
+    def confirmation():
+        confirmAccept=col1.button("Confirm")
+        #create_new_dataset()
+        if confirmAccept:
+         col1.write("Changes Added...current dataset is now updated to include new species information")
+
+
+    
+    if accept:
+        st.write(path)
+        #create_new_dataset()
+        #update_GABiP()
+        
+    if reject:
+        reason=col2.text_area("Reasons for declining")
+        confirmReject=col2.button("Confirm")
+        if confirmReject:
+            col2.write("Submission has been rejected")
+
+

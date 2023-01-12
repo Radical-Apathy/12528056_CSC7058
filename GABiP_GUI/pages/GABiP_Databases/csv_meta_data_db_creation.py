@@ -80,4 +80,6 @@ def get_changes_csv(date):
         if database["key"]==date:
             print(database["Changes"])
 
-get_changes_csv(latest)
+#get_changes_csv(latest)
+
+print("latest" + get_latest())
