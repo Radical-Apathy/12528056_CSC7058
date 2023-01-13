@@ -30,22 +30,44 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
-path = sorted([database["Current Dataset"] for database in databases])
+paths = [database["Current Dataset"] for database in databases]
 
 #getting the most recent approved csv file
-def get_latest():
-    for database in databases:
-     for i in date_time:
+#def get_latest():
+ #   for database in databases:
+  #   for i in date_time:
         
-      if database["key"]== i and database["Status"] =="Approved":
-        break
-    return(database["Current Dataset"])
+ #     if database["key"]== i and database["Status"] =="Approved":
+ #       break
+ #   return(database["Current Dataset"])
 
-path=get_latest()
+#path=get_latest()
+
+approved=[]
+def get_approved():
+    for database in databases:
+        
+            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                
+             approved.append(database["key"])
+
+get_approved()
+
+approvedordered=sorted(approved,reverse=True)
+print(approvedordered)
+
+def get_latest_ds(key):
+    for database in databases:
+        if database["key"] ==key:
+            return database["Current Dataset"]
 
 
+latestds=get_latest_ds(approvedordered[0])
+
+
+@st.cache
 def load_latest():
-    current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
     return current_db
 
 def add_changes(dataframe, dataframe2):
@@ -222,9 +244,9 @@ if preview:
 
     
     if accept:
-        st.write(path)
-        #create_new_dataset()
-        #update_GABiP()
+        create_new_dataset()
+        update_GABiP()
+        st.write("GABiP updated!")
         
     if reject:
         reason=col2.text_area("Reasons for declining")
