@@ -47,9 +47,10 @@ approved=[]
 def get_approved():
     for database in databases:
         
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                if database["Status"] =="Approved":
                 
-             approved.append(database["key"])
+                 approved.append(database["key"])
 
 get_approved()
 

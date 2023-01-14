@@ -20,7 +20,7 @@ def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, spec
 
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv"
 now=datetime.now()
-#insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
+insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv")
 
 
 def get_all_paths():
@@ -153,9 +153,10 @@ approved=[]
 def get_approved():
     for database in databases:
         
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                if database["Status"] =="Approved":
                 
-             approved.append(database["key"])
+                 approved.append(database["key"])
 
 get_approved()
 
@@ -170,4 +171,4 @@ def get_latest_ds(key):
 
 print(get_latest_ds(approvedordered[0]))
 
-print(approvedordered)
+#print(approvedordered)
