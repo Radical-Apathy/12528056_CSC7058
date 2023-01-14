@@ -224,7 +224,7 @@ if datesubmitted:
     
     #updates the status, 
     def update_GABiP():
-        updates = {"Status":"Approved", "Reason_Denied":"n/a", "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":newPath, "Dataset_Pre_Changes":latestds }
+        updates = {"Status":"Approved", "Reason_Denied":"n/a", "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":newPath, "Dataset_Pre_Change":latestds }
         metaData.update(updates, datesubmitted)
 
     if preview:
