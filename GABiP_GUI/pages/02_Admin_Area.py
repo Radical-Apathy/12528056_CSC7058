@@ -84,7 +84,7 @@ def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":
