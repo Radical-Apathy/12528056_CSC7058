@@ -105,7 +105,7 @@ isAdmin=[user["admin"] for user in users]
 #if "reason" not in st.session_state:
 #   st.session_state['reason'] ==""
 
-st.session_state
+#st.session_state
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
 
@@ -181,11 +181,11 @@ if datesubmitted:
                 authorSurname = user["surname"] 
                 authorEmail= user["key"]
                 
-    tab2.write("Author firstname: "+" "+authorName)
-    tab2.write("Author surname: "+authorSurname)
-    tab2.write("Author email: "+authorEmail)
+    tab2.write("Author firstname: "+" "+" "+authorName)
+    tab2.write("Author surname: "+" "+" "+authorSurname)
+    tab2.write("Author email: "+" "+" "+authorEmail)
 
-    tab3.write("User comments: "+ " "+ authorComment)
+    tab3.write("User comments: "+ " "+" "+ authorComment)
 
     tab4.subheader("User edit history")
     tab4.write("This is tab 4")
@@ -226,6 +226,12 @@ if datesubmitted:
     def update_GABiP():
         updates = {"Status":"Approved", "Reason_Denied":"n/a", "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":newPath, "Dataset_Pre_Change":latestds }
         metaData.update(updates, datesubmitted)
+    
+    def reject_addition():
+        updates = {"Status":"Denied", "Reason_Denied":reason, "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":latestds, "Dataset_Pre_Change":latestds }
+        metaData.update(updates, datesubmitted)
+
+
 
     if preview:
         newDataset=preview_addition(current, user_changes)
@@ -247,7 +253,8 @@ if datesubmitted:
         
 
         if reject and reason:           
-            col2.write(reason)
+            reject_addition()
+            col2.write("Addition rejected")
         elif reject:
             col2.warning("Please add a reason for rejection")
             
