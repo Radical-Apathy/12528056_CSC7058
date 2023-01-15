@@ -102,10 +102,10 @@ isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
 #-----------------------------------------------------------SESSION STATES-----------------------------------------#
-#if "subdate" not in st.session_state:
-#   st.session_state["subdate"] ==""
+#if "reason" not in st.session_state:
+#   st.session_state['reason'] ==""
 
-#st.session_state
+st.session_state
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
 
@@ -239,11 +239,17 @@ if datesubmitted:
             create_new_dataset()
             update_GABiP()
             st.write("GABiP updated!")
+
+
+    
+        reason=col2.text_area("Reasons for declining", key='reason') 
+
+        
+
+        if reject and reason:           
+            col2.write(reason)
+        elif reject:
+            col2.warning("Please add a reason for rejection")
             
-        if reject:
-            reason=col2.text_area("Reasons for declining")
-            confirmReject=col2.button("Confirm")
-            if confirmReject:
-                col2.write("Submission has been rejected")
 
 
