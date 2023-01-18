@@ -6,6 +6,8 @@ from deta import Deta
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from st_aggrid import AgGrid
+
 
 
 #------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
@@ -188,8 +190,12 @@ def speciesSearchTest(speciesChoice): # formally option2
 
     #if showMore:
     allInfo=current.groupby("Species").get_group(speciesChoice)
-    infoSummary=allInfo.iloc[0]
+    #infoSummary=allInfo.iloc[0]
     col2.dataframe(allInfo.iloc[0], width=500)
+
+    #col2.write("Using ag grid")
+
+    #AgGrid(allInfo)
     #pd.DataFrame(infoSummary)
     #col2.write(infoSummary.style.highlight_null(null_color='green'), width=500)
       
@@ -205,6 +211,10 @@ showgaps=st.checkbox("Show knowledge gaps")
 if showgaps:
     st.write("Current Database")
     st.dataframe(current.style.highlight_null(null_color='yellow'))
+    #AgGrid(current, grid_options={'editable': True})
+
+
+
 
 
 
@@ -212,7 +222,22 @@ speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']
 
 speciesSearchTest(speciesdropdown)
 
-speciestext=st.text_input("Manual Species Search: ", "relicta") 
-speciesSearchTest(speciestext)           
+methodcheck=st.checkbox("Practicing value replacement")
+
+def replace_value(species, colname, value):
+     speciesInfo=current.groupby("Species").get_group(species)
+     #df.at[0, 'A'] = value
+     speciesInfo.at[0, colname]=value
+     st.dataframe(speciesInfo.iloc[0])
+     st.write(speciesInfo["Species"] + " has been updated")
+
+if methodcheck:
+    newInfo = replace_value(speciesdropdown, "IUCN", "IUCN value")
+    #st.dataframe(newInfo, width=500)
+    #st.write(newInfo["Species"])
+
+
+#speciestext=st.text_input("Manual Species Search: ", "relicta") 
+#speciesSearchTest(speciestext)           
 
 
