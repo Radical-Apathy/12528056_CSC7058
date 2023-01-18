@@ -155,12 +155,14 @@ def display_pending_users():
 
 def new_species_review():
     current=load_latest()
+
+    st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
     (ordered))
 
 
-    st.write("Tabs to show user info related to edit selected")
+    
     #get_changes_csv(ordered[0])
 
     if datesubmitted:
@@ -303,7 +305,7 @@ def welcome_screen():
     st.image("amphibs.jpeg", width=200)
 
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Add Species Information',  'Remove Species Information', 'Edit Species Information'), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
         current=load_latest()
