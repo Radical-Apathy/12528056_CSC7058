@@ -79,7 +79,9 @@ def welcome_screen():
     st.image("amphibs.jpeg", width=200)
 
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')     
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')
+    if options == "Show Current Database":
+        pass     
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")

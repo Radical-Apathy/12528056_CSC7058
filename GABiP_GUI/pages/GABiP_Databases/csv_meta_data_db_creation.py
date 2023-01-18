@@ -20,9 +20,9 @@ def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, spec
 
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv"
 now=datetime.now()
-insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
+#insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
 
-
+#insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
 def get_all_paths():
     res = metaData.fetch()
     
@@ -32,7 +32,7 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
-path = [database["Current Dataset"] for database in databases]
+path = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 date_approved= sorted([database["Decision_Date"] for database in databases], reverse=True)
@@ -46,7 +46,7 @@ def get_latest():
         #for database["key"] in databases:
       if database["key"]== i and database["Status"] =="Approved":
         break
-    return(database["Current Dataset"])
+    return(database["Dataset_In_Use"])
 
 current_path=get_latest()
 
