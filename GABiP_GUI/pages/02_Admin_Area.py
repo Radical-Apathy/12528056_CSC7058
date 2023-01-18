@@ -56,6 +56,8 @@ databases=get_all_paths()
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
 paths = [database["Dataset_In_Use"] for database in databases]
+edit_type=[database["Edit_Type"] for database in databases]
+changes=[database["Changes"] for database in databases]
 
 #getting the most recent approved csv file
 #def get_latest():
@@ -100,6 +102,20 @@ def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
 
+#gets dates for new species additions needing approval
+pending=[]
+
+
+def get_pending():
+    for database in databases:
+        
+            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                
+             pending.append(database["key"])
+
+get_pending()
+
+ordered=sorted(pending,reverse=True)
 
 
 #-------------------------------------------------------------ADMIN USERS_DB METHODS--------------------------------------------------------------------------------------------#
@@ -137,18 +153,47 @@ def display_pending_users():
 
 #-----------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
 
+def new_species_review():
+    pass
+    
+
+
+#method to select edits that are new species addition and pending
+pending=[]
+
+#gets dates for new species additions needing approval
+def get_pending():
+    for database in databases:
+        
+            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                
+             pending.append(database["key"])
+
+get_pending()
+
+ordered=sorted(pending,reverse=True)
+
 def welcome_screen():
     st.image("amphibs.jpeg", width=200)
 
 def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')
     if options == "Show Current Database":
-        pass     
+        st.write("Current Database")
+        current=load_latest()
+        #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
+        st.write(current) 
+
+    if options == "New Species Entry":
+        new_species_review()
+
+
+
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','View Access Requests', 'View existing users','See edit requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":
