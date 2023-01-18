@@ -30,7 +30,7 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
-paths = [database["Current Dataset"] for database in databases]
+paths = [database["Dataset_In_Use"] for database in databases]
 
 #getting the most recent approved csv file
 #def get_latest():
@@ -60,7 +60,7 @@ approvedordered=sorted(approved,reverse=True)
 def get_latest_ds(key):
     for database in databases:
         if database["key"] ==key:
-            return database["Current Dataset"]
+            return database["Dataset_In_Use"]
 
 
 latestds=get_latest_ds(approvedordered[0])
@@ -123,7 +123,7 @@ st.write(current)
 #database metadata items
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=[database["Status"] for database in databases]
-path = [database["Current Dataset"] for database in databases]
+path = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 
@@ -224,11 +224,11 @@ if datesubmitted:
     
     #updates the status, 
     def update_GABiP():
-        updates = {"Status":"Approved", "Reason_Denied":"n/a", "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":newPath, "Dataset_Pre_Change":latestds }
+        updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latestds }
         metaData.update(updates, datesubmitted)
     
     def reject_addition():
-        updates = {"Status":"Denied", "Reason_Denied":reason, "Approved_By":st.session_state['username'], "Date_Approved":str(now), "Current Dataset":latestds, "Dataset_Pre_Change":latestds }
+        updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latestds, "Dataset_Pre_Change":latestds }
         metaData.update(updates, datesubmitted)
 
 

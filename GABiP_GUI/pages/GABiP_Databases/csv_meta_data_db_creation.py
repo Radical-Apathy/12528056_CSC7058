@@ -13,14 +13,14 @@ deta_connection= Deta(deta_key)
 #metaData=deta_connection.Base("database_versions")
 metaData=deta_connection.Base("database_metadata")
 
-def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
+def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path):
     """adding user"""
     #defining the email as the key
-    return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
+    return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, "Dataset_In_Use":current_database_path })
 
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv"
 now=datetime.now()
-#insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv")
+insert_csv(str(now), "n/a", "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv", "none", "n/a", "n/a", "admin", "n/a", "Approved", "n/a", "admin",str(now), "C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/testDB.csv")
 
 
 def get_all_paths():
@@ -35,7 +35,7 @@ status=sorted([database["Status"] for database in databases])
 path = [database["Current Dataset"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
-date_approved= sorted([database["Date_Approved"] for database in databases], reverse=True)
+date_approved= sorted([database["Decision_Date"] for database in databases], reverse=True)
 
 approved=[]
 
@@ -54,8 +54,8 @@ def get_latest_date_approved():
     for database in databases:
      for i in date_approved:
         #for database["key"] in databases:
-      if database["Date_Approved"]== i and database["Status"] =="Approved":
-        print(database["Date_Approved"], database["Status"] )
+      if database["Decision_Date"]== i and database["Status"] =="Approved":
+        print(database["Decision_Date"], database["Status"] )
     #return(database["Current Dataset"])
 #method to get pending approvals for new species addition
 
