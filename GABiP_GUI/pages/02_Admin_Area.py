@@ -154,24 +154,150 @@ def display_pending_users():
 #-----------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
 
 def new_species_review():
-    pass
+    current=load_latest()
+    datesubmitted = st.selectbox(
+    'Date submitted',
+    (ordered))
+
+
+    st.write("Tabs to show user info related to edit selected")
+    #get_changes_csv(ordered[0])
+
+    if datesubmitted:
+
+        tab1, tab2, tab3, tab4 = st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+
+        #tab1 methods
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    path=database["Changes"]
+        user_changes = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
+        tab1.write(user_changes)
+
+        tab1.write("Displaying vertically")
+        tab1.dataframe(user_changes.iloc[0], width=300)
+
+
+        #tab2 methods
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    author=database["Edited_By"]
+                    authorComment=database["User_Comment"]
+        for user in users:
+                if user["username"]==author:
+                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                    authorName=user["firstname"]
+                    authorSurname = user["surname"] 
+                    authorEmail= user["key"]
+                    
+        tab2.write("Author firstname: "+" "+" "+authorName)
+        tab2.write("Author surname: "+" "+" "+authorSurname)
+        tab2.write("Author email: "+" "+" "+authorEmail)
+
+        tab3.write("User comments: "+ " "+" "+ authorComment)
+
+        tab4.subheader("User edit history")
+        tab4.write("This is tab 4")
+
+
+        preview=st.checkbox("Preview new addition to current dataset")
+
+
+
+
+        def preview_addition(df1,df2):
+            #result = df1.append(df2, ignore_index=True).append(df3, ignore_index=True)
+            
+            proposed=df1.append(df2, ignore_index=True)
+            last_row=proposed.iloc[-1]
+            st.dataframe(proposed.style.applymap(lambda _: 'background-color: yellow', subset=pd.IndexSlice[last_row.name, :]))
+
+
+
+        now=datetime.now()
+        version=now.strftime("%d.%m.%Y-%H.%M.%S")
+        path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
+        #path_end = version
+        newPath=path_prefix+version+"-"+st.session_state['username']+"-approved"+".csv"
+
+        
+
+        def create_new_dataset():
+            newDataset=current.append(user_changes, ignore_index=True)
+            newDataset.to_csv(newPath, index=False)
+        
+        #updates the status, 
+        def update_GABiP():
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latestds }
+            metaData.update(updates, datesubmitted)
+        
+        def reject_addition():
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latestds, "Dataset_Pre_Change":latestds }
+            metaData.update(updates, datesubmitted)
+
+
+
+        if preview:
+            try:
+                newDataset=preview_addition(current, user_changes)
+                col1,col2=st.columns(2)
+
+                accept=col1.button("Approve Addition")
+                reject=col2.button("Deny Addition")
+
+                        
+                if accept:
+                    create_new_dataset()
+                    update_GABiP()
+                    st.write("GABiP updated!")
+
+
+            
+                reason=col2.text_area("Reasons for declining", key='reason') 
+
+                
+
+                if reject and reason:           
+                    reject_addition()
+                    col2.write("Addition rejected")
+                elif reject:
+                    col2.warning("Please add a reason for rejection")
+            except:
+             st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
+                
+
+
+
+    
     
 
 
-#method to select edits that are new species addition and pending
-pending=[]
 
-#gets dates for new species additions needing approval
-def get_pending():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending.append(database["key"])
 
-get_pending()
 
-ordered=sorted(pending,reverse=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def welcome_screen():
     st.image("amphibs.jpeg", width=200)
