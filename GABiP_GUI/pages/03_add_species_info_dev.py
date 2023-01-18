@@ -31,6 +31,8 @@ databases=get_all_paths()
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=sorted([database["Status"] for database in databases])
 paths = [database["Dataset_In_Use"] for database in databases]
+edit_type=[database["Edit_Type"] for database in databases]
+changes=[database["Changes"] for database in databases]
 
 #getting the most recent approved csv file
 #def get_latest():
@@ -64,6 +66,21 @@ def get_latest_ds(key):
 
 
 latestds=get_latest_ds(approvedordered[0])
+
+#method to select edits that are new species addition and pending
+pending=[]
+
+#gets dates for new species additions needing approval
+def get_pending():
+    for database in databases:
+        
+            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                
+             pending.append(database["key"])
+
+get_pending()
+
+ordered=sorted(pending,reverse=True)
 
 
 @st.cache
@@ -108,158 +125,94 @@ isAdmin=[user["admin"] for user in users]
 #st.session_state
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
+@st.cache
+def load_references():
+    dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfReferences
 
+@st.cache
+def load_images():
+    dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfImages
+
+dfReferences = load_references()
+dfImages = load_images()
+
+def displayImage(speciesInfo):
+    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    mergedInfo.drop_duplicates()
+    return mergedInfo["Display Image"].loc[0]
+
+def embeddedImage(speciesInfo):
+    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    mergedInfo.drop_duplicates()
+    return mergedInfo["Embedded Link"].loc[0]
+
+
+speciesdf= []
+def speciesSearchTest(speciesChoice): # formally option2
+    col1,col2=st.columns(2)
+    col1.header(speciesChoice, " Species Summary:")
+    #speciesInfo = dfFull.groupby("Species").get_group(st.session_state['text_option']) # only definition of the three speciesInfo that works
+    speciesInfo=current.groupby("Species").get_group(speciesChoice)
+    #speciesInfo = st.session_state['drop_option']
+    #st.session_state.speciesInfo = speciesInfo
+    col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
+    url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+speciesChoice
+    col1.write("AMNH web link for "+ speciesChoice+  " [AMNH Link](%s)" % url)
+    url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ speciesChoice +"&rel-scientific_name=contains&include_synonymies=Yes"
+    col1.write("Amphibian web link for "+ speciesChoice+  " [Amphibia Web Link](%s)" % url2)
+    col2.header("Species Summary")
+    
+   # tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
+   # with tab1:
+   #    st.write(refGeneratorTop(speciesInfo)) 
+   # with tab2:
+   #     st.write(refGeneratorAll(speciesInfo))
+    #speciesdf.append(speciesInfo["Genus"])
+    #speciesdf.append(speciesInfo["GeographicRegion"])
+    #speciesdf.append(speciesInfo["SVLMMx"])
+    #speciesdf.append(speciesInfo["RangeSize"])
+    #speciesdf.append(speciesInfo["ElevationMin"])
+    #speciesdf.append(speciesInfo["ElevationMax"])
+    #speciesdf.append(speciesInfo["IUCN"])
+    #speciesdatadf=pd.DataFrame(speciesdf)
+    #hide_row_no="""<style>
+   #         thead tr th:first-child {display:none}
+    #        tbody th {display:none}
+     #       </style>"""
+    #st.markdown(hide_row_no, unsafe_allow_html=True)
+    #col2.write(speciesdatadf)
+    #showMore = col2.checkbox("Show All")
+    
+
+    #if showMore:
+    allInfo=current.groupby("Species").get_group(speciesChoice)
+    infoSummary=allInfo.iloc[0]
+    col2.dataframe(allInfo.iloc[0], width=500)
+    #pd.DataFrame(infoSummary)
+    #col2.write(infoSummary.style.highlight_null(null_color='green'), width=500)
+      
+    
+def show_knowledge_gaps():
+    st.write("knowledge gaps")
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
-st.header("Amin New Species Addition dev")
-
-st.write("Current Database")
+st.header("Add New Species Info Dev")
 current=load_latest()
-currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
-st.write(current)
+#st.dataframe(df.style.highlight_null(null_color='red'))
+showgaps=st.checkbox("Show knowledge gaps")
+if showgaps:
+    st.write("Current Database")
+    st.dataframe(current.style.highlight_null(null_color='yellow'))
 
 
 
-#database metadata items
-date_time= sorted([database["key"] for database in databases], reverse=True)
-status=[database["Status"] for database in databases]
-path = [database["Dataset_In_Use"] for database in databases]
-edit_type=[database["Edit_Type"] for database in databases]
-changes=[database["Changes"] for database in databases]
+speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']))
 
+speciesSearchTest(speciesdropdown)
 
-#method to select edits that are new species addition and pending
-pending=[]
-
-#gets dates for new species additions needing approval
-def get_pending():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending.append(database["key"])
-
-get_pending()
-
-ordered=sorted(pending,reverse=True)
-
-st.write("Using selectbox to show pending new species edits in chronological order")
-
-
-datesubmitted = st.selectbox(
-    'Date submitted',
-    (ordered))
-
-
-st.write("Tabs to show user info related to edit selected")
-#get_changes_csv(ordered[0])
-
-if datesubmitted:
-
-    tab1, tab2, tab3, tab4 = st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
-
-    #tab1 methods
-    for database in databases:
-            if database["key"]==datesubmitted:
-                path=database["Changes"]
-    user_changes = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
-    tab1.write(user_changes)
-
-    tab1.write("Displaying vertically")
-    tab1.dataframe(user_changes.iloc[0], width=300)
-
-
-    #tab2 methods
-    for database in databases:
-            if database["key"]==datesubmitted:
-                author=database["Edited_By"]
-                authorComment=database["User_Comment"]
-    for user in users:
-            if user["username"]==author:
-                #tab2.write(((user["firstname"],user["surname"], user["key"])))
-                authorName=user["firstname"]
-                authorSurname = user["surname"] 
-                authorEmail= user["key"]
-                
-    tab2.write("Author firstname: "+" "+" "+authorName)
-    tab2.write("Author surname: "+" "+" "+authorSurname)
-    tab2.write("Author email: "+" "+" "+authorEmail)
-
-    tab3.write("User comments: "+ " "+" "+ authorComment)
-
-    tab4.subheader("User edit history")
-    tab4.write("This is tab 4")
-
-
-    preview=st.checkbox("Preview new addition to current dataset")
-
-
-
-
-    def preview_addition(df1,df2):
-        #result = df1.append(df2, ignore_index=True).append(df3, ignore_index=True)
-        
-        proposed=df1.append(df2, ignore_index=True)
-        last_row=proposed.iloc[-1]
-        st.dataframe(proposed.style.applymap(lambda _: 'background-color: yellow', subset=pd.IndexSlice[last_row.name, :]))
-
-
-
-    now=datetime.now()
-    version=now.strftime("%d.%m.%Y-%H.%M.%S")
-    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
-    #path_end = version
-    newPath=path_prefix+version+"-"+st.session_state['username']+"-approved"+".csv"
-
-    #def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, 
-    # species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
-    #   """adding user"""
-        #defining the email as the key
-    #  return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, 
-    # "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
-
-    def create_new_dataset():
-        newDataset=current.append(user_changes, ignore_index=True)
-        newDataset.to_csv(newPath, index=False)
-    
-    #updates the status, 
-    def update_GABiP():
-        updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latestds }
-        metaData.update(updates, datesubmitted)
-    
-    def reject_addition():
-        updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latestds, "Dataset_Pre_Change":latestds }
-        metaData.update(updates, datesubmitted)
-
-
-
-    if preview:
-       try:
-            newDataset=preview_addition(current, user_changes)
-            col1,col2=st.columns(2)
-
-            accept=col1.button("Approve Addition")
-            reject=col2.button("Deny Addition")
-
-                    
-            if accept:
-                create_new_dataset()
-                update_GABiP()
-                st.write("GABiP updated!")
-
-
-        
-            reason=col2.text_area("Reasons for declining", key='reason') 
-
-            
-
-            if reject and reason:           
-                reject_addition()
-                col2.write("Addition rejected")
-            elif reject:
-                col2.warning("Please add a reason for rejection")
-       except:
-        st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
-            
+speciestext=st.text_input("Manual Species Search: ", "relicta") 
+speciesSearchTest(speciestext)           
 
 
