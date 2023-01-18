@@ -234,29 +234,32 @@ if datesubmitted:
 
 
     if preview:
-        newDataset=preview_addition(current, user_changes)
-        col1,col2=st.columns(2)
+       try:
+            newDataset=preview_addition(current, user_changes)
+            col1,col2=st.columns(2)
 
-        accept=col1.button("Approve Addition")
-        reject=col2.button("Deny Addition")
+            accept=col1.button("Approve Addition")
+            reject=col2.button("Deny Addition")
 
-                
-        if accept:
-            create_new_dataset()
-            update_GABiP()
-            st.write("GABiP updated!")
+                    
+            if accept:
+                create_new_dataset()
+                update_GABiP()
+                st.write("GABiP updated!")
 
-
-    
-        reason=col2.text_area("Reasons for declining", key='reason') 
 
         
+            reason=col2.text_area("Reasons for declining", key='reason') 
 
-        if reject and reason:           
-            reject_addition()
-            col2.write("Addition rejected")
-        elif reject:
-            col2.warning("Please add a reason for rejection")
+            
+
+            if reject and reason:           
+                reject_addition()
+                col2.write("Addition rejected")
+            elif reject:
+                col2.warning("Please add a reason for rejection")
+       except:
+        st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
             
 
 

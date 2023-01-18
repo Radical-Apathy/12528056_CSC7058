@@ -93,7 +93,7 @@ approvedordered=sorted(approved,reverse=True)
 def get_latest_ds(key):
     for database in databases:
         if database["key"] ==key:
-            return database["Current Dataset"]
+            return database["Dataset_In_Use"]
 
 
 latestds=get_latest_ds(approvedordered[0])
@@ -211,7 +211,7 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-
+    
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
