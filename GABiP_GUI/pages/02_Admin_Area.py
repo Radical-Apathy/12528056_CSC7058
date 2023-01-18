@@ -15,30 +15,6 @@ from datetime import datetime
 st.set_page_config(page_icon='amphibs.jpeg')
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
-#------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
-load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
-deta_key=os.getenv("deta_key")
-
-
-#initialising a deta object
-deta_connection= Deta(deta_key)
-
-users_db=deta_connection.Base("users_db")
-
-def get_all_users():
-    res = users_db.fetch()
-    #print(res.items) #using return here gives an address
-    return res.items
-
-#converts each individual values for users to a their own list using list comprehension
-users=get_all_users()
-email=[user["key"] for user in users]
-username=[user["username"] for user in users]
-firstname=[user["firstname"] for user in users]
-surname = [user["surname"] for user in users]
-hashed_passwords=[user ["password"] for user in users]
-isApproved=[user["approved"]for user in users]
-isAdmin=[user["admin"] for user in users]
 
 #------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
@@ -103,12 +79,14 @@ def welcome_screen():
     st.image("amphibs.jpeg", width=200)
 
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')     
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Update an Existing Entry',  'Delete an Entry'), key='admin_current_option')
+    if options == "Show Current Database":
+        pass     
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','Click here to see Admin options','View Access Requests', 'View existing users','See edit requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":

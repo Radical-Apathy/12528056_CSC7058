@@ -64,29 +64,53 @@ databases=get_all_paths()
 
 date_time= sorted([database["key"] for database in databases], reverse=True)
 status=[database["Status"] for database in databases]
-path = [database["Current Dataset"] for database in databases]
+path = [database["Dataset_In_Use"] for database in databases]
 
 #getting the most recent approved csv file
-def get_latest():
-    for database in databases:
-     for i in date_time:
+#def get_latest():
+#    for database in databases:
+#     for i in date_time:
         
-      if database["key"]== i and database["Status"] =="Approved":
-        break
-    return(database["Current Dataset"])
+#      if database["key"]== i and database["Status"] =="Approved":
+#        break
+#    return(database["Current Dataset"])
+
+
+approved=[]
+def get_approved():
+    for database in databases:
+        
+            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                if database["Status"] =="Approved":
+                
+                 approved.append(database["key"])
+
+get_approved()
+
+approvedordered=sorted(approved,reverse=True)
+
+
+def get_latest_ds(key):
+    for database in databases:
+        if database["key"] ==key:
+            return database["Dataset_In_Use"]
+
+
+latestds=get_latest_ds(approvedordered[0])
 
 #add user's entries to csv 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
     """adding user"""
     #defining the email as the key
-    return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Approved_By":approved_by, "Date_Approved":date_approved, "Current Dataset":current_database_path })
+    return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":approved_by, "Decision_Date":date_approved, "Dataset_In_Use":current_database_path })
 
 
-path=get_latest()
+
+
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
     return current_db
 
 
@@ -187,7 +211,7 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-
+    
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
@@ -236,7 +260,7 @@ def add_entry_page():
       columnrow=current_db.columns
       inforow=userInfo
       create_csv(columnrow, inforow)
-      add_to_database(str(now), newPath, get_latest(), "Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_latest())
+      add_to_database(str(now), newPath, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
       st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
 
     
