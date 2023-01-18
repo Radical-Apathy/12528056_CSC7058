@@ -40,6 +40,68 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
+
+#------------------------------------------------------------META DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+metaData=deta_connection.Base("database_metadata")
+
+#fetching info from the database
+def get_all_paths():
+    res = metaData.fetch()
+    return res.items
+
+
+#calling method and creating a list comprehension
+databases=get_all_paths()
+
+date_time= sorted([database["key"] for database in databases], reverse=True)
+status=sorted([database["Status"] for database in databases])
+paths = [database["Dataset_In_Use"] for database in databases]
+
+#getting the most recent approved csv file
+#def get_latest():
+ #   for database in databases:
+  #   for i in date_time:
+        
+ #     if database["key"]== i and database["Status"] =="Approved":
+ #       break
+ #   return(database["Current Dataset"])
+
+#path=get_latest()
+
+approved=[]
+def get_approved():
+    for database in databases:
+        
+            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                if database["Status"] =="Approved":
+                
+                 approved.append(database["key"])
+
+get_approved()
+
+approvedordered=sorted(approved,reverse=True)
+
+
+def get_latest_ds(key):
+    for database in databases:
+        if database["key"] ==key:
+            return database["Dataset_In_Use"]
+
+
+latestds=get_latest_ds(approvedordered[0])
+
+
+@st.cache
+def load_latest():
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    return current_db
+
+def add_changes(dataframe, dataframe2):
+    updated=dataframe.append(dataframe2, ignore_index = True)
+    return updated
+
+
+
 #-------------------------------------------------------------ADMIN USERS_DB METHODS--------------------------------------------------------------------------------------------#
 
 def get_current_user(email):
