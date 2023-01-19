@@ -90,6 +90,11 @@ def load_latest():
     current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
     return current_db
 
+
+@st.cache
+def load_full():
+    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
+    return dfFull
 def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
@@ -125,6 +130,14 @@ isAdmin=[user["admin"] for user in users]
 #   st.session_state['reason'] ==""
 
 #st.session_state
+
+#creating session state variables for each column in dataset
+def create_session_states(dbColumns):
+    for column in dbColumns:
+        if column not in st.session_state:
+           st.session_state[column] =""
+
+
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
 @st.cache
@@ -165,47 +178,23 @@ def speciesSearchTest(speciesChoice): # formally option2
     url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ speciesChoice +"&rel-scientific_name=contains&include_synonymies=Yes"
     col1.write("Amphibian web link for "+ speciesChoice+  " [Amphibia Web Link](%s)" % url2)
     col2.header("Species Summary")
-    
-   # tab1, tab2= st.tabs(["Literature References - Most Recent", "See All References"])
-   # with tab1:
-   #    st.write(refGeneratorTop(speciesInfo)) 
-   # with tab2:
-   #     st.write(refGeneratorAll(speciesInfo))
-    #speciesdf.append(speciesInfo["Genus"])
-    #speciesdf.append(speciesInfo["GeographicRegion"])
-    #speciesdf.append(speciesInfo["SVLMMx"])
-    #speciesdf.append(speciesInfo["RangeSize"])
-    #speciesdf.append(speciesInfo["ElevationMin"])
-    #speciesdf.append(speciesInfo["ElevationMax"])
-    #speciesdf.append(speciesInfo["IUCN"])
-    #speciesdatadf=pd.DataFrame(speciesdf)
-    #hide_row_no="""<style>
-   #         thead tr th:first-child {display:none}
-    #        tbody th {display:none}
-     #       </style>"""
-    #st.markdown(hide_row_no, unsafe_allow_html=True)
-    #col2.write(speciesdatadf)
-    #showMore = col2.checkbox("Show All")
-    
+       
 
     #if showMore:
     allInfo=current.groupby("Species").get_group(speciesChoice)
     #infoSummary=allInfo.iloc[0]
     col2.dataframe(allInfo.iloc[0], width=500)
 
-    #col2.write("Using ag grid")
-
-    #AgGrid(allInfo)
-    #pd.DataFrame(infoSummary)
-    #col2.write(infoSummary.style.highlight_null(null_color='green'), width=500)
-      
+        
     
 def show_knowledge_gaps():
     st.write("knowledge gaps")
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
 st.header("Add New Species Info Dev")
-current=load_latest()
+current=load_full()
+dbColumns=current.columns
+create_session_states(dbColumns)
 #st.dataframe(df.style.highlight_null(null_color='red'))
 showgaps=st.checkbox("Show knowledge gaps")
 if showgaps:
@@ -216,13 +205,14 @@ if showgaps:
 
 
 
-
+additionalInfo=[]
 
 speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+st.write(speciesdropdown)
 
 speciesSearchTest(speciesdropdown)
 
-methodcheck=st.checkbox("Practicing value replacement")
+
 
 def replace_value(species, colname, value):
      speciesInfo=current.groupby("Species").get_group(species)
@@ -231,10 +221,40 @@ def replace_value(species, colname, value):
      st.dataframe(speciesInfo.iloc[0])
      st.write(speciesInfo["Species"] + " has been updated")
 
+def get_extra_userinfo():
+     for option in addinfo_options:
+        
+        userText=st.text_input(option, key=option)
+        if userText:
+         st.session_state[option] == userText
+        #elif not userText :
+         #   st.session_state[option]==""
+
+def populate_additionLinfo():
+        for column in dbColumns:
+            additionalInfo.append(st.session_state[column])
+
+def add_information():
+    pass
+
+   
+
+addinfo_options=st.multiselect("Add Missing Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
+                             'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
+                             'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
+
+
+
+if addinfo_options:
+     get_extra_userinfo()
+
+st.write(additionalInfo)
+
+methodcheck=st.checkbox("Practicing value replacement")
 if methodcheck:
-    newInfo = replace_value(speciesdropdown, "IUCN", "IUCN value")
-    #st.dataframe(newInfo, width=500)
-    #st.write(newInfo["Species"])
+    #replace_value()
+   populate_additionLinfo()
+   st.write(additionalInfo)
 
 
 #speciestext=st.text_input("Manual Species Search: ", "relicta") 
