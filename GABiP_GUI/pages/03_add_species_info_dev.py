@@ -137,7 +137,7 @@ def create_session_states(dbColumns):
         if column not in st.session_state:
            st.session_state[column] =""
 
-
+#st.session_state
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
 @st.cache
@@ -208,7 +208,7 @@ def get_genus(speciesdropdown):
     return allgenus
 
 
-
+#user_changes.iloc[0], width=300
 
 additionalInfo=[]
 
@@ -218,9 +218,12 @@ speciesGenus=current.loc[current["Species"]==speciesdropdown]
 
 genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Genus"])
 
-st.write(speciesdropdown)
+results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
+
+st.dataframe(results.iloc[0], width=300)
 
 
+st.write(speciesGenus)
 
 #speciesSearchTest(speciesdropdown)
 
@@ -251,22 +254,49 @@ def add_information():
 
    
 
-addinfo_options=st.multiselect("Add Missing Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
+addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
                              'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
                              'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
 
 
+#df.loc[0, 'A'] = 10
 
 if addinfo_options:
      get_extra_userinfo()
 
 st.write(additionalInfo)
-
+ 
 methodcheck=st.checkbox("Practicing value replacement")
 if methodcheck:
-    #replace_value()
-   populate_additionLinfo()
-   st.write(additionalInfo)
+      
+    #st.write(str(results.index.values))
+    #df = pd.DataFrame(data, columns=columns, index=False)
+    st.write(results.index.values.astype(int))
+    #df = pd.DataFrame(data, columns=columns, index=False)
+    st.write(results)
+    results.at[5262,'NestingSite']="my nesting site"
+    st.write(results)
+
+jsonexperiemnt=st.checkbox("Convert results to a json file")
+
+if jsonexperiemnt:
+    st.write("Results as a dataframe")
+    st.write(results)
+    st.write("Results as json orient records")
+    resultsjsonorient=results.to_json(orient='records')
+    st.write(resultsjsonorient)
+    st.write("Results as json orient columns")
+    resultsjsoncols=results.to_json(orient='columns')
+    st.write(resultsjsoncols)
+    st.write("Results as json orient index")
+    resultsjsonindex=results.to_json(orient='index')
+    st.write(resultsjsonindex)
+    st.write("Getting json data ")
+    st.write(resultsjsoncols)
+   
+  
+    
+    
 
 
 #speciestext=st.text_input("Manual Species Search: ", "relicta") 
@@ -275,28 +305,28 @@ if methodcheck:
 
 #genus count dev
 
-st.write("counting  occurances using .sum()")
+#st.write("counting  occurances using .sum()")
 
-reps=(current["Species"] == "wittei").sum()
+#reps=(current["Species"] == "wittei").sum()
 
-st.write(reps)
+#st.write(reps)
 
-valueCounts=current["Species"].value_counts()
+#valueCounts=current["Species"].value_counts()
 
-st.write("Value counts")
-st.write(valueCounts)
+#st.write("Value counts")
+#st.write(valueCounts)
 
-def get_genea_count(speciesname):
-    if ((current["Species"] == speciesname).sum()) >1:
-        st.write("More than one occurance of this")
+#def get_genea_count(speciesname):
+#    if ((current["Species"] == speciesname).sum()) >1:
+#        st.write("More than one occurance of this")
     #for speciesname in current["Species"]:
      #   st.write(current["Genus"])
 
 
-get_genea_count(speciesdropdown)
+#get_genea_count(speciesdropdown)
 
-st.write("Printing row nums where species name is")
-st.write(current.loc[current["Species"]==speciesdropdown])
+#st.write("Printing row nums where species name is")
+#st.write(current.loc[current["Species"]==speciesdropdown])
 
-st.write("Printing all genus")
+#st.write("Printing all genus")
 
