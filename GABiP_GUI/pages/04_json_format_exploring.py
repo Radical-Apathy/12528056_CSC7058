@@ -12,6 +12,7 @@ from deta import Deta
 import csv
 from dotenv import load_dotenv
 from datetime import datetime
+import json
 st.set_page_config(page_icon='amphibs.jpeg')
 
 
@@ -22,13 +23,13 @@ deta_key=os.getenv("deta_key")
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-metaData=deta_connection.Base("database_metadata")
+database_metadata=deta_connection.Base("database_metadata")
 
 #------------------------------------------------------------metadata METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
 def get_all_paths():
-    res = metaData.fetch()
+    res = database_metadata.fetch()
     return res.items
 
 
@@ -129,3 +130,78 @@ surname = [user["surname"] for user in users]
 hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
+
+
+#----------------------------------------------------------------EXPLORING IN JSON FORMAT------------------------------------------------------------#
+
+datacsv=load_full()
+
+#converting the full csv to json 
+
+#st.write("Results as json orient records")
+#    resultsjsonorient=results.to_json(orient='records')
+#    st.write(resultsjsonorient)
+#    st.write("Results as json orient columns")
+#    resultsjsoncols=results.to_json(orient='columns')
+#    st.write(resultsjsoncols)
+#    st.write("Results as json orient index")
+#    resultsjsonindex=results.to_json(orient='index')
+#    st.write(resultsjsonindex)
+#    st.write("Getting json data ")
+#    st.write(resultsjsoncols)
+
+
+datajson=datacsv.to_json(orient='columns')
+alfrediInfo=datacsv.groupby("Species").get_group("alfredi")
+speciesInfo=datacsv.groupby("Species").get_group("coppingeri")
+
+st.write("Dataframe for alfredi")
+st.write(alfrediInfo)
+speciesjsonrecs=speciesInfo.to_json(orient='records')
+speciesjsoncols=speciesInfo.to_json(orient='columns')
+speciesjsonindex=speciesInfo.to_json(orient='index')
+
+jsonfullcsv=st.checkbox("Convert csv to a json file")
+if jsonfullcsv:
+   # st.write("no orient specified")
+    #speciesjson=speciesInfo.to_json()
+    #st.write(speciesjson)
+    #st.write("orient index")
+    #st.write(speciesjsonindex)
+    #st.write("orient columns")
+    #st.write(speciesjsoncols)
+    st.write("orient records")
+    st.write(speciesjsonindex)
+
+showpythonobject=st.checkbox("Show as a python object")
+
+if showpythonobject:
+#converting json into a python object
+    st.write("as a python object")
+    pythonobject=json.loads(speciesjsonindex)
+
+    st.write(pythonobject)
+
+
+def append_json_todf(df1, json):
+    json_to_df=pd.read_json(json, orient="index")
+    newdf=df1.append(json_to_df)
+
+convertjsontodf=st.checkbox("Convert json to a pandas dataframe")
+
+if convertjsontodf:
+   st.write("reverted back with pd.read_json()")
+   revertedback= pd.read_json(speciesjsonindex, orient="index")
+   st.write(revertedback)
+   st.write("merged")
+   merged=alfrediInfo.append(revertedback)
+   st.write(merged)
+
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, 
+                    user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
+    """adding user"""
+    #defining the email as the key
+    return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, 
+    "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, 
+    "Reason_Denied":reason_denied, "Decided_By":approved_by, "Decision_Date":date_approved, "Dataset_In_Use":current_database_path })
+
