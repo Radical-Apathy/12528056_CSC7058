@@ -191,7 +191,7 @@ def show_knowledge_gaps():
     st.write("knowledge gaps")
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
-st.header("Add New Species Info Dev")
+st.header("Add Species Info Dev")
 current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -202,15 +202,27 @@ if showgaps:
     st.dataframe(current.style.highlight_null(null_color='yellow'))
     #AgGrid(current, grid_options={'editable': True})
 
+allgenus=[]
+def get_genus(speciesdropdown):
+    allgenus=current.loc[current["Species"]==speciesdropdown]
+    return allgenus
+
 
 
 
 additionalInfo=[]
 
 speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+
+speciesGenus=current.loc[current["Species"]==speciesdropdown]
+
+genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Genus"])
+
 st.write(speciesdropdown)
 
-speciesSearchTest(speciesdropdown)
+
+
+#speciesSearchTest(speciesdropdown)
 
 
 
@@ -260,4 +272,31 @@ if methodcheck:
 #speciestext=st.text_input("Manual Species Search: ", "relicta") 
 #speciesSearchTest(speciestext)           
 
+
+#genus count dev
+
+st.write("counting  occurances using .sum()")
+
+reps=(current["Species"] == "wittei").sum()
+
+st.write(reps)
+
+valueCounts=current["Species"].value_counts()
+
+st.write("Value counts")
+st.write(valueCounts)
+
+def get_genea_count(speciesname):
+    if ((current["Species"] == speciesname).sum()) >1:
+        st.write("More than one occurance of this")
+    #for speciesname in current["Species"]:
+     #   st.write(current["Genus"])
+
+
+get_genea_count(speciesdropdown)
+
+st.write("Printing row nums where species name is")
+st.write(current.loc[current["Species"]==speciesdropdown])
+
+st.write("Printing all genus")
 
