@@ -239,8 +239,8 @@ def add_entry_page():
      reviewdf = pd.DataFrame(userInfo, current_db.columns)
      st.dataframe(reviewdf, width=300) 
      
-     userdfTojson=reviewdf.to_json()
-     #st.write(userdfTojson)
+     userdfTojson=reviewdf.to_json('records')
+     st.write(userdfTojson)
     
 
     user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
@@ -264,10 +264,12 @@ def add_entry_page():
      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
     elif commit_changes and user_message:
       populate_userinfo()
-      columnrow=current_db.columns
-      inforow=userInfo
-      create_csv(columnrow, inforow)
-      add_to_database(str(now), newPath, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+      committeddf = pd.DataFrame(userInfo, current_db.columns)
+      committeddfTojson=committeddf.to_json(orient="records")
+      #columnrow=current_db.columns
+      #inforow=userInfo
+      #create_csv(columnrow, inforow)
+      add_to_database(str(now), committeddfTojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
       st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
 
     

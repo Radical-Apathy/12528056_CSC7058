@@ -1,0 +1,2 @@
+Order,Family,Genus,Species,SVLMMx,SVLFMx,SVLMx,Longevity,NestingSite,ClutchMin,ClutchMax,Clutch,ParityMode,EggDiameter,Activity,Microhabitat,GeographicRegion,IUCN,PopTrend,RangeSize,ElevationMin,ElevationMax,Elevation
+json order,json family,json genus,json species,80,,,,json nesting site,,,,,,,,,,,,,,

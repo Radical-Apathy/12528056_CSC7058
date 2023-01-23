@@ -166,13 +166,13 @@ speciesinfodict=speciesInfo.to_dict()
 
 jsonfullcsv=st.checkbox("Convert csv to a json file")
 if jsonfullcsv:
-   # st.write("no orient specified")
-    #speciesjson=speciesInfo.to_json()
-    #st.write(speciesjson)
-    #st.write("orient index")
-    #st.write(speciesjsonindex)
-    #st.write("orient columns")
-    #st.write(speciesjsoncols)
+    st.write("no orient specified")
+    speciesjson=speciesInfo.to_json()
+    st.write(speciesjson)
+    st.write("orient index")
+    st.write(speciesjsonindex)
+    st.write("orient columns")
+    st.write(speciesjsoncols)
     st.write("orient records")
     st.write(speciesjsonrecs)
 
@@ -196,7 +196,7 @@ convertjsontodf=st.checkbox("Convert json to a pandas dataframe")
 
 if convertjsontodf:
    st.write("reverted back with pd.read_json()")
-   revertedback= pd.read_json(speciesjsonindex, orient="index")
+   revertedback= pd.read_json(speciesjsoncols, orient="columns")
    st.write(revertedback)
    st.write("merged")
    merged=alfrediInfo.append(revertedback)
@@ -217,10 +217,11 @@ addtodb=st.checkbox("Add to db")
 # st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
 now=datetime.now()
 if addtodb:
-   # add_to_database(str(now), speciesjsonrecs, "currentDB", "json test", "json test", "Alfredi", "Alfredi", "admin", "jsontest", "json test", "Pending",
-   #         "n/a", "currentDB")
+   #add_to_database(str(now), speciesjsoncols, "currentDB", "json test 2", "json test 2", "Alfredi", "Alfredi", "col ui", "jsontest", "Pending", "n/a",
+   #  "n/a", "n/a ")
     
-    st.write("info not added")
+   st.write(" added commented out")
+
 
 fetchfromdb=st.checkbox("Fetch from db")
 
@@ -228,13 +229,17 @@ if fetchfromdb:
     "grabbing it"
 #2023-01-23 10:03:16.758975
     for database in databases:
-                    if database["Dataset_In_Use"]=="currentDB":
+                    if database["User_Comment"]=="as records":
                         fromdb=database["Changes"]
     st.write(fromdb)
     
     "changed to a dataframe"
+
+    "adding brackets"
+    withbrackets="["+fromdb+"]"
+    #st.write(withbrackets)
     #revertedback= pd.read_json(speciesjsonindex, orient="index")
-    speciesdf=pd.read_json(fromdb)
+    speciesdf=pd.read_json(fromdb, orient="records")
     st.write(speciesdf)
     "merged from db"
     mergedfromdb=alfrediInfo.append(speciesdf)
