@@ -160,6 +160,8 @@ st.write(alfrediInfo)
 speciesjsonrecs=speciesInfo.to_json(orient='records')
 speciesjsoncols=speciesInfo.to_json(orient='columns')
 speciesjsonindex=speciesInfo.to_json(orient='index')
+speciesinfojson=speciesInfo.to_json()
+speciesinfodict=speciesInfo.to_dict()
 
 jsonfullcsv=st.checkbox("Convert csv to a json file")
 if jsonfullcsv:
@@ -171,9 +173,11 @@ if jsonfullcsv:
     #st.write("orient columns")
     #st.write(speciesjsoncols)
     st.write("orient records")
-    st.write(speciesjsonindex)
+    st.write(speciesjsonrecs)
 
 showpythonobject=st.checkbox("Show as a python object")
+
+pythonobject=json.loads(speciesjsonindex)
 
 if showpythonobject:
 #converting json into a python object
@@ -204,4 +208,35 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, 
     "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, 
     "Reason_Denied":reason_denied, "Decided_By":approved_by, "Decision_Date":date_approved, "Dataset_In_Use":current_database_path })
+
+addtodb=st.checkbox("Add to db")
+
+#add_to_database(str(now), newPath, get_approved(), "New Species Addition", st.session_state["Species"], 
+# st.session_state["Genus"], st.session_state["username"], 
+# st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+now=datetime.now()
+if addtodb:
+   # add_to_database(str(now), speciesjsonrecs, "currentDB", "json test", "json test", "Alfredi", "Alfredi", "admin", "jsontest", "json test", "Pending",
+   #         "n/a", "currentDB")
+    
+    st.write("info not added")
+
+fetchfromdb=st.checkbox("Fetch from db")
+
+if fetchfromdb:
+    "grabbing it"
+#2023-01-23 10:03:16.758975
+    for database in databases:
+                    if database["Dataset_In_Use"]=="currentDB":
+                        fromdb=database["Changes"]
+    st.write(fromdb)
+    
+    "changed to a dataframe"
+    #revertedback= pd.read_json(speciesjsonindex, orient="index")
+    speciesdf=pd.read_json(fromdb)
+    st.write(speciesdf)
+    "merged from db"
+    mergedfromdb=alfrediInfo.append(speciesdf)
+    st.write(mergedfromdb)
+
 
