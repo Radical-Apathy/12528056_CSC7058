@@ -163,6 +163,7 @@ speciesjsonindex=speciesInfo.to_json(orient='index')
 speciesinfojson=speciesInfo.to_json()
 speciesinfodict=speciesInfo.to_dict()
 
+
 jsonfullcsv=st.checkbox("Convert csv to a json file")
 if jsonfullcsv:
    # st.write("no orient specified")

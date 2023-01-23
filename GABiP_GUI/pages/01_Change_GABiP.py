@@ -12,6 +12,7 @@ from deta import Deta
 import csv
 from dotenv import load_dotenv
 from datetime import datetime
+import json
 st.set_page_config(page_icon='amphibs.jpeg')
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
