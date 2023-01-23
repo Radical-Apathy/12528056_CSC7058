@@ -196,10 +196,10 @@ current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
 #st.dataframe(df.style.highlight_null(null_color='red'))
-showgaps=st.checkbox("Show knowledge gaps")
-if showgaps:
-    st.write("Current Database")
-    st.dataframe(current.style.highlight_null(null_color='yellow'))
+#showgaps=st.checkbox("Show knowledge gaps")
+#if showgaps:
+#    st.write("Current Database")
+#    st.dataframe(current.style.highlight_null(null_color='yellow'))
     #AgGrid(current, grid_options={'editable': True})
 
 allgenus=[]
