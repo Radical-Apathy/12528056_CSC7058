@@ -178,10 +178,10 @@ def add_entry_page():
             st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
 
     #contructs a dataframe for user to see summary of their addition
-    def construct_review_dataframe(userinfo, columns=current_db.columns):
-        completed = pd.DataFrame(userInfo, current_db.columns)
+    #def construct_review_dataframe(userinfo, columns=current_db.columns):
+    #    completed = pd.DataFrame(userInfo, current_db.columns)
         #st.write(completed)
-        st.dataframe(completed, width=300) 
+    #    st.dataframe(completed, width=300) 
 
     #creates a csv file with users addition
     def create_csv(columnrow, inforow):
@@ -234,7 +234,13 @@ def add_entry_page():
      populate_userinfo()
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-     userdf=construct_review_dataframe(userInfo, columns=current_db.columns)
+     #userdf=construct_review_dataframe(userInfo, columns=current_db.columns)
+     st.write("converting review df to json string")
+     reviewdf = pd.DataFrame(userInfo, current_db.columns)
+     st.dataframe(reviewdf, width=300) 
+     
+     userdfTojson=reviewdf.to_json()
+     #st.write(userdfTojson)
     
 
     user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
