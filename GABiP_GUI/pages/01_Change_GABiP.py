@@ -123,10 +123,20 @@ if 'comment' not in st.session_state:
     st.session_state['comment']=""
 
 #creating session state variables for each column in dataset
+#columnstates=[]
 def create_session_states(dbColumns):
     for column in dbColumns:
         if column not in st.session_state:
            st.session_state[column] =""
+        
+
+#columnstates=[]
+#def create_session_states(dbColumns):
+#    for column in dbColumns:
+#        if column not in st.session_state:
+#           st.session_state[column] =""
+#        columnstates.append(st.session_state[column])
+#    return columnstates
          
 #st.session_state
 
@@ -150,21 +160,25 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
-    #displays text fields for optional information
-    def display_extra_fields():
-        for option in more_options:
-            userText=st.text_input(option, key=option)
-            st.session_state[option] == userText
-
+  
     #sets session state values for optional extra fields
+    #def get_extra_userinfo():
+    # for option in more_options:
+        
+    #    userText=st.text_input(option, key=option)
+    #    if userText:
+    #     st.session_state[option] == userText
+    #    elif not userText :
+    #        st.session_state[option]==None
+
     def get_extra_userinfo():
      for option in more_options:
         
         userText=st.text_input(option, key=option)
         if userText:
          st.session_state[option] == userText
-        elif not userText :
-            st.session_state[option]==""
+        elif not userText =="" :
+            st.session_state[option]==None
 
 
     #stores user info in an array      
@@ -227,7 +241,36 @@ def add_entry_page():
 
    
     review_information=st.button("Review Information")
-       
+    #altering populate userinfo method to create json array
+    #def populate_userinfo():
+    #    for column in dbColumns:
+    #        userInfo.append(st.session_state[column])    
+    
+    jsondata=[]
+    def create_json_data():
+        for column in dbColumns:
+            #jsonString=[]
+            #userInfo.append(st.session_state[column])   
+            #st.write(column, st.session_state[column])
+            #data = [{"col1": col1[i], "col2": col2[i]} for i in range(len(col1))]
+            #jsondata=[{column:st.session_state[column]} for i in range(len(column))]
+            #st.write([{column:st.session_state[column]}])
+            jsondata.append({column:st.session_state[column]})
+        return jsondata
+
+    def create_json_data_blanks():
+        for column in dbColumns:
+            if st.session_state[column]=="":
+                st.session_state[column] = "<NA>"
+            #jsonString=[]
+            #userInfo.append(st.session_state[column])   
+            #st.write(column, st.session_state[column])
+            #data = [{"col1": col1[i], "col2": col2[i]} for i in range(len(col1))]
+            #jsondata=[{column:st.session_state[column]} for i in range(len(column))]
+            #st.write([{column:st.session_state[column]}])
+            jsondata.append({column:st.session_state[column]})
+        return jsondata
+
 
     if review_information:
     
@@ -239,9 +282,20 @@ def add_entry_page():
      reviewdf = pd.DataFrame(userInfo, current_db.columns)
      st.dataframe(reviewdf, width=300) 
      
-     userdfTojson=reviewdf.to_json('records')
+     userdfTojson=reviewdf.to_json(orient="columns")
      st.write(userdfTojson)
+     #st.write("trying to convert session state into json array")
+     #create_json_data_blanks()
+     #st.write("jsondata")
+     #st.write(jsondata)
     
+     #jsonString=json.dumps(jsondata)
+     #st.write("json string")
+     #st.write(jsonString)
+
+     
+    
+    #st.session_state
 
     user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
     
@@ -263,9 +317,13 @@ def add_entry_page():
     if commit_changes and genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
     elif commit_changes and user_message:
+     #create_json_data_blanks()
+     #st.write(jsondata)
+     #jsonString=json.dumps(jsondata)
+     #st.write(jsonString)
       populate_userinfo()
       committeddf = pd.DataFrame(userInfo, current_db.columns)
-      committeddfTojson=committeddf.to_json(orient="records")
+      committeddfTojson=committeddf.to_json(orient="columns")
       #columnrow=current_db.columns
       #inforow=userInfo
       #create_csv(columnrow, inforow)

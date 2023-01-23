@@ -196,8 +196,10 @@ convertjsontodf=st.checkbox("Convert json to a pandas dataframe")
 
 if convertjsontodf:
    st.write("reverted back with pd.read_json()")
-   revertedback= pd.read_json(speciesjsoncols, orient="columns")
+   #revertedback= pd.read_json(speciesjsoncols, orient="columns")
+   revertedback= pd.read_json(speciesjsoncols)
    st.write(revertedback)
+   #st.write(revertedback.dtypes)
    st.write("merged")
    merged=alfrediInfo.append(revertedback)
    st.write(merged)
@@ -229,7 +231,7 @@ if fetchfromdb:
     "grabbing it"
 #2023-01-23 10:03:16.758975
     for database in databases:
-                    if database["User_Comment"]=="as records":
+                    if database["User_Comment"]=="manual quotes removal":
                         fromdb=database["Changes"]
     st.write(fromdb)
     
@@ -239,7 +241,7 @@ if fetchfromdb:
     withbrackets="["+fromdb+"]"
     #st.write(withbrackets)
     #revertedback= pd.read_json(speciesjsonindex, orient="index")
-    speciesdf=pd.read_json(fromdb, orient="records")
+    speciesdf=pd.read_json(fromdb)
     st.write(speciesdf)
     "merged from db"
     mergedfromdb=alfrediInfo.append(speciesdf)
