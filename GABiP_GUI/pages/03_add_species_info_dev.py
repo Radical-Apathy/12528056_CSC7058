@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from deta import Deta
 import os
+import json
 from dotenv import load_dotenv
 from datetime import datetime
 from st_aggrid import AgGrid
@@ -178,6 +179,7 @@ def speciesSearchTest(speciesChoice): # formally option2
     url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ speciesChoice +"&rel-scientific_name=contains&include_synonymies=Yes"
     col1.write("Amphibian web link for "+ speciesChoice+  " [Amphibia Web Link](%s)" % url2)
     col2.header("Species Summary")
+    
        
 
     #if showMore:
@@ -189,9 +191,16 @@ def speciesSearchTest(speciesChoice): # formally option2
     
 def show_knowledge_gaps():
     st.write("knowledge gaps")
+
+jsondata=[]
+def create_json_data():
+  for column in dbColumns:
+      jsondata.append({column:st.session_state[column]})
+  return jsondata
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
 st.header("Add Species Info Dev")
+#st.session_state
 current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -242,12 +251,14 @@ def get_extra_userinfo():
         userText=st.text_input(option, key=option)
         if userText:
          st.session_state[option] == userText
-        #elif not userText :
+        #else :
          #   st.session_state[option]==""
+
 
 def populate_additionLinfo():
         for column in dbColumns:
             additionalInfo.append(st.session_state[column])
+        
 
 def add_information():
     pass
@@ -264,35 +275,85 @@ addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 
 if addinfo_options:
      get_extra_userinfo()
 
-st.write(additionalInfo)
- 
-methodcheck=st.checkbox("Practicing value replacement")
-if methodcheck:
-      
-    #st.write(str(results.index.values))
-    #df = pd.DataFrame(data, columns=columns, index=False)
-    st.write(results.index.values.astype(int))
-    #df = pd.DataFrame(data, columns=columns, index=False)
-    st.write(results)
-    results.at[5262,'NestingSite']="my nesting site"
-    st.write(results)
+populate_additionLinfo()
+#st.write(additionalInfo)
 
 jsonexperiemnt=st.checkbox("Convert results to a json file")
 
 if jsonexperiemnt:
-    st.write("Results as a dataframe")
+    st.write("Results as a dataframe - results=current.loc[(current['Species'] == speciesdropdown) & (current['Genus'] == genusdropdown)]")
     st.write(results)
-    st.write("Results as json orient records")
-    resultsjsonorient=results.to_json(orient='records')
-    st.write(resultsjsonorient)
-    st.write("Results as json orient columns")
+   # st.write("Results as json orient records")
+    resultsjsonorientrecs=results.to_json(orient='records')
+    #st.write(resultsjsonorient)
+    st.write("Results as json orient columns - resultsjsoncols=results.to_json(orient='columns')")
     resultsjsoncols=results.to_json(orient='columns')
     st.write(resultsjsoncols)
-    st.write("Results as json orient index")
-    resultsjsonindex=results.to_json(orient='index')
-    st.write(resultsjsonindex)
-    st.write("Getting json data ")
-    st.write(resultsjsoncols)
+    #st.write(resultsjsonorientrecs["Family"])
+
+    #st.write("Results as json orient index")
+    #resultsjsonindex=results.to_json(orient='index')
+    #st.write(resultsjsonindex)
+    #st.write("Getting json data ")
+    #st.write(resultsjsoncols)
+
+pythonobjectexperiemnt=st.checkbox("Convert results to a python object")
+
+if pythonobjectexperiemnt:
+    resultsjsoncols=results.to_json(orient='columns')
+    speciespythonobject= json.loads(resultsjsoncols)
+    st.write(speciespythonobject)
+    st.write("replacing family via speciespythonobject[2]='family replaced' - didnt work ")
+    speciespythonobject[2]="family replaced"
+    st.write(speciespythonobject)
+
+jsonarraywithsessionstate=st.checkbox("Create json array using session state and columns")
+
+if jsonarraywithsessionstate:
+    create_json_data()
+    st.write(jsondata)
+
+dfaskeyvaluedict=st.checkbox("Turn df into key value pair dictionary")
+
+if dfaskeyvaluedict:
+    st.write("dict=results.to_dict()")
+    dict=results.to_dict()
+    st.write(dict)
+    st.write("dict.get('Species')")
+    st.write(dict.get("Species"))
+    st.write("Back to dataframe - dictreverted=pd.DataFrame(dict)")
+    dictreverted=pd.DataFrame(dict)
+    st.write(dictreverted)
+    st.write("dictorient=results.to_dict(orient='index')")
+    dictorient=results.to_dict(orient='index')
+    st.write(dictorient)
+    #dictnorec=results.to_dict('records')
+    #st.write(dictnorec.get("Family"))
+
+methodcheck=st.checkbox("Practicing value replacement using results as a dictionary - hardcoded")
+if methodcheck:
+    #st.write("code pending") 
+    dict=results.to_dict() 
+    st.write("dict.update({'Family':'hardcoded update value'})")
+    dict.update({'non existent column':'hardcoded update family'})
+    dict.update({'Genus':'hardcoded update genus'})
+    st.write(dict)
+    dictreverted=pd.DataFrame(dict)
+    st.write(dictreverted)
+
+indexmethodcheck=st.checkbox("Practicing value replacement using results as a dictionary and keeping index - hardcoded")
+
+if indexmethodcheck:
+    dictorient=results.to_dict(orient='index')
+    st.write(dictorient)
+    dictorient[5]['Family'] = 'Fam update and preserving index?'
+    #dict.update({'Genus':'hardcoded update genus'})
+    st.write(dictorient)
+    dictreverted=pd.DataFrame(dictorient)
+    st.write(dictreverted)
+    st.write("code to be written")
+
+
    
   
     
