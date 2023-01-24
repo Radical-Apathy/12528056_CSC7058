@@ -151,7 +151,7 @@ datacsv=load_full()
 #    st.write(resultsjsoncols)
 
 
-datajson=datacsv.to_json(orient='columns')
+fulldatasetjson=datacsv.to_json(orient='columns')
 alfrediInfo=datacsv.groupby("Species").get_group("alfredi")
 speciesInfo=datacsv.groupby("Species").get_group("coppingeri")
 
@@ -222,10 +222,10 @@ now=datetime.now()
 if addtodb:
    #add_to_database(str(now), speciesjsoncols, "currentDB", "json test 2", "json test 2", "Alfredi", "Alfredi", "col ui", "jsontest", "Pending", "n/a",
    #  "n/a", "n/a ")
-   #add_to_database(str(now), speciesjsoncols, "a database", "New Species Addition", 
-    #"jsonspecies", "jsongenus", "admin", "speciesjsoncols", "Pending", "n/a", "n/a", "n/a", "a database")
+   #add_to_database(str(now), fulldatasetjson, "a database", "New Species Addition", 
+    #"jsonallspecies", "jsonallgenus", "admin", "full db in json", "Pending", "n/a", "n/a", "n/a", "a database")
 
-   st.write(" added speciesjsoncols")
+   st.write(" comment out ")
 
 
 fetchfromdb=st.checkbox("Fetch speciesjsoncols from db")
@@ -255,7 +255,7 @@ speciesaddedfromui=st.checkbox("Species json from add species UI")
 #speciesjsoncols blank test
 if speciesaddedfromui:
     for database in databases:
-                    if database["User_Comment"]=="last check pre-merge":
+                    if database["User_Comment"]=="merge sanity":
                         fromdbui=database["Changes"]
     fromjsondbuitodf= pd.read_json(fromdbui)
     st.write((fromjsondbuitodf))
@@ -263,4 +263,7 @@ if speciesaddedfromui:
     "merged from db - mergedfromdb=alfrediInfo.append(fromjsondbtodf)"
     mergedfromdbui=alfrediInfo.append(fromjsondbuitodf)
     st.write(mergedfromdbui)
+    
+
+    
     
