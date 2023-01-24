@@ -182,9 +182,9 @@ def add_entry_page():
 
 
     #stores user info in an array      
-    def populate_userinfo():
-        for column in dbColumns:
-            userInfo.append(st.session_state[column])
+    #def populate_userinfo():
+    #    for column in dbColumns:
+    #        userInfo.append(st.session_state[column])
 
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
@@ -242,11 +242,17 @@ def add_entry_page():
    
     review_information=st.button("Review Information")
     #altering populate userinfo method to create json array
-    #def populate_userinfo():
-    #    for column in dbColumns:
-    #        userInfo.append(st.session_state[column])    
     
-   
+    
+    #userinfo method dev
+    def populate_userinfo():
+       for column in dbColumns:
+           if st.session_state[column]=="":
+             st.session_state[column]=None
+
+           userInfo.append(st.session_state[column])
+    
+
 
 
     if review_information:
@@ -254,10 +260,15 @@ def add_entry_page():
      populate_userinfo()
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-     
-     st.write("converting review df to json string")
      reviewdf = pd.DataFrame(userInfo, current_db.columns)
      st.dataframe(reviewdf, width=300) 
+
+     #temp code for development
+     #populate_userinfo()
+     #data = {0: userInfo}
+     #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+     #dftojson=dftojsondict.to_json(orient="columns")
+     #st.write(dftojson)
      
      
     
@@ -287,8 +298,9 @@ def add_entry_page():
      data = {0: userInfo}
      dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
      dftojson=dftojsondict.to_json(orient="columns")
-     #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
-     #st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     
+     add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+     st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
      st.write("commented out for development")    
 
     

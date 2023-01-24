@@ -255,7 +255,7 @@ speciesaddedfromui=st.checkbox("Species json from add species UI")
 #speciesjsoncols blank test
 if speciesaddedfromui:
     for database in databases:
-                    if database["User_Comment"]=="using df dictionary - manual null manipulation":
+                    if database["User_Comment"]=="double checking":
                         fromdbui=database["Changes"]
     fromjsondbuitodf= pd.read_json(fromdbui)
     st.write((fromjsondbuitodf))
