@@ -12,6 +12,7 @@ from deta import Deta
 import csv
 from dotenv import load_dotenv
 from datetime import datetime
+import json
 st.set_page_config(page_icon='amphibs.jpeg')
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
@@ -122,10 +123,20 @@ if 'comment' not in st.session_state:
     st.session_state['comment']=""
 
 #creating session state variables for each column in dataset
+#columnstates=[]
 def create_session_states(dbColumns):
     for column in dbColumns:
         if column not in st.session_state:
            st.session_state[column] =""
+        
+
+#columnstates=[]
+#def create_session_states(dbColumns):
+#    for column in dbColumns:
+#        if column not in st.session_state:
+#           st.session_state[column] =""
+#        columnstates.append(st.session_state[column])
+#    return columnstates
          
 #st.session_state
 
@@ -149,27 +160,34 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
-    #displays text fields for optional information
-    def display_extra_fields():
-        for option in more_options:
-            userText=st.text_input(option, key=option)
-            st.session_state[option] == userText
-
+  
     #sets session state values for optional extra fields
+    #def get_extra_userinfo():
+    # for option in more_options:
+        
+    #    userText=st.text_input(option, key=option)
+    #    if userText:
+    #     st.session_state[option] == userText
+    #    elif not userText :
+    #        st.session_state[option]==None
+
     def get_extra_userinfo():
      for option in more_options:
         
         userText=st.text_input(option, key=option)
         if userText:
          st.session_state[option] == userText
-        elif not userText :
-            st.session_state[option]==""
+        elif not userText =="" :
+            st.session_state[option]==None
 
 
     #stores user info in an array      
     def populate_userinfo():
-        for column in dbColumns:
-            userInfo.append(st.session_state[column])
+       for column in dbColumns:
+           if st.session_state[column]=="":
+             st.session_state[column]=None
+
+           userInfo.append(st.session_state[column])
 
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
@@ -177,10 +195,10 @@ def add_entry_page():
             st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
 
     #contructs a dataframe for user to see summary of their addition
-    def construct_review_dataframe(userinfo, columns=current_db.columns):
-        completed = pd.DataFrame(userInfo, current_db.columns)
+    #def construct_review_dataframe(userinfo, columns=current_db.columns):
+    #    completed = pd.DataFrame(userInfo, current_db.columns)
         #st.write(completed)
-        st.dataframe(completed, width=300) 
+    #    st.dataframe(completed, width=300) 
 
     #creates a csv file with users addition
     def create_csv(columnrow, inforow):
@@ -226,15 +244,33 @@ def add_entry_page():
 
    
     review_information=st.button("Review Information")
-       
+    #altering populate userinfo method to create json array
+    
+    
+    
+  
+    
+
+
 
     if review_information:
     
      populate_userinfo()
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-     userdf=construct_review_dataframe(userInfo, columns=current_db.columns)
+     reviewdf = pd.DataFrame(userInfo, current_db.columns)
+     st.dataframe(reviewdf, width=300) 
+
+     #temp code for development
+     #populate_userinfo()
+     #data = {0: userInfo}
+     #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+     #dftojson=dftojsondict.to_json(orient="columns")
+     #st.write(dftojson)
+     
+     
     
+    #st.session_state
 
     user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
     
@@ -256,12 +292,14 @@ def add_entry_page():
     if commit_changes and genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
     elif commit_changes and user_message:
-      populate_userinfo()
-      columnrow=current_db.columns
-      inforow=userInfo
-      create_csv(columnrow, inforow)
-      add_to_database(str(now), newPath, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
-      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
+     populate_userinfo()
+     data = {0: userInfo}
+     dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+     dftojson=dftojsondict.to_json(orient="columns")
+     
+     add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+     st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     st.write("commented out for development")    
 
     
     
