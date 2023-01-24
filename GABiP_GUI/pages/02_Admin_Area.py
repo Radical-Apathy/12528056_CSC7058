@@ -172,8 +172,9 @@ def new_species_review():
         #tab1 methods
         for database in databases:
                 if database["key"]==datesubmitted:
-                    path=database["Changes"]
-        user_changes = pd.read_csv(path, encoding= 'unicode_escape', low_memory=False)
+                    newAdd=database["Changes"]
+        
+        user_changes= pd.read_json(newAdd)
         tab1.write(user_changes)
 
         tab1.write("Displaying vertically")
