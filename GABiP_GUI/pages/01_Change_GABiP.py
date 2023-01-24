@@ -182,9 +182,12 @@ def add_entry_page():
 
 
     #stores user info in an array      
-    #def populate_userinfo():
-    #    for column in dbColumns:
-    #        userInfo.append(st.session_state[column])
+    def populate_userinfo():
+       for column in dbColumns:
+           if st.session_state[column]=="":
+             st.session_state[column]=None
+
+           userInfo.append(st.session_state[column])
 
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
@@ -244,13 +247,8 @@ def add_entry_page():
     #altering populate userinfo method to create json array
     
     
-    #userinfo method dev
-    def populate_userinfo():
-       for column in dbColumns:
-           if st.session_state[column]=="":
-             st.session_state[column]=None
-
-           userInfo.append(st.session_state[column])
+    
+  
     
 
 

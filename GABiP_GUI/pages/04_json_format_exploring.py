@@ -255,7 +255,7 @@ speciesaddedfromui=st.checkbox("Species json from add species UI")
 #speciesjsoncols blank test
 if speciesaddedfromui:
     for database in databases:
-                    if database["User_Comment"]=="double checking":
+                    if database["User_Comment"]=="last check pre-merge":
                         fromdbui=database["Changes"]
     fromjsondbuitodf= pd.read_json(fromdbui)
     st.write((fromjsondbuitodf))
@@ -263,4 +263,4 @@ if speciesaddedfromui:
     "merged from db - mergedfromdb=alfrediInfo.append(fromjsondbtodf)"
     mergedfromdbui=alfrediInfo.append(fromjsondbuitodf)
     st.write(mergedfromdbui)
-    st.write("JUST WORK!!")
+    
