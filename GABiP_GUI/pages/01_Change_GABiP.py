@@ -246,30 +246,7 @@ def add_entry_page():
     #    for column in dbColumns:
     #        userInfo.append(st.session_state[column])    
     
-    jsondata=[]
-    def create_json_data():
-        for column in dbColumns:
-            #jsonString=[]
-            #userInfo.append(st.session_state[column])   
-            #st.write(column, st.session_state[column])
-            #data = [{"col1": col1[i], "col2": col2[i]} for i in range(len(col1))]
-            #jsondata=[{column:st.session_state[column]} for i in range(len(column))]
-            #st.write([{column:st.session_state[column]}])
-            jsondata.append({column:st.session_state[column]})
-        return jsondata
-
-    def create_json_data_blanks():
-        for column in dbColumns:
-            if st.session_state[column]=="":
-                st.session_state[column] = "<NA>"
-            #jsonString=[]
-            #userInfo.append(st.session_state[column])   
-            #st.write(column, st.session_state[column])
-            #data = [{"col1": col1[i], "col2": col2[i]} for i in range(len(col1))]
-            #jsondata=[{column:st.session_state[column]} for i in range(len(column))]
-            #st.write([{column:st.session_state[column]}])
-            jsondata.append({column:st.session_state[column]})
-        return jsondata
+   
 
 
     if review_information:
@@ -277,22 +254,11 @@ def add_entry_page():
      populate_userinfo()
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-     #userdf=construct_review_dataframe(userInfo, columns=current_db.columns)
+     
      st.write("converting review df to json string")
      reviewdf = pd.DataFrame(userInfo, current_db.columns)
      st.dataframe(reviewdf, width=300) 
      
-     userdfTojson=reviewdf.to_json(orient="columns")
-     st.write(userdfTojson)
-     #st.write("trying to convert session state into json array")
-     #create_json_data_blanks()
-     #st.write("jsondata")
-     #st.write(jsondata)
-    
-     #jsonString=json.dumps(jsondata)
-     #st.write("json string")
-     #st.write(jsonString)
-
      
     
     #st.session_state
@@ -317,18 +283,13 @@ def add_entry_page():
     if commit_changes and genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
     elif commit_changes and user_message:
-     #create_json_data_blanks()
-     #st.write(jsondata)
-     #jsonString=json.dumps(jsondata)
-     #st.write(jsonString)
-      populate_userinfo()
-      committeddf = pd.DataFrame(userInfo, current_db.columns)
-      committeddfTojson=committeddf.to_json(orient="columns")
-      #columnrow=current_db.columns
-      #inforow=userInfo
-      #create_csv(columnrow, inforow)
-      add_to_database(str(now), committeddfTojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
-      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)    
+     populate_userinfo()
+     data = {0: userInfo}
+     dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+     dftojson=dftojsondict.to_json(orient="columns")
+     #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+     #st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     st.write("commented out for development")    
 
     
     

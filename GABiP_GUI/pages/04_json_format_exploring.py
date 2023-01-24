@@ -155,35 +155,36 @@ datajson=datacsv.to_json(orient='columns')
 alfrediInfo=datacsv.groupby("Species").get_group("alfredi")
 speciesInfo=datacsv.groupby("Species").get_group("coppingeri")
 
-st.write("Dataframe for alfredi")
-st.write(alfrediInfo)
+st.write("Dataframe for coppingeri - 'speciesInfo=datacsv.groupby('Species').get_group('coppingeri')' ")
+st.write(speciesInfo)
+#st.write(datacsv.info())
+
 speciesjsonrecs=speciesInfo.to_json(orient='records')
 speciesjsoncols=speciesInfo.to_json(orient='columns')
 speciesjsonindex=speciesInfo.to_json(orient='index')
 speciesinfojson=speciesInfo.to_json()
 speciesinfodict=speciesInfo.to_dict()
 
-
-jsonfullcsv=st.checkbox("Convert csv to a json file")
+jsonfullcsv=st.checkbox("Convert csv to a json file - speciesjsoncols=speciesInfo.to_json(orient='columns')")
 if jsonfullcsv:
-    st.write("no orient specified")
-    speciesjson=speciesInfo.to_json()
-    st.write(speciesjson)
-    st.write("orient index")
-    st.write(speciesjsonindex)
-    st.write("orient columns")
+    #st.write("no orient specified")
+    #speciesjson=speciesInfo.to_json()
+    #st.write(speciesjson)
+    #st.write("orient index")
+    #st.write(speciesjsonindex)
+    #st.write("orient columns")
     st.write(speciesjsoncols)
-    st.write("orient records")
-    st.write(speciesjsonrecs)
+    #st.write("orient records")
+    #st.write(speciesjsonrecs)
 
-showpythonobject=st.checkbox("Show as a python object")
+showpythonobject=st.checkbox("Show as a python object - 'pythonobject=json.loads(speciesjsoncols)'")
 
-pythonobject=json.loads(speciesjsonindex)
+pythonobject=json.loads(speciesjsoncols)
 
 if showpythonobject:
 #converting json into a python object
     st.write("as a python object")
-    pythonobject=json.loads(speciesjsonindex)
+    pythonobject=json.loads(speciesjsoncols)
 
     st.write(pythonobject)
 
@@ -195,13 +196,13 @@ def append_json_todf(df1, json):
 convertjsontodf=st.checkbox("Convert json to a pandas dataframe")
 
 if convertjsontodf:
-   st.write("reverted back with pd.read_json()")
+   st.write("json to df -  jsontodf= pd.read_json(speciesjsoncols)")
    #revertedback= pd.read_json(speciesjsoncols, orient="columns")
-   revertedback= pd.read_json(speciesjsoncols)
-   st.write(revertedback)
+   jsontodf= pd.read_json(speciesjsoncols)
+   st.write(jsontodf)
    #st.write(revertedback.dtypes)
-   st.write("merged")
-   merged=alfrediInfo.append(revertedback)
+   st.write("merged - merged=alfrediInfo.append(jsontodf)")
+   merged=alfrediInfo.append(jsontodf)
    st.write(merged)
 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, 
@@ -221,30 +222,45 @@ now=datetime.now()
 if addtodb:
    #add_to_database(str(now), speciesjsoncols, "currentDB", "json test 2", "json test 2", "Alfredi", "Alfredi", "col ui", "jsontest", "Pending", "n/a",
    #  "n/a", "n/a ")
-    
-   st.write(" added commented out")
+   #add_to_database(str(now), speciesjsoncols, "a database", "New Species Addition", 
+    #"jsonspecies", "jsongenus", "admin", "speciesjsoncols", "Pending", "n/a", "n/a", "n/a", "a database")
+
+   st.write(" added speciesjsoncols")
 
 
-fetchfromdb=st.checkbox("Fetch from db")
+fetchfromdb=st.checkbox("Fetch speciesjsoncols from db")
 
 if fetchfromdb:
-    "grabbing it"
+    "speciesjsoncols retrieved from database"
 #2023-01-23 10:03:16.758975
     for database in databases:
-                    if database["User_Comment"]=="manual quotes removal":
+                    if database["User_Comment"]=="speciesjsoncols":
                         fromdb=database["Changes"]
     st.write(fromdb)
     
-    "changed to a dataframe"
+    "changed to a dataframe - fromjsondbtodf= pd.read_json(fromdb) no orient"
 
-    "adding brackets"
-    withbrackets="["+fromdb+"]"
+    #"adding brackets"
+    #withbrackets="["+fromdb+"]"
     #st.write(withbrackets)
-    #revertedback= pd.read_json(speciesjsonindex, orient="index")
-    speciesdf=pd.read_json(fromdb)
-    st.write(speciesdf)
-    "merged from db"
-    mergedfromdb=alfrediInfo.append(speciesdf)
+    fromjsondbtodf= pd.read_json(fromdb)
+    st.write((fromjsondbtodf))
+    #st.write(speciesdf)
+    "merged from db - mergedfromdb=alfrediInfo.append(fromjsondbtodf)"
+    mergedfromdb=alfrediInfo.append(fromjsondbtodf)
     st.write(mergedfromdb)
 
 
+speciesaddedfromui=st.checkbox("Species json from add species UI")
+#speciesjsoncols blank test
+if speciesaddedfromui:
+    for database in databases:
+                    if database["User_Comment"]=="using df dictionary - manual null manipulation":
+                        fromdbui=database["Changes"]
+    fromjsondbuitodf= pd.read_json(fromdbui)
+    st.write((fromjsondbuitodf))
+    #st.write(speciesdf)
+    "merged from db - mergedfromdb=alfrediInfo.append(fromjsondbtodf)"
+    mergedfromdbui=alfrediInfo.append(fromjsondbuitodf)
+    st.write(mergedfromdbui)
+    st.write("JUST WORK!!")
