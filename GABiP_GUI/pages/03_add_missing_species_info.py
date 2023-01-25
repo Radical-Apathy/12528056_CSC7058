@@ -230,13 +230,14 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
+#st.write(genusdropdown)
 #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
 #st.markdown('Streamlit is **_really_ cool**.')
 #st.markdown("This text is :red[colored red], and this is **:blue[colored]** and bold.")
 
 col1, col2, col3 = st.columns(3)
 
-col3.markdown("**All Genea of** "+genusdropdown)
+col3.markdown("**All Genea of** "+speciesdropdown)
 
 col3.write(genusdropdown)
 col3.write(speciesGenus["Genus"].iloc[0])

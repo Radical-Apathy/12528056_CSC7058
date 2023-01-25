@@ -155,12 +155,14 @@ dfReferences = load_references()
 dfImages = load_images()
 
 def displayImage(speciesInfo):
-    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
-    mergedInfo.drop_duplicates()
-    return mergedInfo["Display Image"].loc[0]
+   # mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+   mergedInfo=pd.merge(speciesInfo, dfImages, on="Genus")
+   mergedInfo.drop_duplicates()
+   return mergedInfo["Display Image"].loc[0]
 
 def embeddedImage(speciesInfo):
-    mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    #mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
+    mergedInfo=pd.merge(speciesInfo, dfImages, on="Genus")
     mergedInfo.drop_duplicates()
     return mergedInfo["Embedded Link"].loc[0]
 
@@ -230,6 +232,21 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
+st.write(results["RangeSize"])
+
+missingInfoColumns=[]
+def get_missing_info_columns(results):
+    pass
+    #for column in dbColumns:
+       # if pd.isna(results[column]):
+        #    missingInfoColumns.append[results[column]]
+
+        #if results[column]==None:
+         #   st.write(results[column])
+            #missingInfoColumns.append[column]
+   # return missingInfoColumns
+
+
 #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
 #st.markdown('Streamlit is **_really_ cool**.')
 #st.markdown("This text is :red[colored red], and this is **:blue[colored]** and bold.")
@@ -239,9 +256,14 @@ col1, col2, col3 = st.columns(3)
 col3.markdown("**Genea of** "+speciesdropdown)
 col3.write(genusdropdown)
 col3.write(speciesGenus["Genus"].iloc[0])
-col2.dataframe(results.iloc[0], width=500)
+col2.write("All data")
+col2.write(results)
+#col2.dataframe(results.iloc[0], width=500)
+col2.write("Missing column data only")
+col2.dataframe(get_missing_info_columns(results))
+#col2.write(missingInfoColumns)
 col1.write("Image Goes Here")
-
+#col1.markdown("[![Image not Available]("+displayImage(results)+")]("+embeddedImage(results)+")")
 #st.write(speciesGenus)
 
 #speciesSearchTest(speciesdropdown)
@@ -277,6 +299,11 @@ addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 
 #st.write(addinfo_options)
 
 #df.loc[0, 'A'] = 10
+
+
+
+show_missing_info=st.multiselect("Add Missing Information", ["Option1", "option2"])
+
 
 if addinfo_options:
      get_extra_userinfo()
