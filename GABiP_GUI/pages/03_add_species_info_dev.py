@@ -199,7 +199,8 @@ def create_json_data():
   return jsondata
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
-st.header("Add Species Info Dev")
+headercol1, headercol2, headercol3=st.columns(3)
+headercol2.subheader("Add Species Info Dev")
 #st.session_state
 current=load_full()
 dbColumns=current.columns
@@ -229,21 +230,25 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
-st.dataframe(results.iloc[0], width=300)
+#st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
+#st.markdown('Streamlit is **_really_ cool**.')
+#st.markdown("This text is :red[colored red], and this is **:blue[colored]** and bold.")
 
+col1, col2, col3 = st.columns(3)
 
-st.write(speciesGenus)
+col3.markdown("**Genea of** "+speciesdropdown)
+col3.write(genusdropdown)
+col3.write(speciesGenus["Genus"].iloc[0])
+col2.dataframe(results.iloc[0], width=500)
+col1.write("Image Goes Here")
+
+#st.write(speciesGenus)
 
 #speciesSearchTest(speciesdropdown)
 
 
 
-def replace_value(species, colname, value):
-     speciesInfo=current.groupby("Species").get_group(species)
-     #df.at[0, 'A'] = value
-     speciesInfo.at[0, colname]=value
-     st.dataframe(speciesInfo.iloc[0])
-     st.write(speciesInfo["Species"] + " has been updated")
+
 
 def get_extra_userinfo():
      for option in addinfo_options:
@@ -269,14 +274,161 @@ addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 
                              'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
                              'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
 
+#st.write(addinfo_options)
 
 #df.loc[0, 'A'] = 10
 
 if addinfo_options:
      get_extra_userinfo()
 
+
+
 populate_additionLinfo()
 #st.write(additionalInfo)
+
+def comparedfs(df1,df2):
+    diff = df1.diff(df2)
+    if diff.empty:
+        st.success('The DataFrames are equal.')
+    else:
+        st.dataframe(diff.style.applymap(lambda x: 'background-color: red' if x else ''))
+
+def comparerows(df1,df2):
+    mask = (df1['Order'] == df2['Order'])
+    diff_mask = mask & (df1 != df2)
+
+    if diff_mask.empty:
+        st.success('The DataFrames are equal.')
+    else:
+            st.dataframe(df1[diff_mask].style.applymap(lambda x: 'background-color: red' if x else ''))
+            st.dataframe(df2[diff_mask].style.applymap(lambda x: 'background-color: red' if x else ''))
+
+
+
+#search=dfFull[multiOptions].drop_duplicates()
+#def update_results(addinfo_options): #addinfo_options):
+#    speciesIndex=results.index[0]
+#    results_updated = results.copy()
+#    columns=addinfo_options
+#    results_updated.at[speciesIndex, columns] = "method testing"
+#    return results_updated
+
+def update_results(addinfo_options): #addinfo_options):
+    speciesIndex=results.index[0]
+    results_updated = results.copy()
+    for column in addinfo_options:
+        results_updated.at[speciesIndex, column] = st.session_state[column]
+    return results_updated
+
+
+showresults=st.checkbox("Show updates")
+
+if showresults:
+    st.write("magic happens here")
+    #st.write(update_results(addinfo_options))
+    #reviewdf = pd.DataFrame(userInfo, current_db.columns)
+    #st.dataframe(reviewdf, width=300) 
+
+    methodcol1, methodcol2, methodcol3=st.columns(3)
+    methodcol2.dataframe(update_results(addinfo_options).iloc[0], width=300)
+
+
+dataframeapproach=st.checkbox("Replacing values with dataframe approach - hard coded")
+
+if dataframeapproach:
+    speciesIndex=results.index[0]
+    st.write("Results before")
+    st.write(results)
+    st.write("After results..copying old df and using df_new.at[index_label, 'column_name'] = new_value")
+    results_updated = results.copy()
+    results_updated.at[speciesIndex, 'SVLMMx'] = 99
+    #results.at[speciesIndex, 'Order']="Order updated"
+    st.write(results_updated)
+    st.write("Updating multiple at once -")
+    #df_new.at[index_label, ['column_name1', 'column_name2']] = [new_value1, new_value2]
+    results_multiple=results.copy()
+    results_multiple.at[speciesIndex, ('Order', 'Family', 'SVLMMx')] = ["New order", "New Family", 88 ]
+    st.write(results_multiple)
+
+    diff_mask = results != results_multiple
+
+    #st.dataframe(results.style.applymap(lambda x: 'background-color: yellow' if x else ''))
+    #st.dataframe(results_multiple.style.applymap(lambda x: 'background-color: yellow' if x else ''))
+
+    compare=st.button("Compare")
+    if compare:
+        #col1, col2, col3 = st.columns(3)
+        #st.dataframe(speciesInfo.iloc[0])
+        comparecol1,comparecol2, comparecol3=st.columns(3)
+        comparecol1.write("Original Species")
+        comparecol1.dataframe(results.iloc[0], width=300)
+        comparecol2.write("Updated Species Info")
+        comparecol2.dataframe(results_multiple.iloc[0], width=300)
+        comparecol3.write("Differences highlighted?")
+        #comparerows(results, results_multiple)
+
+
+
+
+    
+jsonarraywithsessionstate=st.checkbox("Create json array using session state and columns")
+
+if jsonarraywithsessionstate:
+    create_json_data()
+    st.write(jsondata)
+
+dfaskeyvaluedict=st.checkbox("Turn df into key value pair dictionary")
+
+if dfaskeyvaluedict:
+    st.write("dict=results.to_dict()")
+    dict=results.to_dict()
+    st.write(dict)
+    st.write("dict.get('Species')")
+    st.write(dict.get("Species"))
+    st.write("Back to dataframe - dictreverted=pd.DataFrame(dict)")
+    dictreverted=pd.DataFrame(dict)
+    st.write(dictreverted)
+    st.write("dictorient=results.to_dict(orient='index')")
+    dictorient=results.to_dict(orient='index')
+    st.write(dictorient)
+    #dictnorec=results.to_dict('records')
+    #st.write(dictnorec.get("Family"))
+
+methodcheck=st.checkbox("Practicing value replacement using results as a dictionary - hardcoded")
+if methodcheck:
+    #st.write("code pending") 
+    dict=results.to_dict() 
+    #st.write("dict.update({'Family':'hardcoded update value'})")
+    #dict.update({'non existent column':'hardcoded update family'})
+    dict.update({'Order':'checking index preservation'})
+    st.write(dict)
+    dictreverted=pd.DataFrame(dict)
+    st.write(dictreverted)
+
+indexmethodcheck=st.checkbox("Practicing value replacement using results as a dictionary and keeping index - hardcoded")
+
+if indexmethodcheck:
+    #index = df.loc[df['A'] == 2].index[0]
+    #results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
+    speciesIndex=results.index[0]
+    st.write(speciesIndex)
+    dictorient=results.to_dict(orient='index')
+    #st.write(dictorient)
+    dictorient[6]['Family'] = 'Fam update and preserving index for '
+    #dict.update({'Genus':'hardcoded update genus'})
+    st.write(dictorient)
+    dictreverted=pd.DataFrame(dictorient)
+    st.write(dictreverted)
+    st.write("code to be written")
+
+
+
+
+
+
+
+
+
 
 jsonexperiemnt=st.checkbox("Convert results to a json file")
 
@@ -307,51 +459,7 @@ if pythonobjectexperiemnt:
     speciespythonobject[2]="family replaced"
     st.write(speciespythonobject)
 
-jsonarraywithsessionstate=st.checkbox("Create json array using session state and columns")
 
-if jsonarraywithsessionstate:
-    create_json_data()
-    st.write(jsondata)
-
-dfaskeyvaluedict=st.checkbox("Turn df into key value pair dictionary")
-
-if dfaskeyvaluedict:
-    st.write("dict=results.to_dict()")
-    dict=results.to_dict()
-    st.write(dict)
-    st.write("dict.get('Species')")
-    st.write(dict.get("Species"))
-    st.write("Back to dataframe - dictreverted=pd.DataFrame(dict)")
-    dictreverted=pd.DataFrame(dict)
-    st.write(dictreverted)
-    st.write("dictorient=results.to_dict(orient='index')")
-    dictorient=results.to_dict(orient='index')
-    st.write(dictorient)
-    #dictnorec=results.to_dict('records')
-    #st.write(dictnorec.get("Family"))
-
-methodcheck=st.checkbox("Practicing value replacement using results as a dictionary - hardcoded")
-if methodcheck:
-    #st.write("code pending") 
-    dict=results.to_dict() 
-    st.write("dict.update({'Family':'hardcoded update value'})")
-    dict.update({'non existent column':'hardcoded update family'})
-    dict.update({'Genus':'hardcoded update genus'})
-    st.write(dict)
-    dictreverted=pd.DataFrame(dict)
-    st.write(dictreverted)
-
-indexmethodcheck=st.checkbox("Practicing value replacement using results as a dictionary and keeping index - hardcoded")
-
-if indexmethodcheck:
-    dictorient=results.to_dict(orient='index')
-    st.write(dictorient)
-    dictorient[5]['Family'] = 'Fam update and preserving index?'
-    #dict.update({'Genus':'hardcoded update genus'})
-    st.write(dictorient)
-    dictreverted=pd.DataFrame(dictorient)
-    st.write(dictreverted)
-    st.write("code to be written")
 
 
    
