@@ -232,35 +232,37 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
-st.write(results["RangeSize"])
+#st.write(results)
 
 missingInfoColumns=[]
 def get_missing_info_columns(results):
-    pass
-    #for column in dbColumns:
-       # if pd.isna(results[column]):
-        #    missingInfoColumns.append[results[column]]
+    for column in dbColumns:
+        if results[column].isna().any():
+         missingInfoColumns.append(results[column].name)
+    return missingInfoColumns
 
         #if results[column]==None:
          #   st.write(results[column])
             #missingInfoColumns.append[column]
    # return missingInfoColumns
 
-
+#st.write(get_missing_info_columns(results))
+    
+        
+#get_missing_info_columns(results)
 #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
 #st.markdown('Streamlit is **_really_ cool**.')
 #st.markdown("This text is :red[colored red], and this is **:blue[colored]** and bold.")
 
 col1, col2, col3 = st.columns(3)
 
-col3.markdown("**Genea of** "+speciesdropdown)
+col3.markdown("** All Genea of** "+speciesdropdown)
 col3.write(genusdropdown)
 col3.write(speciesGenus["Genus"].iloc[0])
 col2.write("All data")
-col2.write(results)
-#col2.dataframe(results.iloc[0], width=500)
+#col2.write(results)
+col2.dataframe(results.iloc[0], width=500)
 col2.write("Missing column data only")
-col2.dataframe(get_missing_info_columns(results))
 #col2.write(missingInfoColumns)
 col1.write("Image Goes Here")
 #col1.markdown("[![Image not Available]("+displayImage(results)+")]("+embeddedImage(results)+")")
@@ -272,8 +274,8 @@ col1.write("Image Goes Here")
 
 
 
-def get_extra_userinfo():
-     for option in addinfo_options:
+def get_missing_userinfo():
+     for option in show_missing_info:
         
         userText=st.text_input(option, key=option)
         if userText:
@@ -282,7 +284,7 @@ def get_extra_userinfo():
          #   st.session_state[option]==""
 
 
-def populate_additionLinfo():
+def populate_missing_info():
         for column in dbColumns:
             additionalInfo.append(st.session_state[column])
         
@@ -292,25 +294,26 @@ def add_information():
 
    
 
-addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
-                             'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
-                             'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
+#addinfo_options=st.multiselect("Add Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
+#                             'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
+#                             'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
 
 #st.write(addinfo_options)
 
 #df.loc[0, 'A'] = 10
 
+#get_missing_info_columns(results)
+
+get_missing_info_columns(results)
+show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
 
-show_missing_info=st.multiselect("Add Missing Information", ["Option1", "option2"])
-
-
-if addinfo_options:
-     get_extra_userinfo()
+if show_missing_info:
+     get_missing_userinfo()
 
 
 
-populate_additionLinfo()
+populate_missing_info()
 #st.write(additionalInfo)
 
 def comparedfs(df1,df2):
@@ -347,17 +350,23 @@ def update_results(addinfo_options): #addinfo_options):
         results_updated.at[speciesIndex, column] = st.session_state[column]
     return results_updated
 
+def update_missing_results(show_missing_info): #addinfo_options):
+    speciesIndex=results.index[0]
+    results_updated = results.copy()
+    for column in show_missing_info:
+        results_updated.at[speciesIndex, column] = st.session_state[column]
+    return results_updated
 
 showresults=st.checkbox("Show updates")
 
 if showresults:
     st.write("magic happens here")
-    #st.write(update_results(addinfo_options))
+    #st.write(update_missing_results(show_missing_info))
     #reviewdf = pd.DataFrame(userInfo, current_db.columns)
     #st.dataframe(reviewdf, width=300) 
 
     methodcol1, methodcol2, methodcol3=st.columns(3)
-    methodcol2.dataframe(update_results(addinfo_options).iloc[0], width=300)
+    methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
 
 
 dataframeapproach=st.checkbox("Replacing values with dataframe approach - hard coded")
