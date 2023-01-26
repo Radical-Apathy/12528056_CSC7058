@@ -241,7 +241,7 @@ def link_image(results):
     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
     #return merged_image_df["Display Image"].iloc[0]
     if  merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-        col1.write("No images available. Add an image?")
+        col1.write("No images available.")
     else:
         return merged_image_df["Display Image"].iloc[0]
 
@@ -293,14 +293,9 @@ col2.write("Missing data highlighted")
 
 col2.dataframe(results.iloc[0], width=500)
 
-#st.markdown("![Streamlit logo](https://streamlit.io/images/logo.png)")
-#col1.markdown("[![Image not Available]("+link_image(results)+")]("+link_embedded_image(results)+")")
-#col1.markdown("[![Image not Available]("+link_image(results)+")]("+link_embedded_image(results)+")")
-#col1.markdown("!["+link_image(results)+")]("+link_embedded_image(results)+")")
+col1.markdown(f"[![]({link_image(results)})]({link_embedded_image(results)})")
 
-link_image(results)
-link_embedded_image(results)
-st.markdown("![Streamlit logo](https://streamlit.io/images/logo.png)")
+#embedd in method to say https://amphibiaweb.org/
 col1.write("Image Source: ")
 
 get_missing_info_columns(results)
