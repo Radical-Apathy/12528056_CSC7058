@@ -8,6 +8,9 @@ import json
 from dotenv import load_dotenv
 from datetime import datetime
 from st_aggrid import AgGrid
+#from io import StringIO
+#from PIL import Image
+import base64
 
 
 
@@ -154,43 +157,8 @@ def load_images():
 
 dfReferences = load_references()
 dfImages = load_images()
-
-def displayImage(speciesInfo):
-   # mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
-   mergedInfo=pd.merge(speciesInfo, dfImages, on="Genus")
-   mergedInfo.drop_duplicates()
-   return mergedInfo["Display Image"].loc[0]
-
-def embeddedImage(speciesInfo):
-    #mergedInfo=pd.merge(speciesInfo, dfImages, on="Species")
-    mergedInfo=pd.merge(speciesInfo, dfImages, on="Genus")
-    mergedInfo.drop_duplicates()
-    return mergedInfo["Embedded Link"].loc[0]
-
-
-speciesdf= []
-def speciesSearchTest(speciesChoice): # formally option2
-    col1,col2=st.columns(2)
-    col1.header(speciesChoice, " Species Summary:")
-    #speciesInfo = dfFull.groupby("Species").get_group(st.session_state['text_option']) # only definition of the three speciesInfo that works
-    speciesInfo=current.groupby("Species").get_group(speciesChoice)
-    #speciesInfo = st.session_state['drop_option']
-    #st.session_state.speciesInfo = speciesInfo
-    col1.markdown("[![Image not Available]("+displayImage(speciesInfo)+")]("+embeddedImage(speciesInfo)+")")
-    url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+speciesChoice
-    col1.write("AMNH web link for "+ speciesChoice+  " [AMNH Link](%s)" % url)
-    url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ speciesChoice +"&rel-scientific_name=contains&include_synonymies=Yes"
-    col1.write("Amphibian web link for "+ speciesChoice+  " [Amphibia Web Link](%s)" % url2)
-    col2.header("Species Summary")
-    
+      
        
-
-    #if showMore:
-    allInfo=current.groupby("Species").get_group(speciesChoice)
-    #infoSummary=allInfo.iloc[0]
-    col2.dataframe(allInfo.iloc[0], width=500)
-
-        
     
 def show_knowledge_gaps():
     st.write("knowledge gaps")
@@ -233,17 +201,21 @@ def update_missing_results(show_missing_info): #addinfo_options):
 
 now=datetime.now()
 
-# def link_image(results):
-#     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-#     return merged_image_df["Display Image"].iloc[0]
+# def image_upload():
+#     uploaded_file = col1.file_uploader("Add an Image")
+#     #col1.write("Add an image?")
+
 
 def link_image(results):
     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
     #return merged_image_df["Display Image"].iloc[0]
     if  merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
         col1.write("No images available.")
+        #image_upload()
     else:
+        col1.write("Image from amphibiaweb.org")
         return merged_image_df["Display Image"].iloc[0]
+        
 
 
 
@@ -269,6 +241,8 @@ def get_genus(speciesdropdown):
 
 additionalInfo=[]
 
+missingInfoSources=[]
+
 speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']))
 
 speciesGenus=current.loc[current["Species"]==speciesdropdown]
@@ -277,6 +251,32 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
+# jsondata=[]
+# def create_json_data():
+#   for column in dbColumns:
+#       jsondata.append({column:st.session_state[column]})
+#   return jsondata
+
+
+# def get_missing_userinfo():
+#      for option in show_missing_info:
+        
+#         userText=st.text_input(option, key=option)
+#         if userText:
+#          st.session_state[option] == userText"
+#          #st.write("You've entered ", userText)
+        #else :
+         #   st.session_state[option]==""
+
+def create_source_fields(show_missing_info):
+    for option in show_missing_info:
+        if st.session_state[option] !="":
+            usersource=st.text_input("Please enter a source for "+option, key=option+" source")
+    for option in show_missing_info:
+        if usersource and usersource!="":
+            st.session_state[option+" source"]==usersource
+            missingInfoSources.append({option: st.session_state[option+" source"]})
+    return missingInfoSources
 
 
 
@@ -296,13 +296,21 @@ col2.dataframe(results.iloc[0], width=500)
 col1.markdown(f"[![]({link_image(results)})]({link_embedded_image(results)})")
 
 #embedd in method to say https://amphibiaweb.org/
-col1.write("Image Source: ")
+#col1.write("Image Source: ")
 
 get_missing_info_columns(results)
 show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
+ 
+
+
+
+
+
+
 if show_missing_info:
      get_missing_userinfo()
+     
 
 
 populate_missing_info()
@@ -330,10 +338,29 @@ if showresults:
         comparecol2.dataframe(resultschanged.iloc[0], width=300)
         comparecol3.write("Differences highlighted?")     
 
+sourcecol1,sourcecol2,sourcecol3=st.columns(3)
+sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
+sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+create_source_fields(show_missing_info)
+st.write(missingInfoSources)
+#st.write(missingInfoSources)
+
+
+checkSummary=st.button("View summary sources")
+
+if checkSummary:
+    # jsontodf= pd.read_json(speciesjsoncols)
+    #sources=json.loads(missingInfoSources)
+    try:
+        sourceSummary=pd.DataFrame(missingInfoSources)
+        st.dataframe(sourceSummary)
+    except:
+        st.warning("Please enter sources for all data ")
+    
 
 
 
- 
 
 
 
@@ -370,11 +397,81 @@ if jsonexperiemnt:
         fromjsondbtodf= pd.read_json(gapsfromdb)
         st.write((fromjsondbtodf.iloc[0]))
     
-    
 
+
+
+
+
+# st.write("Exploring image uploading")
+
+# image_test=deta_connection.Base("image_testing")
+
+# def insert_image(date, image_bytes):
+#     """adding user"""
+#     #defining the email as the key
+#     return image_test.put({"key":date, "user_image": image_bytes, 
+#      })
+
+
+
+
+# uploaded_file = st.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+
+
+# if uploaded_file is not None:
+#     #read as bytes
+#     file_bytes = uploaded_file.read()
+#     #encode in base64
+#     file_to_base64=base64.b64encode(file_bytes).decode()
+#     #create json object for database storage
+#     #json_image = {"image": file_to_base64}
+#     st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+#     #st.write(json_image)
+# else:
+#     st.write("No file uploaded")
    
-    
 
+
+
+# dbimagetest=st.button("Save image to images_database")
+
+# if dbimagetest:
+#     #insert_image(str(now), "creating db" )
+
+#     st.success("Image saved to the database! - COMMENTED OUT")
+
+
+
+
+
+
+
+
+# if uploaded_file is not None:
+#     # Convert the bytes data to a PIL Image
+#     img = Image.open(uploaded_file)
+#     # Save the image as JPEG
+#     img.save("image.jpeg", "JPEG")
+
+
+#uploaded_file = st.file_uploader("Add an Image")
+
+# if uploaded_file is not None:
+#     # To read file as bytes:
+#     bytes_data = uploaded_file.getvalue()
+#     st.header("image in bytes :")
+#     st.write(bytes_data)
+
+#     # To convert to a string based IO:
+#     #stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+#     #st.write("String IO")
+#     #st.write(stringio)
+
+#     # To read file as string:
+#     #string_data = stringio.read()
+#     #st.write("String data")
+#     #st.write(string_data)
+   
 
 
 
