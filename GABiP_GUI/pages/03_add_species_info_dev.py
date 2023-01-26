@@ -354,7 +354,7 @@ if checkSummary:
     #sources=json.loads(missingInfoSources)
     try:
         sourceSummary=pd.DataFrame(missingInfoSources)
-        st.dataframe(sourceSummary)
+        st.dataframe(sourceSummary.iloc[0])
     except:
         st.warning("Please enter sources for all data ")
     
