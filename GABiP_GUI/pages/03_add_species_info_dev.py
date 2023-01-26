@@ -199,20 +199,44 @@ def create_json_data():
   for column in dbColumns:
       jsondata.append({column:st.session_state[column]})
   return jsondata
+
+missingInfoColumns=[]
+def get_missing_info_columns(results):
+    for column in dbColumns:
+        if results[column].isna().any():
+         missingInfoColumns.append(results[column].name)
+    return missingInfoColumns
+
+
+def get_missing_userinfo():
+     for option in show_missing_info:
+        
+        userText=st.text_input(option, key=option)
+        if userText:
+         st.session_state[option] == userText
+        #else :
+         #   st.session_state[option]==""
+
+
+def populate_missing_info():
+        for column in dbColumns:
+            additionalInfo.append(st.session_state[column])
+
+def update_missing_results(show_missing_info): #addinfo_options):
+    speciesIndex=results.index[0]
+    results_updated = results.copy()
+    for column in show_missing_info:
+        results_updated.at[speciesIndex, column] = st.session_state[column]
+    return results_updated
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
 headercol1, headercol2, headercol3=st.columns(3)
 headercol2.subheader("Add Species Info Dev")
+st.markdown("**This markdown text will be bold**")
 #st.session_state
 current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
-#st.dataframe(df.style.highlight_null(null_color='red'))
-#showgaps=st.checkbox("Show knowledge gaps")
-#if showgaps:
-#    st.write("Current Database")
-#    st.dataframe(current.style.highlight_null(null_color='yellow'))
-    #AgGrid(current, grid_options={'editable': True})
 
 allgenus=[]
 def get_genus(speciesdropdown):
@@ -234,12 +258,7 @@ results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] 
 
 #st.write(results)
 
-missingInfoColumns=[]
-def get_missing_info_columns(results):
-    for column in dbColumns:
-        if results[column].isna().any():
-         missingInfoColumns.append(results[column].name)
-    return missingInfoColumns
+
 
         #if results[column]==None:
          #   st.write(results[column])
@@ -256,7 +275,7 @@ def get_missing_info_columns(results):
 
 col1, col2, col3 = st.columns(3)
 
-col3.markdown("** All Genea of** "+speciesdropdown)
+col3.markdown("**All Genea of** "+speciesdropdown)
 col3.write(genusdropdown)
 col3.write(speciesGenus["Genus"].iloc[0])
 col2.write("All data")
@@ -272,25 +291,8 @@ col1.write("Image Goes Here")
 
 
 
-
-
-def get_missing_userinfo():
-     for option in show_missing_info:
-        
-        userText=st.text_input(option, key=option)
-        if userText:
-         st.session_state[option] == userText
-        #else :
-         #   st.session_state[option]==""
-
-
-def populate_missing_info():
-        for column in dbColumns:
-            additionalInfo.append(st.session_state[column])
         
 
-def add_information():
-    pass
 
    
 
@@ -350,12 +352,7 @@ def update_results(addinfo_options): #addinfo_options):
         results_updated.at[speciesIndex, column] = st.session_state[column]
     return results_updated
 
-def update_missing_results(show_missing_info): #addinfo_options):
-    speciesIndex=results.index[0]
-    results_updated = results.copy()
-    for column in show_missing_info:
-        results_updated.at[speciesIndex, column] = st.session_state[column]
-    return results_updated
+
 
 showresults=st.checkbox("Show updates")
 
@@ -364,9 +361,29 @@ if showresults:
     #st.write(update_missing_results(show_missing_info))
     #reviewdf = pd.DataFrame(userInfo, current_db.columns)
     #st.dataframe(reviewdf, width=300) 
+    resultsbefore=results
+    resultscopy=results.copy()
+    resultschanged=update_missing_results(show_missing_info)
 
     methodcol1, methodcol2, methodcol3=st.columns(3)
     methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
+    diff_mask = results != resultschanged
+
+    #st.dataframe(results.style.applymap(lambda x: 'background-color: yellow' if x else ''))
+    #st.dataframe(results_multiple.style.applymap(lambda x: 'background-color: yellow' if x else ''))
+
+    compare=st.button("Compare")
+    if compare:
+        #col1, col2, col3 = st.columns(3)
+        #st.dataframe(speciesInfo.iloc[0])
+        comparecol1,comparecol2, comparecol3=st.columns(3)
+        comparecol1.write("Original Species")
+        comparecol1.dataframe(results.iloc[0], width=300)
+        comparecol2.write("Updated Species Info")
+        comparecol2.dataframe(resultschanged.iloc[0], width=300)
+        comparecol3.write("Differences highlighted?")
+        #comparerows(results, results_multiple)
+
 
 
 dataframeapproach=st.checkbox("Replacing values with dataframe approach - hard coded")
@@ -386,23 +403,7 @@ if dataframeapproach:
     results_multiple.at[speciesIndex, ('Order', 'Family', 'SVLMMx')] = ["New order", "New Family", 88 ]
     st.write(results_multiple)
 
-    diff_mask = results != results_multiple
-
-    #st.dataframe(results.style.applymap(lambda x: 'background-color: yellow' if x else ''))
-    #st.dataframe(results_multiple.style.applymap(lambda x: 'background-color: yellow' if x else ''))
-
-    compare=st.button("Compare")
-    if compare:
-        #col1, col2, col3 = st.columns(3)
-        #st.dataframe(speciesInfo.iloc[0])
-        comparecol1,comparecol2, comparecol3=st.columns(3)
-        comparecol1.write("Original Species")
-        comparecol1.dataframe(results.iloc[0], width=300)
-        comparecol2.write("Updated Species Info")
-        comparecol2.dataframe(results_multiple.iloc[0], width=300)
-        comparecol3.write("Differences highlighted?")
-        #comparerows(results, results_multiple)
-
+    
 
 
 
