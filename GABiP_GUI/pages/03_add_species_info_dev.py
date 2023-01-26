@@ -18,13 +18,14 @@ deta_key=os.getenv("deta_key")
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
-metaData=deta_connection.Base("database_metadata")
+database_metadata=deta_connection.Base("database_metadata")
+#metaData=deta_connection.Base("database_metadata")
 
 #------------------------------------------------------------metadata METHODS-----------------------------------------------------------------------------------------#
 
 #fetching info from the database
 def get_all_paths():
-    res = metaData.fetch()
+    res = database_metadata.fetch()
     return res.items
 
 
@@ -214,6 +215,7 @@ def get_missing_userinfo():
         userText=st.text_input(option, key=option)
         if userText:
          st.session_state[option] == userText
+         #st.write("You've entered ", userText)
         #else :
          #   st.session_state[option]==""
 
@@ -228,6 +230,27 @@ def update_missing_results(show_missing_info): #addinfo_options):
     for column in show_missing_info:
         results_updated.at[speciesIndex, column] = st.session_state[column]
     return results_updated
+
+now=datetime.now()
+
+# def link_image(results):
+#     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+#     return merged_image_df["Display Image"].iloc[0]
+
+def link_image(results):
+    merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+    #return merged_image_df["Display Image"].iloc[0]
+    if  merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+        col1.write("No images available. Add an image?")
+    else:
+        return merged_image_df["Display Image"].iloc[0]
+
+
+
+def link_embedded_image(results):
+    embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+    if  embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+        return embedded_image_df["Embedded Link"].iloc[0]
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 
 headercol1, headercol2, headercol3=st.columns(3)
@@ -255,15 +278,30 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
 
+
+
+
 col1, col2, col3 = st.columns(3)
 
 col3.markdown("**All Genea of** "+speciesdropdown)
+
 col3.write(genusdropdown)
+
 col3.write(speciesGenus["Genus"].iloc[0])
-col2.write("All data")
+
+col2.write("Missing data highlighted")
+
 col2.dataframe(results.iloc[0], width=500)
-col2.write("Missing column data only")
-col1.write("Image Goes Here")
+
+#st.markdown("![Streamlit logo](https://streamlit.io/images/logo.png)")
+#col1.markdown("[![Image not Available]("+link_image(results)+")]("+link_embedded_image(results)+")")
+#col1.markdown("[![Image not Available]("+link_image(results)+")]("+link_embedded_image(results)+")")
+#col1.markdown("!["+link_image(results)+")]("+link_embedded_image(results)+")")
+
+link_image(results)
+link_embedded_image(results)
+st.markdown("![Streamlit logo](https://streamlit.io/images/logo.png)")
+col1.write("Image Source: ")
 
 get_missing_info_columns(results)
 show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
@@ -274,23 +312,18 @@ if show_missing_info:
 
 populate_missing_info()
 
+resultscopy=results.copy()
 
-
+resultschanged=update_missing_results(show_missing_info)
 
 
 showresults=st.checkbox("Show updates")
 
 if showresults:
     st.write("magic happens here")
-    
-    resultscopy=results.copy()
-    resultschanged=update_missing_results(show_missing_info)
-
     methodcol1, methodcol2, methodcol3=st.columns(3)
     methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
     diff_mask = results != resultschanged
-
-   
 
     compare=st.button("Compare")
     if compare:
@@ -303,24 +336,51 @@ if showresults:
         comparecol3.write("Differences highlighted?")     
 
 
+
+
+ 
+
+
+
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, 
+                     user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, 
+     "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, 
+     "Reason_Denied":reason_denied, "Decided_By":approved_by, "Decision_Date":date_approved, "Dataset_In_Use":current_database_path })
+
+
 jsonexperiemnt=st.checkbox("Convert results to a json file")
 
 if jsonexperiemnt:
-    st.write("Results as a dataframe - results=current.loc[(current['Species'] == speciesdropdown) & (current['Genus'] == genusdropdown)]")
-    st.write(results)
-   # st.write("Results as json orient records")
-    resultsjsonorientrecs=results.to_json(orient='records')
-    #st.write(resultsjsonorient)
-    st.write("Results as json orient columns - resultsjsoncols=results.to_json(orient='columns')")
-    resultsjsoncols=results.to_json(orient='columns')
-    st.write(resultsjsoncols)
-    #st.write(resultsjsonorientrecs["Family"])
+     st.write("Results as json orient columns - resultsjsoncols=results.to_json(orient='columns')")
+     resultschangedjson=resultschanged.to_json(orient='columns')
+     st.write(resultschangedjson)
 
-    #st.write("Results as json orient index")
-    #resultsjsonindex=results.to_json(orient='index')
-    #st.write(resultsjsonindex)
-    #st.write("Getting json data ")
-    #st.write(resultsjsoncols)
+     addtodb=st.button("Add to metadatabase")
+     
+     if addtodb:
+        #add_to_database(str(now), resultschangedjson, "current db", "Filling Information Gaps", speciesdropdown, genusdropdown, "admin", "ruthveni Pristimantis loves info ", "Pending", "n/a", "n/a", "n/a", "current db" )
+        st.write("Added to the meta database - COMMENTED OUT")
+    
+     retrievefromdb=st.button("Retrieve and convert back to dataframe")
+
+     if retrievefromdb:
+        st.write("Here's the new dataframe back")
+        for database in databases:
+                    if database["User_Comment"]=="ruthveni Pristimantis loves info ":
+                        gapsfromdb=database["Changes"]
+        st.write(gapsfromdb)
+        fromjsondbtodf= pd.read_json(gapsfromdb)
+        st.write((fromjsondbtodf.iloc[0]))
+    
+    
+
+   
+    
+
+
 
 
 
