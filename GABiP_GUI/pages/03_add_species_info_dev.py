@@ -183,15 +183,18 @@ def get_missing_info_columns(results):
     return missingInfoColumns
 
 
+usermissingino=[]
 def get_missing_userinfo():
      for option in show_missing_info:
         
         userText=st.text_input(option, key=option)
         if userText:
-         st.session_state[option] == userText
+         #st.session_state[option] == userText
+         usermissingino.append(st.session_state[option])
          #st.write("You've entered ", userText)
         #else :
          #   st.session_state[option]==""
+     return usermissingino
 
 
 def populate_missing_info():
@@ -257,23 +260,6 @@ genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Ge
 
 results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
 
-# jsondata=[]
-# def create_json_data():
-#   for column in dbColumns:
-#       jsondata.append({column:st.session_state[column]})
-#   return jsondata
-
-
-# def get_missing_userinfo():
-#      for option in show_missing_info:
-        
-#         userText=st.text_input(option, key=option)
-#         if userText:
-#          st.session_state[option] == userText"
-#          #st.write("You've entered ", userText)
-        #else :
-         #   st.session_state[option]==""
-
 sourcefields=[]
 summarydf=[]
 #st.session_state
@@ -290,21 +276,6 @@ def create_source_fields(show_missing_info):
            
        return missingInfoSources
    
-# def create_source_fields_dict(show_missing_info):
-#       for option in show_missing_info:
-#           #if st.session_state[option] !="":
-#               usersource=st.text_input("Please enter a source for "+option, key=option+" source")
-
-#       for option in show_missing_info:
-#           if usersource and usersource!="":
-#               st.session_state[option+" source"]==usersource
-#               missingInfoSources={option:[st.session_state[option+" source"]]}
-           
-#       return missingInfoSources
-
-
-#reviewdf = pd.DataFrame(userInfo, current_db.columns)
-
 col1, col2, col3 = st.columns(3)
 
 col3.markdown("**All Genea of** "+speciesdropdown)
@@ -345,18 +316,7 @@ resultschanged=update_missing_results(show_missing_info)
 
 
 showresults=st.checkbox("Show updates")
-
-# my_dict = {}
-
-# for item in arr:
-#     for key, value in item.items():
-#         for k, v in value.items():
-#             my_dict[k] = v
-
-    
-
-
-
+ 
 
 
 if showresults:
@@ -380,47 +340,53 @@ sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 2
 sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
 sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
 create_source_fields(show_missing_info)
-st.write(missingInfoSources)
+#st.write(missingInfoSources)
 #st.session_state
 
 checkSummary=st.button("View summary sources")
 
-dictsources={}
+
 
 
 if checkSummary:
-    # jsontodf= pd.read_json(speciesjsoncols)
-    #sources=json.loads(missingInfoSources)
-    #df = pd.DataFrame(data)
-    #df = df.T.squeeze()
-    #try:
-        st.write(missingInfoSources)
-        sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
-        st.write(sourcesreviewdf)
-        # missingInfoSourcesDict = {}
+    
+        if not missingInfoSources:
 
-        # for item in missingInfoSources:
-        #     for key, value in item.items():
-        #         for k, v in value.items():
-        #             missingInfoSourcesDict[k] = v
+         st.warning("Please ensure sources are provided for each information point")
+        else:
+            sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+            st.dataframe(sourcesreviewdf)
+sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+st.write("Dataframe to json")            
+jsonsources=sourcesreviewdf.to_json()
+st.write(jsonsources)
+st.write("back to dataframe") 
+st.dataframe(pd.read_json(jsonsources))
+st.write("dataset updated -hardcoded")
+speciesIndex=results.index[0]
+#st.write(speciesIndex)
+#df.loc[1, ['A', 'B']] = [7, 8]
+#updateddb=current.loc[0, ['Longevity']=[usermissingino]]
 
-        #st.write(missingInfoSources[0])
-        # keys = []
-        # values = []
-
-        # for key, value in missingInfoSources.items():
-        #     for k, v in value.items():
-        #          keys.append(k)
-        #          values.append(v)
-        # st.write(keys)
-        # st.write(values)      
+#st.write(current.loc[1, ['A', 'B']] = [7, 8])
 
         
-    #except:
-     #   st.warning("Please enter sources for all data ")
     
+#updatewholedb=st.checkbox("Update new db with values")
 
+# def update_missing_results(show_missing_info): #addinfo_options):
+#     speciesIndex=results.index[0]
+#     results_updated = results.copy()
+#     for column in show_missing_info:
+#         results_updated.at[speciesIndex, column] = st.session_state[column]
+#     return results_updated
 
+#if updatewholedb:
+ 
+#    df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+#     speciesIndex=results.index[0]
+#     # Replace values in the second row based on column names
+#     df.loc[1, ['A', 'B']] = [7, 8]
 
 
 
