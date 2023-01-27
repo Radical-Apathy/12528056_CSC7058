@@ -142,6 +142,12 @@ def create_session_states(dbColumns):
         if column not in st.session_state:
            st.session_state[column] =""
 
+def create_session_states_source(dbColumns):
+    for column in dbColumns:
+        if [column+" source"] not in st.session_state:
+           st.session_state[column+ "source"] =""
+
+
 #st.session_state
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
@@ -268,18 +274,36 @@ results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] 
         #else :
          #   st.session_state[option]==""
 
+sourcefields=[]
+summarydf=[]
+#st.session_state
 def create_source_fields(show_missing_info):
-    for option in show_missing_info:
-        if st.session_state[option] !="":
-            usersource=st.text_input("Please enter a source for "+option, key=option+" source")
-    for option in show_missing_info:
-        if usersource and usersource!="":
-            st.session_state[option+" source"]==usersource
-            missingInfoSources.append({option: st.session_state[option+" source"]})
-    return missingInfoSources
+       for option in show_missing_info:
+           #if st.session_state[option] !="":
+               usersource=st.text_input("Please enter a source for "+option, key=option+" source")
+
+       for option in show_missing_info:
+           if usersource and usersource!="":
+               st.session_state[option+" source"]==usersource
+               #missingInfoSources.append({option:st.session_state[option+" source"]})
+               missingInfoSources.append(st.session_state[option+" source"])
+           
+       return missingInfoSources
+   
+# def create_source_fields_dict(show_missing_info):
+#       for option in show_missing_info:
+#           #if st.session_state[option] !="":
+#               usersource=st.text_input("Please enter a source for "+option, key=option+" source")
+
+#       for option in show_missing_info:
+#           if usersource and usersource!="":
+#               st.session_state[option+" source"]==usersource
+#               missingInfoSources={option:[st.session_state[option+" source"]]}
+           
+#       return missingInfoSources
 
 
-
+#reviewdf = pd.DataFrame(userInfo, current_db.columns)
 
 col1, col2, col3 = st.columns(3)
 
@@ -322,6 +346,19 @@ resultschanged=update_missing_results(show_missing_info)
 
 showresults=st.checkbox("Show updates")
 
+# my_dict = {}
+
+# for item in arr:
+#     for key, value in item.items():
+#         for k, v in value.items():
+#             my_dict[k] = v
+
+    
+
+
+
+
+
 if showresults:
     st.write("magic happens here")
     methodcol1, methodcol2, methodcol3=st.columns(3)
@@ -344,19 +381,43 @@ sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 2
 sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
 create_source_fields(show_missing_info)
 st.write(missingInfoSources)
-#st.write(missingInfoSources)
-
+#st.session_state
 
 checkSummary=st.button("View summary sources")
+
+dictsources={}
+
 
 if checkSummary:
     # jsontodf= pd.read_json(speciesjsoncols)
     #sources=json.loads(missingInfoSources)
-    try:
-        sourceSummary=pd.DataFrame(missingInfoSources)
-        st.dataframe(sourceSummary.iloc[0])
-    except:
-        st.warning("Please enter sources for all data ")
+    #df = pd.DataFrame(data)
+    #df = df.T.squeeze()
+    #try:
+        st.write(missingInfoSources)
+        sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+        st.write(sourcesreviewdf)
+        # missingInfoSourcesDict = {}
+
+        # for item in missingInfoSources:
+        #     for key, value in item.items():
+        #         for k, v in value.items():
+        #             missingInfoSourcesDict[k] = v
+
+        #st.write(missingInfoSources[0])
+        # keys = []
+        # values = []
+
+        # for key, value in missingInfoSources.items():
+        #     for k, v in value.items():
+        #          keys.append(k)
+        #          values.append(v)
+        # st.write(keys)
+        # st.write(values)      
+
+        
+    #except:
+     #   st.warning("Please enter sources for all data ")
     
 
 
