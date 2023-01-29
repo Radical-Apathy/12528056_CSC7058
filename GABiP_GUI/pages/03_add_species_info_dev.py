@@ -364,29 +364,30 @@ st.write("back to dataframe")
 st.dataframe(pd.read_json(jsonsources))
 st.write("dataset updated -hardcoded")
 speciesIndex=results.index[0]
-#st.write(speciesIndex)
-#df.loc[1, ['A', 'B']] = [7, 8]
-#updateddb=current.loc[0, ['Longevity']=[usermissingino]]
 
-#st.write(current.loc[1, ['A', 'B']] = [7, 8])
+
+
+#st.write(missingInfoColumns)
 
         
     
-#updatewholedb=st.checkbox("Update new db with values")
+updatewholedb=st.checkbox("Update new db with values")
 
-# def update_missing_results(show_missing_info): #addinfo_options):
-#     speciesIndex=results.index[0]
-#     results_updated = results.copy()
-#     for column in show_missing_info:
-#         results_updated.at[speciesIndex, column] = st.session_state[column]
-#     return results_updated
+#st.write(missingInfoColumns)
+if updatewholedb:
+    acopy=current.copy()
+    speciesIndex=results.index[0]
+    #currentcopy.loc[speciesIndex, missingInfoColumns] = additionalInfo
+    #acopy.loc[speciesIndex, "Species"]="Updated species" - works
+    #acopy.loc[speciesIndex, missingInfoColumns]="Updated column" - working
+   # acopy.loc[speciesIndex, missingInfoColumns]=additionalInfo - Must have equal len keys and value when setting with an iterable 
+   #df.loc[row_index, ['column_name_1', 'column_name_2']] = [new_value_1, new_value_2]
+    st.write(" Not Hardcoded")
+    #acopy.loc[speciesIndex,["Order", "Family"]]=["a new order", "a new family"] - works
+    acopy.loc[speciesIndex, missingInfoColumns]="a new long"
 
-#if updatewholedb:
- 
-#    df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-#     speciesIndex=results.index[0]
-#     # Replace values in the second row based on column names
-#     df.loc[1, ['A', 'B']] = [7, 8]
+    st.write(acopy)
+
 
 
 
@@ -398,6 +399,8 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
      return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, 
      "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, 
      "Reason_Denied":reason_denied, "Decided_By":approved_by, "Decision_Date":date_approved, "Dataset_In_Use":current_database_path })
+
+
 
 
 jsonexperiemnt=st.checkbox("Convert results to a json file")
@@ -423,8 +426,29 @@ if jsonexperiemnt:
         st.write(gapsfromdb)
         fromjsondbtodf= pd.read_json(gapsfromdb)
         st.write((fromjsondbtodf.iloc[0]))
-    
 
+
+
+updatewholedbbyrow=st.checkbox("Trying row replacement with json file")   
+if updatewholedbbyrow:
+    resultschangedjson=resultschanged.to_json(orient='columns')
+    st.write(resultschangedjson)
+    #st.write(pd.Series(resultschangedjson))
+    newresults=pd.read_json(resultschangedjson)
+    st.write(newresults)
+    st.write("updating whole dataset")
+    speciesIndex=results.index[0]
+    #df.loc[row_index] = new_row
+
+    copied=current.copy()
+    #if not copied.loc[speciesIndex].empty:
+    #updated=copied.loc[speciesIndex] ==pd.read_json(resultschangedjson, orient='columns')
+    try:
+        copied.loc[speciesIndex] =(newresults.loc[speciesIndex])
+        st.write(copied) 
+    except:
+        st.write("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
+    
 
 
 
