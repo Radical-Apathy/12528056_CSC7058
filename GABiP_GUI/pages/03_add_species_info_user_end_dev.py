@@ -288,9 +288,11 @@ col3.write(genusdropdown)
 
 col3.write(speciesGenus["Genus"].iloc[0])
 
-col2.write("Missing data highlighted")
 
-col2.dataframe(results.iloc[0], width=500)
+#col1.dataframe(results.style.apply(highlight_null, subset=df.columns[df.iloc[0].isnull()]).render())
+col2.write("Missing data highlighted")
+col2.write(results.iloc[0])
+#row = results.iloc[0]
 
 col1.markdown(f"[![]({link_image(results)})]({link_embedded_image(results)})")
 
