@@ -233,8 +233,12 @@ def link_embedded_image(results):
     if  embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
         return embedded_image_df["Embedded Link"].iloc[0]
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
-
+#C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/dataset_thumbnail.jpeg
+#st.image("amphibs.jpeg", width=200)
+#"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg"
 headercol1, headercol2, headercol3=st.columns(3)
+headercol1.image("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg", width=200)
+
 headercol2.subheader("Add Species Info Dev")
 st.markdown("**This markdown text will be bold**")
 #st.session_state
@@ -349,13 +353,13 @@ checkSummary=st.button("View summary sources")
 
 
 if checkSummary:
-    
+        sumcol1,sumcol2,sumcol3=st.columns(3)
         if not missingInfoSources:
 
          st.warning("Please ensure sources are provided for each information point")
         else:
             sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
-            st.dataframe(sourcesreviewdf)
+            sumcol2.dataframe(sourcesreviewdf)
 sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
 st.write("Dataframe to json")            
 jsonsources=sourcesreviewdf.to_json()
@@ -447,7 +451,7 @@ if updatewholedbbyrow:
         copied.loc[speciesIndex] =(newresults.loc[speciesIndex])
         st.write(copied) 
     except:
-        st.write("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
+        st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
     
 
 
