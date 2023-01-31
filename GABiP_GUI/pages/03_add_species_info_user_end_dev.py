@@ -371,12 +371,39 @@ st.dataframe(pd.read_json(jsonsources))
 st.write("dataset updated -hardcoded")
 speciesIndex=results.index[0]
 
-
-
 #st.write(missingInfoColumns)
 
-  
     
+overwrittingsinglecellsjson=st.checkbox("Updating individual cells using json")
+
+if overwrittingsinglecellsjson:
+    st.write("Species index", speciesIndex)
+    newdb=current.copy()
+    originalresultsjson=results.to_json(orient="columns")
+    st.write("Species before user change json")
+    st.write(originalresultsjson)
+    st.write("Original results json converted to python dictionary")
+    originalpython=json.loads(originalresultsjson)
+    st.write(originalpython)
+
+    st.write("Hard coding longveity change via originalpython['Longevity']['0'] = 90")
+    originalpython['Longevity']['0'] = 90
+    st.write(originalpython)
+    st.write("User changes in dataframe")
+    userchanges=pd.DataFrame(usermissingino, show_missing_info)
+    st.write(userchanges)
+    st.write("changes in json from data frame, orient columns")
+    userjson=userchanges.to_json(orient="columns")
+    #for i in show_missing_info[i]:
+
+    st.write(userjson[0])
+    st.write("User json converted to a python dictionary")
+    parsed=json.loads(userjson)
+    #st.write(parsed[show_missing_info[0]])
+    st.write("columns chosen array")
+    st.write(show_missing_info)
+    st.write("user data array")
+    st.write(usermissingino)
 
 
 
@@ -441,11 +468,15 @@ if jsonexperiemnt:
 #         st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
     
 
+    
 
 overwrittingsinglecells=st.checkbox("Replacing cells in stead of whole row using pandas - Admin UI")
 
 if overwrittingsinglecells:
      #sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+     st.write("Original results df as python dict")
+     pythondict=results.to_dict(orient="index")
+     st.write(pythondict)
      currentcopy=current.copy()
      addeddata=pd.DataFrame(usermissingino, show_missing_info)
      st.write(addeddata)
@@ -456,13 +487,7 @@ if overwrittingsinglecells:
      st.write(usermissingino)
      st.write(show_missing_info)
 
-     for i in show_missing_info:
-        for j in usermissingino:
-            currentcopy[[show_missing_info[i]]].columns
-            currentcopy.replace(" ", usermissingino[j], inplace=True)
-        st.write(currentcopy)
-        #  for i in dfz[['A','B','C','D']].columns:
-        #       dfz[i].replace(1,i,inplace=True)
+     
 
    
 
