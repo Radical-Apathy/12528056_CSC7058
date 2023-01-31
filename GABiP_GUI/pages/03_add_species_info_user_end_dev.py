@@ -362,49 +362,161 @@ if checkSummary:
         else:
             sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
             sumcol2.dataframe(sourcesreviewdf)
-sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
-st.write("Dataframe to json")            
-jsonsources=sourcesreviewdf.to_json()
-st.write(jsonsources)
-st.write("back to dataframe") 
-st.dataframe(pd.read_json(jsonsources))
-st.write("dataset updated -hardcoded")
-speciesIndex=results.index[0]
+# sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+# st.write("Dataframe to json")            
+# jsonsources=sourcesreviewdf.to_json()
+# st.write(jsonsources)
+# st.write("back to dataframe") 
+# st.dataframe(pd.read_json(jsonsources))
+# st.write("dataset updated -hardcoded")
+# speciesIndex=results.index[0]
 
 #st.write(missingInfoColumns)
 
+
+#C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/31.01.2023-17.38.12-admin-approved.csv
+# dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
+datacheckdf=pd.read_csv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/31.01.2023-17.48.42-admin-approved.csv", encoding= 'unicode_escape', low_memory=False)
+st.write("I've written in the 42s")
+st.write(datacheckdf.to_dict())
+st.write(current.head().to_dict())
+overwrittingsinglecells=st.checkbox("Replacing cells in stead of whole row using pandas and python dic - Admin side UI Processing")
+
+
+# def updatespecies(pythondictionary):
+#     for column in show_missing_info:
+#         for value in usermissingino:
+#             pythondictionary[column][speciesIndex] = value
+#     return pythondictionary
+
+# def iteration_check_combo():
+#      for column in show_missing_info:
+#         for value in usermissingino:
+#             st.write(column, value)
+# def iteration_check_idividual():
+#     for column in show_missing_info:
+#         st.write(column)
+#     for value in usermissingino:
+#         st.write(value)
+# def iteration_check_combo_fix():
+#      for column in show_missing_info:
+#         for value in usermissingino:
+#          st.write(column, value)
+
+
+def update_species(userdict, originaldict):
     
+    added_values=list(userdict.values())[0]
+    for key, value in added_values.items():
+      if key in originaldict:
+        originaldict[key][speciesIndex] = value #float('NaN' if value == 'NaN' else value)
+    return originaldict
+
+
+
+if overwrittingsinglecells:
+     currentcopy=current.copy()
+     speciesIndex=results.index[0]
+     #sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+     st.write("Original results types")
+     originaltypes=current.dtypes
+     st.write(originaltypes)
+     st.write("Original results df as python dict")
+     originaldict=results.to_dict()
+     #st.write(originaldict)
+     st.write("Original results back to df")
+     #st.dataframe(pd.DataFrame.from_dict(originaldict))
+     st.write("User changes in dataframe, formed by userchanges=pd.DataFrame(usermissingino, show_missing_info) ")
+     userchanges=pd.DataFrame(usermissingino, show_missing_info)
+     #st.write(userchanges)
+     st.write("User changes dataframe to a python dict")
+     userdict=userchanges.to_dict()
+     st.write(userdict)
+     
+     st.write("trying to replace user dic values in original row values -")
+     st.write(update_species(userdict, originaldict))
+     originaldictupdatedtodf = pd.DataFrame.from_dict(originaldict)
+     st.write("orginal row updated in dict form")
+     st.write(originaldictupdatedtodf.to_dict())
+     st.write("Updated results back to dataframe")
+     st.write(originaldictupdatedtodf)
+     st.write("Showing datatypes")
+     datatypesentered=originaldictupdatedtodf.dtypes
+     st.write(datatypesentered)
+     st.write("Updated results to json - does it respect numerical values?-Nope")
+     st.write(originaldictupdatedtodf.to_json(orient="columns"))
+     st.write("Original results updated in dataset")
+     copied=current.copy()
+   
+     try:
+        currentcopy.loc[speciesIndex] =(originaldictupdatedtodf.loc[speciesIndex])
+        st.write(currentcopy) 
+     except:
+        st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
+    
+     
+
+     
+
+        
+jsondata=[]
+def create_json_data():
+  for column in missingInfoColumns:
+      jsondata.append({column:st.session_state[column]})
+  return jsondata  
+
+
+
+
 overwrittingsinglecellsjson=st.checkbox("Updating individual cells using json")
 
 if overwrittingsinglecellsjson:
     st.write("Species index", speciesIndex)
     newdb=current.copy()
-    originalresultsjson=results.to_json(orient="columns")
-    st.write("Species before user change json")
+    originalresultsjson=results.to_json(orient="columns")#)orient="columns")
+    st.write("Species before user change json, orient columns")
     st.write(originalresultsjson)
-    st.write("Original results json converted to python dictionary")
-    originalpython=json.loads(originalresultsjson)
-    st.write(originalpython)
-
-    st.write("Hard coding longveity change via originalpython['Longevity']['0'] = 90")
-    originalpython['Longevity']['0'] = 90
-    st.write(originalpython)
-    st.write("User changes in dataframe")
+    
+    st.write("User changes in dataframe, formed by userchanges=pd.DataFrame(usermissingino, show_missing_info) ")
     userchanges=pd.DataFrame(usermissingino, show_missing_info)
     st.write(userchanges)
-    st.write("changes in json from data frame, orient columns")
-    userjson=userchanges.to_json(orient="columns")
-    #for i in show_missing_info[i]:
-
-    st.write(userjson[0])
-    st.write("User json converted to a python dictionary")
-    parsed=json.loads(userjson)
-    #st.write(parsed[show_missing_info[0]])
-    st.write("columns chosen array")
-    st.write(show_missing_info)
-    st.write("user data array")
+    st.write("User df changes to json")
+    userchangedfjson=userchanges.to_json()
+    st.write(userchangedfjson)
+    st.write("usermissinginfo array")
     st.write(usermissingino)
+    st.write("columns selected array")
+    st.write(show_missing_info)
+    st.write("creating json array from columns selected and session state")
+    st.write(create_json_data())
+    st.write("Trying to update json row using json values from users dataframe above - hard coded")
+    
 
+    # Load the first json into a dictionary
+    data = {"Order":{"3":"Anura"},"Family":{"3":"Alsodidae"},"Genus":{"3":"Alsodes"},"Species":{"3":"australis"},"SVLMMx":{"3":None},"SVLFMx":{"3":None},"SVLMx":{"3":63.0},"Longevity":{"3":None},"NestingSite":{"3":None},"ClutchMin":{"3":None},"ClutchMax":{"3":None},"Clutch":{"3":None},"ParityMode":{"3":"Larval"},"EggDiameter":{"3":None},"Activity":{"3":None},"Microhabitat":{"3":"Semi-aquatic"},"GeographicRegion":{"3":"South America"},"IUCN":{"3":"DD"},"PopTrend":{"3":None},"RangeSize":{"3":7833.26157373},"ElevationMin":{"3":250.0},"ElevationMax":{"3":250.0},"Elevation":{"3":250.0}}
+    #originalresultsjson
+    # Load the second json into a dictionary
+    update = {"0":{"ClutchMin":"55","NestingSite":"aus nesting"}}
+    #userchangedfjson
+
+    # Update the values of ClutchMin and NestingSite in the first json
+    data["ClutchMin"][str(speciesIndex)] = update["0"]["ClutchMin"]
+    data["NestingSite"][str(speciesIndex)] = update["0"]["NestingSite"]
+    
+    #originalresultsjson["ClutchMin"]["3"] = userchangedfjson["0"]["ClutchMin"]
+   
+    # Convert the updated dictionary to a json string
+    updated_json = json.dumps(data)
+    st.write(updated_json)
+
+    # Print the updated json
+    st.write(updated_json)
+    st.write("new row after updating individual cells")
+    st.write(pd.read_json(updated_json))
+
+
+
+    
 
 
 
@@ -470,24 +582,7 @@ if jsonexperiemnt:
 
     
 
-overwrittingsinglecells=st.checkbox("Replacing cells in stead of whole row using pandas - Admin UI")
 
-if overwrittingsinglecells:
-     #sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
-     st.write("Original results df as python dict")
-     pythondict=results.to_dict(orient="index")
-     st.write(pythondict)
-     currentcopy=current.copy()
-     addeddata=pd.DataFrame(usermissingino, show_missing_info)
-     st.write(addeddata)
-     addeddatajson=addeddata.to_json(orient="columns")
-     speciesIndex=results.index[0]
-     st.write(speciesIndex)
-     st.write(addeddatajson)
-     st.write(usermissingino)
-     st.write(show_missing_info)
-
-     
 
    
 
