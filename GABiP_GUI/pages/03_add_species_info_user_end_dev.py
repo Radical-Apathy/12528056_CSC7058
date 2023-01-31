@@ -375,24 +375,9 @@ speciesIndex=results.index[0]
 
 #st.write(missingInfoColumns)
 
-        
+  
     
-updatewholedb=st.checkbox("Update new db with values")
 
-#st.write(missingInfoColumns)
-if updatewholedb:
-    acopy=current.copy()
-    speciesIndex=results.index[0]
-    #currentcopy.loc[speciesIndex, missingInfoColumns] = additionalInfo
-    #acopy.loc[speciesIndex, "Species"]="Updated species" - works
-    #acopy.loc[speciesIndex, missingInfoColumns]="Updated column" - working
-   # acopy.loc[speciesIndex, missingInfoColumns]=additionalInfo - Must have equal len keys and value when setting with an iterable 
-   #df.loc[row_index, ['column_name_1', 'column_name_2']] = [new_value_1, new_value_2]
-    st.write(" Not Hardcoded")
-    #acopy.loc[speciesIndex,["Order", "Family"]]=["a new order", "a new family"] - works
-    acopy.loc[speciesIndex, missingInfoColumns]="a new long"
-
-    st.write(acopy)
 
 
 
@@ -435,29 +420,51 @@ if jsonexperiemnt:
 
 
 
-updatewholedbbyrow=st.checkbox("Trying row replacement with json file")   
-if updatewholedbbyrow:
-    resultschangedjson=resultschanged.to_json(orient='columns')
-    st.write(resultschangedjson)
-    #st.write(pd.Series(resultschangedjson))
-    newresults=pd.read_json(resultschangedjson)
-    st.write(newresults)
-    st.write("updating whole dataset")
-    speciesIndex=results.index[0]
-    #df.loc[row_index] = new_row
+# updatewholedbbyrow=st.checkbox("Trying row replacement with json file")   
+# if updatewholedbbyrow:
+#     resultschangedjson=resultschanged.to_json(orient='columns')
+#     st.write(resultschangedjson)
+#     #st.write(pd.Series(resultschangedjson))
+#     newresults=pd.read_json(resultschangedjson)
+#     st.write(newresults)
+#     st.write("updating whole dataset")
+#     speciesIndex=results.index[0]
+#     #df.loc[row_index] = new_row
 
-    copied=current.copy()
-    #if not copied.loc[speciesIndex].empty:
-    #updated=copied.loc[speciesIndex] ==pd.read_json(resultschangedjson, orient='columns')
-    try:
-        copied.loc[speciesIndex] =(newresults.loc[speciesIndex])
-        st.write(copied) 
-    except:
-        st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
+#     copied=current.copy()
+#     #if not copied.loc[speciesIndex].empty:
+#     #updated=copied.loc[speciesIndex] ==pd.read_json(resultschangedjson, orient='columns')
+#     try:
+#         copied.loc[speciesIndex] =(newresults.loc[speciesIndex])
+#         st.write(copied) 
+#     except:
+#         st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
     
 
 
+overwrittingsinglecells=st.checkbox("Replacing cells in stead of whole row using pandas - Admin UI")
 
+if overwrittingsinglecells:
+     #sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+     currentcopy=current.copy()
+     addeddata=pd.DataFrame(usermissingino, show_missing_info)
+     st.write(addeddata)
+     addeddatajson=addeddata.to_json(orient="columns")
+     speciesIndex=results.index[0]
+     st.write(speciesIndex)
+     st.write(addeddatajson)
+     st.write(usermissingino)
+     st.write(show_missing_info)
+
+     for i in show_missing_info:
+        for j in usermissingino:
+            currentcopy[[show_missing_info[i]]].columns
+            currentcopy.replace(" ", usermissingino[j], inplace=True)
+        st.write(currentcopy)
+        #  for i in dfz[['A','B','C','D']].columns:
+        #       dfz[i].replace(1,i,inplace=True)
+
+   
 
 # st.write("Exploring image uploading")
 
