@@ -153,22 +153,22 @@ def get_missing_info_columns(results):
     return missingInfoColumns
 
 
-usermissinginfo=[]
+user_missing_info=[]
 def get_missing_userinfo():
      for option in show_missing_info:
         userText=st.text_input(option, key=option)
         if userText:
-         usermissinginfo.append(st.session_state[option])
-     return usermissinginfo
+         user_missing_info.append(st.session_state[option])
+     return user_missing_info
 
 
 def populate_missing_info():
         for column in dbColumns:
-            additionalInfo.append(st.session_state[column])
+            additional_info.append(st.session_state[column])
 
 def update_missing_results(show_missing_info): 
-    speciesIndex=results.index[0]
-    results_updated = results.copy()
+    speciesIndex=species_results.index[0]
+    results_updated = species_results.copy()
     for column in show_missing_info:
         results_updated.at[speciesIndex, column] = st.session_state[column]
     return results_updated
@@ -194,6 +194,14 @@ def link_embedded_image(results):
         return embedded_image_df["Embedded Link"].iloc[0]
 
 
+def update_user_json(original_results_json, user_df_json):
+    data = json.loads(original_results_json)
+    new_keys_data = json.loads(user_df_json)
+
+    for key, value in new_keys_data["0"].items():
+        if key in data:
+            data[key][str(results_index)] = value
+    return data
 #------------------------------------------------------------MAIN PAGE-----------------------------------------------------------------------------------------#
 #C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/dataset_thumbnail.jpeg
 #st.image("amphibs.jpeg", width=200)
@@ -206,80 +214,80 @@ current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
 
-allgenus=[]
-def get_genus(speciesdropdown):
-    allgenus=current.loc[current["Species"]==speciesdropdown]
-    return allgenus
+all_genus=[]
+def get_genus(species_dropdown):
+    all_genus=current.loc[current["Species"]==species_dropdown]
+    return all_genus
 
 
-additionalInfo=[]
+additional_info=[]
 
-missingInfoSources=[]
+additional_info_sources=[]
 
-speciesdropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+species_dropdown=st.selectbox("Select a species to add to: ", (current['Species']))
 
-speciesGenus=current.loc[current["Species"]==speciesdropdown]
+species_genus=current.loc[current["Species"]==species_dropdown]
 
-genusdropdown=st.selectbox("Select "+speciesdropdown+ " Genus", speciesGenus["Genus"])
+genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
 
-results=current.loc[(current["Species"] == speciesdropdown) & (current['Genus'] == genusdropdown)]
+species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
 
-sourcefields=[]
-summarydf=[]
+source_fields=[]
+summary_dataframe=[]
 
 def create_source_fields(show_missing_info):
        for option in show_missing_info:
-               usersource=st.text_input("Please enter a source for "+option, key=option+" source")
+               user_source=st.text_input("Please enter a source for "+option, key=option+" source")
 
        for option in show_missing_info:
-           if usersource and usersource!="":
-               st.session_state[option+" source"]==usersource
-               missingInfoSources.append(st.session_state[option+" source"])
+           if user_source and user_source!="":
+               st.session_state[option+" source"]==user_source
+               additional_info_sources.append(st.session_state[option+" source"])
            
-       return missingInfoSources
+       return additional_info_sources
    
 col1, col2, col3 = st.columns(3)
 
-col3.markdown("**All Genea of** "+speciesdropdown)
+col3.markdown("**All Genea of** "+species_dropdown)
 
-col3.dataframe(speciesGenus["Genus"])
+col3.dataframe(species_genus["Genus"])
 
 
-col2.write(f"{genusdropdown} {speciesdropdown} Summary")
+col2.write(f"{genus_dropdown} {species_dropdown} Summary")
 
-col2.dataframe(results.iloc[0], width=500)
+col2.dataframe(species_results.iloc[0], width=500)
 
-col1.markdown(f"[![]({link_image(results)})]({link_embedded_image(results)})")
+col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
-get_missing_info_columns(results)
+get_missing_info_columns(species_results)
 show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
 if show_missing_info:
      get_missing_userinfo()
 
-resultscopy=results.copy()
+results_copy=species_results.copy()
 
-resultschanged=update_missing_results(show_missing_info)
+results_updated=update_missing_results(show_missing_info)
 
 
-showresults=st.checkbox("Show updates")
+show_results=st.checkbox("Show updates")
  
 
 
-if showresults:
+if show_results:
     methodcol1, methodcol2, methodcol3=st.columns(3)
     methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
-    diff_mask = results != resultschanged
+    diff_mask = species_results != results_updated
 
     compare=st.button("Compare")
     if compare:
        
         comparecol1,comparecol2, comparecol3=st.columns(3)
         comparecol1.write("Original Species")
-        comparecol1.dataframe(results.iloc[0], width=300)
+        comparecol1.dataframe(species_results.iloc[0], width=300)
         comparecol2.write("Updated Species Info")
-        comparecol2.dataframe(resultschanged.iloc[0], width=300)
+        comparecol2.dataframe(results_updated.iloc[0], width=300)
         comparecol3.write("Differences highlighted?")     
 
 sourcecol1,sourcecol2,sourcecol3=st.columns(3)
@@ -289,39 +297,53 @@ sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 2
 create_source_fields(show_missing_info)
 
 sourcesum1, sourcesum2,sourcesum3=st.columns(3)
-checkSummary=sourcesum2.button("View summary sources")
+checkSummary=sourcesum2.button("species_dropdown sources")
 
 if checkSummary:
         sumcol1,sumcol2,sumcol3=st.columns(3)
-        if not missingInfoSources:
+        if not additional_info_sources:
 
          st.warning("Please ensure sources are provided for each information point")
         else:
-            sourcesreviewdf = pd.DataFrame(missingInfoSources, show_missing_info)
+            sourcesreviewdf = pd.DataFrame(additional_info_sources, show_missing_info)
             sumcol2.dataframe(sourcesreviewdf)
 
 st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
 
-previewwholedb=st.checkbox("Preview updated dataset")
 
-if previewwholedb:
-     resultschangedjson=resultschanged.to_json(orient='columns')
-     st.write(resultschangedjson)
-    
-     newresults=pd.read_json(resultschangedjson)
-     #st.write(newresults)
-     st.write("updating whole dataset")
-     speciesIndex=results.index[0]
-    
-     copied=current.copy()
+
+
+
+preview_updated_dataset=st.checkbox("Preview updated dataset")
+
+if preview_updated_dataset:
+    results_index=species_results.index[0]
+    updated_db=current.copy()
+    search_results_to_json=species_results.to_json(orient="columns")
    
-     try:
-        copied.loc[speciesIndex] =(newresults.loc[speciesIndex])
-        st.write(copied) 
-     except:
-        st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
+    try:
+        pd.DataFrame(user_missing_info, show_missing_info)
+        user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+        user_changes_json=user_changes.to_json()    
+        updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+        updated_row=pd.read_json(updated_json)
+        updated_db.loc[results_index] =(updated_row.loc[results_index])
+    except:
+        st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in. Alternatively, remove the selected field from dropdown menu")
+
+  
+        
+    #st.dataframe(updated_db)
+    #st.warning("Something's gone wrong")
     
+    
+
+
+
+
+
+
 
 subcol1,subcol2,subcol3 = st.columns(3)
 submit_extra_info=subcol2.button("Submit")
@@ -346,7 +368,7 @@ def create_json_data():
 #               st.warning("Please ensure all fields selected have a value")
 
 create_json_data()
-st.write(usermissinginfo)
+#st.write(usermissinginfo)
 if submit_extra_info:
    # check_for_blanks(missingInfoColumns)
     st.write("check user doesnt accidentally have blanks")

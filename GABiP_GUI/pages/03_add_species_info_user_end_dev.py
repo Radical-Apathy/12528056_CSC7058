@@ -475,7 +475,7 @@ def update_user_json(originalresultsjson, userchangedfjson):
     data = json.loads(originalresultsjson)
     new_keys_data = json.loads(userchangedfjson)
 
-    for key, value in new_keys_data["0"].items():
+    for key, value in new_keys_data[0].items():
         if key in data:
             data[key][str(results_index)] = value
     return data
@@ -501,6 +501,8 @@ if overwrittingsinglecellsjson:
     userchangedfjson=userchanges.to_json()
     st.write(userchangedfjson)
     showresults=st.checkbox("Show updated")
+
+
     if showresults:
         st.write("updating results json with user df json")
         updated_json=json.dumps(update_user_json(originalresultsjson, userchangedfjson))
