@@ -224,12 +224,14 @@ def get_genus(species_dropdown):
 additional_info=[]
 
 species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
-#species_alphabetical.drop_duplicates()
+
 additional_info_sources=[]
-#species_dropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+
 species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
 
 species_genus=current.loc[current["Species"]==species_dropdown]
+
+genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
 
 genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
 
@@ -344,7 +346,14 @@ if preview_updated_dataset:
         updated_db.loc[results_index] =(updated_row.loc[results_index])
         st.dataframe(updated_db)
     except:
-        st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in. Alternatively, remove the selected field from dropdown menu")
+        st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx")
+        #st.warning()
+
+    commit_addition=st.button("Submit Addition")
+
+    if commit_addition:
+        st.write("Thank you! Your submission has been sent to admin for review. You'll be notified by e-mail on decision")
+
 
   
   
