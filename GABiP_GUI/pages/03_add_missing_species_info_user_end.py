@@ -206,10 +206,11 @@ def update_user_json(original_results_json, user_df_json):
 #C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/dataset_thumbnail.jpeg
 #st.image("amphibs.jpeg", width=200)
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg"
+#sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
 headercol1, headercol2, headercol3=st.columns(3)
 headercol1.image("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg", width=200)
 
-headercol2.subheader("Add Species Info Dev")
+headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
 current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -222,9 +223,11 @@ def get_genus(species_dropdown):
 
 additional_info=[]
 
+species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
+#species_alphabetical.drop_duplicates()
 additional_info_sources=[]
-
-species_dropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+#species_dropdown=st.selectbox("Select a species to add to: ", (current['Species']))
+species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
 
 species_genus=current.loc[current["Species"]==species_dropdown]
 
@@ -297,21 +300,31 @@ sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 2
 create_source_fields(show_missing_info)
 
 sourcesum1, sourcesum2,sourcesum3=st.columns(3)
-checkSummary=sourcesum2.button("species_dropdown sources")
+source_summary=sourcesum2.button("Review Sources Summary")
+sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
+sources_review_json=sources_review_dataframe.to_json(orient="columns")
 
-if checkSummary:
+
+if source_summary:
+    
         sumcol1,sumcol2,sumcol3=st.columns(3)
         if not additional_info_sources:
 
          st.warning("Please ensure sources are provided for each information point")
         else:
-            sourcesreviewdf = pd.DataFrame(additional_info_sources, show_missing_info)
-            sumcol2.dataframe(sourcesreviewdf)
+            st.write("Display example")
+            sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+            sumcol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+            sources_parsed=json.loads(sources_review_json)
+            for key, value in sources_parsed.items():
+                for inner_key, inner_value in value.items():
+                    sumcol1.markdown("***")
+                    sumcol1.markdown("**"+inner_key+"**")
+                    sumcol3.markdown("***")
+                    sumcol3.markdown("*"+inner_value+"*")
+                    
 
 st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
-
-
-
 
 
 
@@ -329,49 +342,12 @@ if preview_updated_dataset:
         updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
         updated_row=pd.read_json(updated_json)
         updated_db.loc[results_index] =(updated_row.loc[results_index])
+        st.dataframe(updated_db)
     except:
         st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in. Alternatively, remove the selected field from dropdown menu")
 
   
-        
-    #st.dataframe(updated_db)
-    #st.warning("Something's gone wrong")
-    
-    
-
-
-
-
-
-
-
-subcol1,subcol2,subcol3 = st.columns(3)
-submit_extra_info=subcol2.button("Submit")
-
-
-
-jsondata=[]
-def create_json_data():
-  for column in missingInfoColumns:
-      jsondata.append({column:st.session_state[column]})
-  return jsondata
-
-# st.write(usermissinginfo)
-# def check_for_blanks(jsondata):
-#      for value in {jsondata:value}:
-#          if value =="":
-# #              st.warning("Please ensure all fields selected have a value")
-
-# def check_for_blanks(missingInfoColumns):
-#       for column in missingInfoColumns:
-#           if st.session_state[column] and st.session_state[column] =="":
-#               st.warning("Please ensure all fields selected have a value")
-
-create_json_data()
-#st.write(usermissinginfo)
-if submit_extra_info:
-   # check_for_blanks(missingInfoColumns)
-    st.write("check user doesnt accidentally have blanks")
+  
     
 
 

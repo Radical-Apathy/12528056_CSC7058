@@ -499,7 +499,7 @@ if overwrittingsinglecellsjson:
     st.write(userchanges)
     st.write("User df changes to json")
     userchangedfjson=userchanges.to_json()
-    st.write(userchangedfjson)
+    #st.write(userchangedfjson)
     showresults=st.checkbox("Show updated")
 
 
@@ -610,7 +610,45 @@ if jsonexperiemnt:
 #         st.warning("Please check that values entered are in correct format e.g. numerical for values such as SVLMMx")
     
 
+       
+    #st.dataframe(updated_db)
+    #st.warning("Something's gone wrong")
     
+    
+
+
+
+
+
+
+
+subcol1,subcol2,subcol3 = st.columns(3)
+submit_extra_info=subcol2.button("Submit")
+
+
+
+jsondata=[]
+def create_json_data():
+  for column in missingInfoColumns:
+      jsondata.append({column:st.session_state[column]})
+  return jsondata
+
+# st.write(usermissinginfo)
+# def check_for_blanks(jsondata):
+#      for value in {jsondata:value}:
+#          if value =="":
+# #              st.warning("Please ensure all fields selected have a value")
+
+# def check_for_blanks(missingInfoColumns):
+#       for column in missingInfoColumns:
+#           if st.session_state[column] and st.session_state[column] =="":
+#               st.warning("Please ensure all fields selected have a value")
+
+create_json_data()
+#st.write(usermissinginfo)
+if submit_extra_info:
+   # check_for_blanks(missingInfoColumns)
+    st.write("check user doesnt accidentally have blanks")   
 
 
 
