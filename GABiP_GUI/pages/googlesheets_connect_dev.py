@@ -62,15 +62,35 @@ def worksheet_names():
         sheet_names.append(sheet.title)  
     return sheet_names
 
-#folder link
-csvUrl="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+# #folder link
+# folder_link="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+# file_name="dataset_clean.csv"
+# full_link=folder_link + "/" + file_name
+#gooogle_drive_link="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"#/dataset_clean.csv"
 
-#sheet link
-sheetLink="https://docs.google.com/spreadsheets/d/1PCcg_kCxu3_ICk_wlISC9WjyRm6l1BD8i24G1SrEmG4/edit#gid=246960271"
+# #sheet link
+# sheetLink="https://docs.google.com/spreadsheets/d/1PCcg_kCxu3_ICk_wlISC9WjyRm6l1BD8i24G1SrEmG4/edit#gid=246960271"
 
-#-----------reddit attempt------------#
+# #-----------reddit attempt------------#
 
-sheet_id = "https://docs.google.com/spreadsheets/d/1PCcg_kCxu3_ICk_wlISC9WjyRm6l1BD8i24G1SrEmG4/edit#gid=246960271"
-sheet_name = "dataset_clean"
+# sheet_id = "https://docs.google.com/spreadsheets/d/1PCcg_kCxu3_ICk_wlISC9WjyRm6l1BD8i24G1SrEmG4/edit#gid=246960271"
+# sheet_name = "dataset_clean"
+
+# # df_test=pd.read_csv(full_link)
 
 
+# st.write("Trying github link")
+# github_path="https://github.com/Radical-Apathy/12528056_CSC7058/blob/main/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv"
+# raw_github_path="https://raw.githubusercontent.com/Radical-Apathy/12528056_CSC7058/main/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv"
+
+#https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/view?usp=sharing
+
+file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
+google_url = f"https://drive.google.com/uc?id={file_id}"
+#gooogle_drive_link=
+file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/view?usp=sharing"
+folder_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+st.write("from google drive")
+
+from_google=pd.read_csv(google_url, encoding= 'unicode_escape')#, low_memory=False))
+st.write(from_google)
