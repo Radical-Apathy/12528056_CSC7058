@@ -10,8 +10,17 @@ def load_original():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
     return dfFull
 
-dfFull=load_original()
 
+
+file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
+google_url = f"https://drive.google.com/uc?id={file_id}"
+@st.cache
+def load_from_google():
+    dataset = pd.read_csv(google_url, encoding= 'unicode_escape')
+    return dataset
+
+
+dfFull=load_from_google()
 #st.header("This is the chart build exp page")
 #st.sidebar.write("Chart ingredients")
 #st.write("This is a hard coded bar chart using streamlit")

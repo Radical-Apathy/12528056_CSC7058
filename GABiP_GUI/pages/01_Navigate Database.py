@@ -29,8 +29,15 @@ def load_images():
     return dfImages
 
 
+file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
+google_url = f"https://drive.google.com/uc?id={file_id}"
+@st.cache
+def load_from_google():
+    dataset = pd.read_csv(google_url, encoding= 'unicode_escape')
+    return dataset
+
 #dfFull=load_original()
-dfFull=load_cleaned()
+dfFull=load_from_google()
 dfReferences = load_references()
 dfImages = load_images()
 

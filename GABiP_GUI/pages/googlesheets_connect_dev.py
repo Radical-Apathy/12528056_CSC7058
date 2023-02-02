@@ -78,6 +78,11 @@ def worksheet_names():
 
 # # df_test=pd.read_csv(full_link)
 
+@st.cache
+def load_dataset(url):
+    dataset=pd.read_csv(google_url, encoding= 'unicode_escape')
+    return dataset
+
 
 # st.write("Trying github link")
 # github_path="https://github.com/Radical-Apathy/12528056_CSC7058/blob/main/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv"
@@ -94,3 +99,6 @@ st.write("from google drive")
 
 from_google=pd.read_csv(google_url, encoding= 'unicode_escape')#, low_memory=False))
 st.write(from_google)
+
+dataset=load_dataset(google_url)
+st.write(dataset)
