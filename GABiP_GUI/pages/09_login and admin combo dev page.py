@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
 deta_key=os.getenv("deta_key")
 
-
+#deta_key = st.secrets["deta"]["deta_key"]
 #initialising a deta object
 deta_connection= Deta(deta_key)
 
