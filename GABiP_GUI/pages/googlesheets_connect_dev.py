@@ -84,11 +84,6 @@ def load_dataset(url):
     return dataset
 
 
-# st.write("Trying github link")
-# github_path="https://github.com/Radical-Apathy/12528056_CSC7058/blob/main/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv"
-# raw_github_path="https://raw.githubusercontent.com/Radical-Apathy/12528056_CSC7058/main/GABiP_GUI/pages/GABiP_Databases/original_to_edit.csv"
-
-#https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/view?usp=sharing
 
 file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
 google_url = f"https://drive.google.com/uc?id={file_id}"
