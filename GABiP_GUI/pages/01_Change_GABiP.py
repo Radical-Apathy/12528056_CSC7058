@@ -111,7 +111,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')
     return current_db
 
 
