@@ -18,7 +18,7 @@ st.set_page_config(page_icon='amphibs.jpeg')
 
 @st.cache
 def load_cleaned():
-    dfFull = pd.read_csv('https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/dataset_clean.csv', encoding= 'unicode_escape')#, low_memory=False)
+    dfFull = pd.read_csv('https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV', encoding= 'unicode_escape')#, low_memory=False)
     return dfFull
 
 #refs file id https://drive.google.com/file/d/1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek/view?usp=sharing
@@ -43,7 +43,7 @@ def load_from_google():
     return dataset
 
 #dfFull=load_original()
-dfFull=load_from_google()
+dfFull=load_cleaned()
 dfReferences = load_references()
 dfImages = load_images()
 
