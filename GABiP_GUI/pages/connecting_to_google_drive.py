@@ -46,17 +46,12 @@ file = request.execute()
 
 file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
 google_url = f"https://drive.google.com/uc?id={file_id}"
-#gooogle_drive_link=
 file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/view?usp=sharing"
 folder_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 st.write("from google drive, csv must be unrestricted")
-#folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
-
-# from_google=pd.read_csv("https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV", encoding= 'unicode_escape')#, low_memory=False))
-# st.write(from_google)
 folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 dataset=load_dataset(google_url)
-#st.write(dataset)
+
 
 
 #-----------------------------------------------------------------saving a new file to google drive folder----------------------------------------------------------------------#
@@ -71,7 +66,7 @@ create_new_csv=st.button("Create a new csv")
 #----------------------------------------------------------------------------------------------------------------#
 now=datetime.now()
 version=now.strftime("%d.%m.%Y-%H.%M.%S")
-path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
+
         #path_end = version
 newPath=version+"-approved"+".csv"
 
@@ -87,7 +82,7 @@ if create_new_csv:
     st.write("File saved, check google drive!")
   
 
-filesaved_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/02.02.2023-18.28.05-approved.csv.csv"
+filesaved_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/dataset_clean.csv"
 
 readtest=load_dataset(filesaved_url)
 st.write("Reading saved file from google drive")

@@ -2,30 +2,36 @@ from re import search
 import streamlit as st
 import pandas as pd
 import numpy as np
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+#authenticate and build api drive
+service = build("drive", "v3", credentials=creds)
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
-#def css_file(file_name):
- #   with open(file_name) as f:
-  #      st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-#css_file("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/style/style.css")
-#@st.cache
-#def load_original():
-#    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
-#    return dfFull
-
 @st.cache
 def load_cleaned():
-    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
+    dfFull = pd.read_csv('https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/dataset_clean.csv', encoding= 'unicode_escape')#, low_memory=False)
     return dfFull
+
+#refs file id https://drive.google.com/file/d/1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek/view?usp=sharing
 @st.cache
 def load_references():
-    dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
+    dfReferences = pd.read_csv('https://drive.google.com/uc?id=1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek', encoding= 'unicode_escape')#, low_memory=False)
     return dfReferences
 
+
+#images https://drive.google.com/file/d/1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi/view?usp=sharing
 @st.cache
 def load_images():
-    dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
+    dfImages = pd.read_csv('https://drive.google.com/uc?id=1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi', encoding= 'unicode_escape')#, low_memory=False)
     return dfImages
 
 
