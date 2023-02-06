@@ -71,16 +71,6 @@ paths = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 
-#getting the most recent approved csv file
-#def get_latest():
- #   for database in databases:
-  #   for i in date_time:
-        
- #     if database["key"]== i and database["Status"] =="Approved":
- #       break
- #   return(database["Current Dataset"])
-
-#path=get_latest()
 
 approved=[]
 def get_approved():

@@ -18,13 +18,13 @@ creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
 
 drive_service = build("drive", "v3", credentials=creds)
 
-# Get a list of the user's files
-results = drive_service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
-items = results.get("files", [])
+# # Get a list of the user's files
+# results = drive_service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
+# items = results.get("files", [])
 
-# Display the results in Streamlit
-for item in items:
-    st.write(f"{item['name']} ({item['id']})")
+# # Display the results in Streamlit
+# for item in items:
+#     st.write(f"{item['name']} ({item['id']})")
 
 
 @st.cache
@@ -68,10 +68,11 @@ now=datetime.now()
 version=now.strftime("%d.%m.%Y-%H.%M.%S")
 
         #path_end = version
-newPath=version+"-approved"+".csv"
+newPath=version+"pathtesting"+"-approved"+".csv"
 
 if create_new_csv:
     # Save the DataFrame as a CSV file in Google Drive
+    st.write(newPath)
     dataset.head()
     dataset.to_csv(newPath, index=False)
     file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
