@@ -107,7 +107,7 @@ latestds=get_latest_ds(approvedordered[0])
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
 def add_changes(dataframe, dataframe2):
