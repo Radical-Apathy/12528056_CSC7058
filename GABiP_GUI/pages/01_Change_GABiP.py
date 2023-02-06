@@ -142,7 +142,9 @@ def create_session_states(dbColumns):
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
-    st.image("amphibs.jpeg", width=200)
+    welcol1,welcol2,welcol3=st.columns(3)
+    welcol2.image("amphibs.jpeg", width=200)
+    
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#

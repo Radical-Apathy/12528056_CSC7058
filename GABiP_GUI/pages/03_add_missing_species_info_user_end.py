@@ -228,7 +228,7 @@ headercol1, headercol2, headercol3=st.columns(3)
 headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
 headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
 headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
-current=load_full()
+current=load_latest()
 dbColumns=current.columns
 create_session_states(dbColumns)
 
