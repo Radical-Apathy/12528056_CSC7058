@@ -9,8 +9,25 @@ from dotenv import load_dotenv
 from datetime import datetime
 from st_aggrid import AgGrid
 #from io import StringIO
-#from PIL import Image
+from PIL import Image
 import base64
+
+# def add_bg_from_url():
+#      st.markdown(
+#           f"""
+#           <style>
+#           .stApp {{
+#               background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr30l_orig.jpg");
+#               background-attachment: fixed;
+#               background-size: cover
+#               background-position: right;
+#           }}
+#           </style>
+#           """,
+#           unsafe_allow_html=True
+#       )
+
+# add_bg_from_url() 
 
 #------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
@@ -208,9 +225,9 @@ def update_user_json(original_results_json, user_df_json):
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg"
 #sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
 headercol1, headercol2, headercol3=st.columns(3)
-headercol1.image("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg", width=200)
-
+headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
 headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
 current=load_full()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -314,7 +331,7 @@ if source_summary:
 
          st.warning("Please ensure sources are provided for each information point")
         else:
-            st.write("Display example")
+            
             sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
             sumcol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
             sources_parsed=json.loads(sources_review_json)
