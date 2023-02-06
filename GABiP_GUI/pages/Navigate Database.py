@@ -2,6 +2,18 @@ from re import search
 import streamlit as st
 import pandas as pd
 import numpy as np
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+#authenticate and build api drive
+service = build("drive", "v3", credentials=creds)
+
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
