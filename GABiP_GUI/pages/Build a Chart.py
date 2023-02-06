@@ -4,10 +4,22 @@ import numpy as np
 import streamlit as st
 import plotly_express as px
 import cufflinks as cf
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+#authenticate and build api drive
+service = build("drive", "v3", credentials=creds)
+
 
 @st.cache
 def load_original():
-    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/GABiP_July.csv', encoding= 'unicode_escape', low_memory=False)
+    dfFull = pd.read_csv('https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV', encoding= 'unicode_escape')
     return dfFull
 
 dfFull=load_original()
