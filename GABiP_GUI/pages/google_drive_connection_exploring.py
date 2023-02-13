@@ -24,7 +24,7 @@ drive_service = build("drive", "v3", credentials=creds)
 
 
 
-@st.cache
+#@st.cache
 def load_dataset(url):
     dataset=pd.read_csv(google_url, encoding= 'unicode_escape')
     return dataset
@@ -50,29 +50,10 @@ folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 dataset=load_dataset(google_url)
 
 
-
-#-----------------------------------------------------------------saving a new file to google drive folder----------------------------------------------------------------------#
 create_new_csv=st.button("Create a new csv")
-
-#--------------------------------------------working-------------------------------------------------------------#
-# dataset.head()
-# dataset.to_csv('datasethead.csv', index=False)
-# file_metadata = {'name': 'datasethead.csv', 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
-# media = MediaFileUpload('datasethead.csv', mimetype='text/csv')
-# file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-#----------------------------------------------------------------------------------------------------------------#
 now=datetime.now()
 version=now.strftime("%d-%m-%Y-%H-%M-%S")
 newPath=version+"pathtesting"+"-approved"+".csv"
-
-#-----------------------------------------------------------working but saves it locally first---------------------#
-# if create_new_csv:
-#     dataset.to_csv(newPath, index=False)
-#     file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
-#     media = MediaFileUpload(newPath, mimetype='text/csv')
-#     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-#     st.write("File saved, check google drive!")
-  #................................................................................................................#
 if create_new_csv:
     # write CSV content to bytes
     csv_bytes = io.StringIO()
@@ -85,12 +66,30 @@ if create_new_csv:
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     st.write("File saved, check google drive!")
 
+folder_and_name="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/06-02-2023-13.53.58-admin-approved.csv"
+from_google=load_dataset(folder_and_name)
+st.write(from_google)
+#-----------------------------------------------------------------saving a new file to google drive folder----------------------------------------------------------------------#
 
 
+#--------------------------------------------working-------------------------------------------------------------#
+# dataset.head()
+# dataset.to_csv('datasethead.csv', index=False)
+# file_metadata = {'name': 'datasethead.csv', 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
+# media = MediaFileUpload('datasethead.csv', mimetype='text/csv')
+# file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+#----------------------------------------------------------------------------------------------------------------#
 
 
-
-st.write("Using pydrive to upload csv") #ref https://towardsdatascience.com/how-to-manage-files-in-google-drive-with-python-d26471d91ecd
+#-----------------------------------------------------------working but saves it locally first---------------------#
+# if create_new_csv:
+#     dataset.to_csv(newPath, index=False)
+#     file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
+#     media = MediaFileUpload(newPath, mimetype='text/csv')
+#     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+#     st.write("File saved, check google drive!")
+  #................................................................................................................#
+ #ref https://towardsdatascience.com/how-to-manage-files-in-google-drive-with-python-d26471d91ecd
 
 
 # import pandas as pd
