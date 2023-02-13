@@ -18,13 +18,8 @@ creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
 
 drive_service = build("drive", "v3", credentials=creds)
 
-# # Get a list of the user's files
-# results = drive_service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
-# items = results.get("files", [])
+#get all folders and file in drive
 
-# # Display the results in Streamlit
-# for item in items:
-#     st.write(f"{item['name']} ({item['id']})")
 
 
 @st.cache
