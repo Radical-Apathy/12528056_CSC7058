@@ -14,6 +14,8 @@ from deta import Deta
 import csv
 from dotenv import load_dotenv
 import os
+from io import BytesIO
+from PIL import Image
 
 #---------------------------------------------------------------------------Authentication Section----------------------------------------------------------------------------#
 
@@ -32,9 +34,8 @@ creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
 
 # Access the user's Google Drive
 
-drive_service = build("drive", "v3", credentials=creds)
 
-#get all folders and file in drive
+service = build("drive", "v3", credentials=creds)
 
 #------------------------------------------------------------META DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 metaData=deta_connection.Base("database_metadata")
@@ -83,28 +84,6 @@ def load_latest():
     current_db = pd.read_csv(latestds, encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
-def add_changes(dataframe, dataframe2):
-    updated=dataframe.append(dataframe2, ignore_index = True)
-    return updated
-
-#gets dates for new species additions needing approval
-pending=[]
-
-
-def get_pending():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending.append(database["key"])
-
-get_pending()
-
-ordered=sorted(pending,reverse=True)
-
-
-
-service = build("drive", "v3", credentials=creds)
 
 file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
 
@@ -113,7 +92,6 @@ file = request.execute()
 
 
 
-file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
 google_url = f"https://drive.google.com/uc?id={file_id}"
 
 folder_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/"
@@ -121,14 +99,8 @@ st.write("from google drive, csv must be unrestricted")
 folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
 
-#--------------------------------------------------------------------------EXPLORING---------------------------------------------------------------------#
-st.write("Showing dataset by csv id")
+#--------------------------------------------------------------------------EXPLORING IMAGE UPLOADING---------------------------------------------------------------------#
 
-file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/14.02.2023-09.59.39-admin-approved.csv"
-
-google_prefix=f"https://drive.google.com/uc?id={file_id}"
-
-latest_id="1JwpLPGeYf4yckMuVO22snAXxoptpMtp2"
 
 #https://drive.google.com/file/d/1OF4VQ6bMuc-d6OG2No24FT_1xsceOkZR/view?usp=sharing
 
@@ -136,11 +108,13 @@ latestdb=pd.read_csv("https://drive.google.com/uc?id=1OF4VQ6bMuc-d6OG2No24FT_1xs
 
 #st.write(latestdb)
 
+image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+
 show_all_files=st.button("Show all files in folder")
 
 if show_all_files:
 
-    results = drive_service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+    results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
     items = results.get('files', [])
 
 
@@ -150,6 +124,16 @@ if show_all_files:
         st.write('Files:')
         for item in items:
             st.write('{0} ({1})'.format(item['name'], item['id']))
+
+
+uploaded_image = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+
+if uploaded_image is not None:
+    #convert tp a PIL object
+    user_image=Image.open(uploaded_image)
+    #save image to bytesIO object
+    
+   
 
 
 
