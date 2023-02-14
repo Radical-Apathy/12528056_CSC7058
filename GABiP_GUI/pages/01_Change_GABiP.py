@@ -111,7 +111,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')
     return current_db
 
 
@@ -142,7 +142,9 @@ def create_session_states(dbColumns):
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
-    st.image("amphibs.jpeg", width=200)
+    welcol1,welcol2,welcol3=st.columns(3)
+    welcol2.image("amphibs.jpeg", width=200)
+    
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#

@@ -12,7 +12,21 @@ from deta import Deta
 import csv
 from dotenv import load_dotenv
 from datetime import datetime
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
+import io
 st.set_page_config(page_icon='amphibs.jpeg')
+
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+# Access the user's Google Drive
+
+service = build("drive", "v3", credentials=creds)
+
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
 
@@ -59,16 +73,6 @@ paths = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 
-#getting the most recent approved csv file
-#def get_latest():
- #   for database in databases:
-  #   for i in date_time:
-        
- #     if database["key"]== i and database["Status"] =="Approved":
- #       break
- #   return(database["Current Dataset"])
-
-#path=get_latest()
 
 approved=[]
 def get_approved():
@@ -95,7 +99,7 @@ latestds=get_latest_ds(approvedordered[0])
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
 def add_changes(dataframe, dataframe2):
@@ -209,25 +213,40 @@ def new_species_review():
 
 
         def preview_addition(df1,df2):
-            #result = df1.append(df2, ignore_index=True).append(df3, ignore_index=True)
+            
             
             proposed=df1.append(df2, ignore_index=True)
-            last_row=proposed.iloc[-1]
-            st.dataframe(proposed.style.applymap(lambda _: 'background-color: yellow', subset=pd.IndexSlice[last_row.name, :]))
+            st.dataframe(proposed)
+            
 
 
 
         now=datetime.now()
         version=now.strftime("%d.%m.%Y-%H.%M.%S")
-        path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
-        #path_end = version
-        newPath=path_prefix+version+"-"+st.session_state['username']+"-approved"+".csv"
+        folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        
+        def create_new_dataset_google():
 
-        def create_new_dataset():
+            # newDataset=current.append(user_changes, ignore_index=True)
+            # newDataset.to_csv(newPath, index=False)
+            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
+            # media = MediaFileUpload(newPath, mimetype='text/csv')
+            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             newDataset=current.append(user_changes, ignore_index=True)
-            newDataset.to_csv(newPath, index=False)
+            csv_bytes = io.StringIO()
+            newDataset.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+
+        # def create_new_dataset():
+        #     newDataset=current.append(user_changes, ignore_index=True)
+        #     newDataset.to_csv(newPath, index=False)
         
         #updates the status, 
         def update_GABiP():
@@ -250,7 +269,7 @@ def new_species_review():
 
                         
                 if accept:
-                    create_new_dataset()
+                    create_new_dataset_google()
                     update_GABiP()
                     st.write("GABiP updated!")
 
