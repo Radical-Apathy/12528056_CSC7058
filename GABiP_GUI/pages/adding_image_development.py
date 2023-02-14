@@ -98,6 +98,9 @@ folder_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_
 st.write("from google drive, csv must be unrestricted")
 folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
+#--------------------------------------------------------------------------IMAGE DATABASE-----------------------------------------------------------#
+
+
 
 #--------------------------------------------------------------------------EXPLORING IMAGE UPLOADING---------------------------------------------------------------------#
 
@@ -161,9 +164,22 @@ if submit_image and uploaded_image:
             st.error(f'An error occurred: {error}')
     
    
+def get_uploaded_image_id(uploaded_image):
+     
+     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+     items = results.get('files', [])
 
+     if not items:
+         st.write('No files found.')
+     else:
+        for item in items:
+             if item['name'] == uploaded_image:
+                 
+                 return item['id']
 
+google_drive_id=get_uploaded_image_id(uploaded_image)
 
+st.write(google_drive_id)
 
 #----------------------------------------------------------------------------------------------------------------------------------#
 # def add_new_image():
