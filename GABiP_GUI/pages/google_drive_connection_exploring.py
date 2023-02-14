@@ -79,7 +79,9 @@ google_prefix=f"https://drive.google.com/uc?id={file_id}"
 
 latest_id="1JwpLPGeYf4yckMuVO22snAXxoptpMtp2"
 
-latestdb=pd.read_csv("https://drive.google.com/uc?id=1JwpLPGeYf4yckMuVO22snAXxoptpMtp2", encoding= 'unicode_escape')
+#https://drive.google.com/file/d/1OF4VQ6bMuc-d6OG2No24FT_1xsceOkZR/view?usp=sharing
+
+latestdb=pd.read_csv("https://drive.google.com/uc?id=1OF4VQ6bMuc-d6OG2No24FT_1xsceOkZR", encoding= 'unicode_escape')
 
 st.write(latestdb)
 
