@@ -13,7 +13,21 @@ import csv
 from dotenv import load_dotenv
 from datetime import datetime
 import json
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
+import io
 st.set_page_config(page_icon='amphibs.jpeg')
+
+#-----------------------------------------------------------GOOGLE DRIVE CONNECTIONS-----------------------------------------------------------------------------#
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+# Access the user's Google Drive
+
+service = build("drive", "v3", credentials=creds)
 
 #------------------------------------------------------------DATABASE CONNECTIONS-----------------------------------------------------------------------------------------#
 #------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
@@ -97,7 +111,26 @@ def get_latest_ds(key):
             return database["Dataset_In_Use"]
 
 
-latestds=get_latest_ds(approvedordered[0])
+latest_approved_ds=get_latest_ds(approvedordered[0])
+
+folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+
+def get_latest_file_id(latest_approved_ds):
+     
+     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+     items = results.get('files', [])
+
+     if not items:
+         st.write('No files found.')
+     else:
+        for item in items:
+             if item['name'] == latest_approved_ds:
+                 
+                 return item['id']
+
+
+
+latest_id=get_latest_file_id(latest_approved_ds)
 
 #add user's entries to csv 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, approved_by, date_approved, current_database_path):
@@ -111,7 +144,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
 
 
