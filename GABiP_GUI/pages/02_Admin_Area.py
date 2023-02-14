@@ -16,6 +16,8 @@ from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
+import io
 st.set_page_config(page_icon='amphibs.jpeg')
 
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -211,12 +213,11 @@ def new_species_review():
 
 
         def preview_addition(df1,df2):
-            #result = df1.append(df2, ignore_index=True).append(df3, ignore_index=True)
+            
             
             proposed=df1.append(df2, ignore_index=True)
             st.dataframe(proposed)
-            #last_row=proposed.iloc[-1]
-            #st.dataframe(proposed.style.applymap(lambda _: 'background-color: yellow', subset=pd.IndexSlice[last_row.name, :]))
+            
 
 
 
@@ -227,10 +228,19 @@ def new_species_review():
 
         def create_new_dataset_google():
 
+            # newDataset=current.append(user_changes, ignore_index=True)
+            # newDataset.to_csv(newPath, index=False)
+            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
+            # media = MediaFileUpload(newPath, mimetype='text/csv')
+            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             newDataset=current.append(user_changes, ignore_index=True)
-            newDataset.to_csv(newPath, index=False)
-            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
-            media = MediaFileUpload(newPath, mimetype='text/csv')
+            csv_bytes = io.StringIO()
+            newDataset.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
 

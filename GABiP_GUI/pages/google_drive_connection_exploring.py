@@ -53,7 +53,7 @@ dataset=load_dataset(google_url)
 create_new_csv=st.button("Create a new csv")
 now=datetime.now()
 version=now.strftime("%d-%m-%Y-%H-%M-%S")
-newPath=version+"pathtesting"+"-approved"+".csv"
+newPath=version+"pathtesting"+".csv"
 if create_new_csv:
     # write CSV content to bytes
     csv_bytes = io.StringIO()
