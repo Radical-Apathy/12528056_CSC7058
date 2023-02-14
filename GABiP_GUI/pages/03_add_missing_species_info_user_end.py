@@ -111,13 +111,13 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     return current_db
 
 
-@st.cache
+@st.cache_data
 def load_full():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
     return dfFull
@@ -165,12 +165,12 @@ def create_session_states_source(dbColumns):
 
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
-@st.cache
+@st.cache_data
 def load_references():
     dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
     return dfReferences
 
-@st.cache
+@st.cache_data
 def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
