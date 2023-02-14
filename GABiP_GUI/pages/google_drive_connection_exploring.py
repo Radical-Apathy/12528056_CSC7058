@@ -43,7 +43,7 @@ file = request.execute()
 
 file_id = "1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV"
 google_url = f"https://drive.google.com/uc?id={file_id}"
-file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/view?usp=sharing"
+
 folder_url="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/"
 st.write("from google drive, csv must be unrestricted")
 folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
@@ -69,6 +69,49 @@ if create_new_csv:
 folder_and_name="https://drive.google.com/drive/u/1/folders/1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN/06-02-2023-13.53.58-admin-approved.csv"
 from_google=load_dataset(folder_and_name)
 st.write(from_google)
+
+#--------------------------------------------------------------------------getting correct path from db----------------------------------------------#
+st.write("Showing dataset by csv name")
+
+file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/14.02.2023-09.59.39-admin-approved.csv"
+
+google_prefix=f"https://drive.google.com/uc?id={file_id}"
+
+latest_id="1JwpLPGeYf4yckMuVO22snAXxoptpMtp2"
+
+latestdb=pd.read_csv("https://drive.google.com/uc?id=1JwpLPGeYf4yckMuVO22snAXxoptpMtp2", encoding= 'unicode_escape')
+
+st.write(latestdb)
+
+show_all_files=st.button("Show all files in folder")
+
+if show_all_files:
+
+    results = drive_service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+    items = results.get('files', [])
+
+
+    if not items:
+        st.write('No files found.')
+    else:
+        st.write('Files:')
+        for item in items:
+            st.write('{0} ({1})'.format(item['name'], item['id']))
+
+
+#14.02.2023-09.59.39-admin-approved.csv (1JwpLPGeYf4yckMuVO22snAXxoptpMtp2)
+
+
+
+
+
+
+
+
+
+
+
+
 #-----------------------------------------------------------------saving a new file to google drive folder----------------------------------------------------------------------#
 
 
@@ -113,7 +156,7 @@ st.write(from_google)
 # file.Upload() # Update the file with the CSV data
 
 
-st.write("Uploading without using pydrive")
+#st.write("Uploading without using pydrive")
 
 # directtogoogledrive=st.button("Create directly to drive")
 
