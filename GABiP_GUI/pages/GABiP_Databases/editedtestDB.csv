@@ -1,5 +1,0 @@
-Order,Family,Genus,Species,SVLMMx,SVLFMx,SVLMx,Longevity,NestingSite,ClutchMin,ClutchMax,Clutch,ParityMode,EggDiameter,Activity,Microhabitat,GeographicRegion,IUCN,PopTrend,RangeSize,ElevationMin,ElevationMax,Elevation
-Anura,Allophrynidae,Allophryne,relicta,21.9,,21.9,,,,,,,,Nocturnal,Bushes/Trees,South America,,,,90,90,90
-Anura,Allophrynidae,Allophryne,resplendens,,28.4,28.4,,,,,,,,,Bushes/Trees,South America,,,,78,120,99
-Anura,Allophrynidae,Allophryne,ruthveni,25,27.5,31,,Vegetation,300,300,300,Larval,1,Cathemeral,Bushes/Trees,South America,LC,Decreasing,2831429.70859,0,300,150
-Order - e.g. Anura,Family - e.g. Allophrynidae,Im edited,Species - e.g. Relicta,,,,,,,,,,,,,,,,,,,
