@@ -75,12 +75,31 @@ def get_latest_ds(key):
             return database["Dataset_In_Use"]
 
 
-latestds=get_latest_ds(approvedordered[0])
+latest_approved_ds=get_latest_ds(approvedordered[0])
+
+folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+
+def get_latest_file_id(latest_approved_ds):
+     
+     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+     items = results.get('files', [])
+
+     if not items:
+         st.write('No files found.')
+     else:
+        for item in items:
+             if item['name'] == latest_approved_ds:
+                 
+                 return item['id']
+
+
+
+latest_id=get_latest_file_id(latest_approved_ds)
 
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape')#, low_memory=False)
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
 def add_changes(dataframe, dataframe2):

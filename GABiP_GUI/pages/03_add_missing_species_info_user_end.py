@@ -10,7 +10,12 @@ from datetime import datetime
 from st_aggrid import AgGrid
 #from io import StringIO
 from PIL import Image
-import base64
+from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
+import io
 
 # def add_bg_from_url():
 #      st.markdown(
@@ -28,6 +33,14 @@ import base64
 #       )
 
 # add_bg_from_url() 
+
+#------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
+# Use the client ID and secret to create an OAuth 2.0 flow
+creds = Credentials.from_authorized_user_info(st.secrets["gcp_drive_account"])
+
+# Access the user's Google Drive
+
+service = build("drive", "v3", credentials=creds)
 
 #------------------------------------------------------------DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058\GABiP_GUI/.env.txt")
@@ -76,27 +89,31 @@ def get_latest_ds(key):
             return database["Dataset_In_Use"]
 
 
-latestds=get_latest_ds(approvedordered[0])
+latest_approved_ds=get_latest_ds(approvedordered[0])
 
-#method to select edits that are new species addition and pending
-pending=[]
+folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
-#gets dates for new species additions needing approval
-def get_pending():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending.append(database["key"])
+def get_latest_file_id(latest_approved_ds):
+     
+     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+     items = results.get('files', [])
 
-get_pending()
+     if not items:
+         st.write('No files found.')
+     else:
+        for item in items:
+             if item['name'] == latest_approved_ds:
+                 
+                 return item['id']
 
-ordered=sorted(pending,reverse=True)
+
+
+latest_id=get_latest_file_id(latest_approved_ds)
 
 
 @st.cache
 def load_latest():
-    current_db = pd.read_csv(latestds, encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     return current_db
 
 
