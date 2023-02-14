@@ -121,7 +121,7 @@ st.write("from google drive, csv must be unrestricted")
 folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
 
-#--------------------------------------------------------------------------refactoring get latest---------------------------------------------------------------------#
+#--------------------------------------------------------------------------EXPLORING---------------------------------------------------------------------#
 st.write("Showing dataset by csv id")
 
 file_folder_url="https://drive.google.com/file/d/1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV/14.02.2023-09.59.39-admin-approved.csv"
@@ -152,35 +152,18 @@ if show_all_files:
             st.write('{0} ({1})'.format(item['name'], item['id']))
 
 
-#14.02.2023-09.59.39-admin-approved.csv (1JwpLPGeYf4yckMuVO22snAXxoptpMtp2)
-st.write("latest db approved name")
-
-latest_approved_db=get_latest_ds(approvedordered[0])
-
-#st.write(latestdb)
-
-def get_latest_file_id(latest_approved_db):
-     
-     results = drive_service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
-     items = results.get('files', [])
-
-     if not items:
-         st.write('No files found.')
-     else:
-        for item in items:
-             if item['name'] == latest_approved_db:
-                 
-                 return item['id']
-
-latest_id=get_latest_file_id(latest_approved_db)
-
-st.write(latest_id)
-
-#original dataset path https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV
-st.write(pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape'))
 
 
-
-
+#----------------------------------------------------------------------------------------------------------------------------------#
+# def add_new_image():
+#             newDataset=current.append(user_changes, ignore_index=True)
+#             csv_bytes = io.StringIO()
+#             newDataset.to_csv(csv_bytes, index=False)
+#             csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+#             # upload bytes to Google Drive
+#             file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+#             media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+#             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
 
