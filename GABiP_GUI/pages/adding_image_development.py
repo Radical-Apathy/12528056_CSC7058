@@ -106,7 +106,14 @@ folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
 latestdb=pd.read_csv("https://drive.google.com/uc?id=1OF4VQ6bMuc-d6OG2No24FT_1xsceOkZR", encoding= 'unicode_escape')
 
-#st.write(latestdb)
+@st.cache_data
+
+def load_images_csv():
+    dfImages = pd.read_csv('https://drive.google.com/uc?id=1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi', encoding= 'unicode_escape')
+    return dfImages
+
+images_csv=load_images_csv()
+st.write(images_csv.head())
 
 image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
 
@@ -129,9 +136,29 @@ if show_all_files:
 uploaded_image = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
 
 if uploaded_image is not None:
-    #convert tp a PIL object
-    user_image=Image.open(uploaded_image)
-    #save image to bytesIO object
+    st.image(uploaded_image)
+
+#1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br
+ 
+ 
+submit_image=st.button("Submit image")
+
+st.image("https://drive.google.com/uc?id=1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br")
+
+if submit_image and uploaded_image:
+    bytes_data = uploaded_image.getvalue()
+    try:
+            file_metadata = {
+                'name': uploaded_image.name,
+                'parents': [image_folder_id],
+                'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+            }
+           #media = googleapiclient.http.MediaIoBaseUpload(user_image, mimetype='image/jpeg')
+            media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            st.success(f'Successfully uploaded {uploaded_image.name} to Google Drive!')
+    except HttpError as error:
+            st.error(f'An error occurred: {error}')
     
    
 
