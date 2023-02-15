@@ -191,8 +191,8 @@ if submit_image and uploaded_image:
             image_id = file.get('id')
             st.success(f'Successfully uploaded {uploaded_image.name} to Google Drive!')
           
-    except HttpError as error:
-            st.error(f'An error occurred: {error}')
+    except:
+            st.error("Please try again. Be sure to check your file type is in the correct format")
     
 st.write(image_id)
 st.write(paths)
