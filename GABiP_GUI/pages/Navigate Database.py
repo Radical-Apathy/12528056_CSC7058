@@ -97,7 +97,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -125,16 +125,16 @@ st.set_page_config(page_icon='amphibs.jpeg')
 
 
 
-@st.cache_data_data
+@st.cache_data
 def load_cleaned():
     dfFull = pd.read_csv('https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV', encoding= 'unicode_escape')
     return dfFull
-@st.cache_data_data
+@st.cache_data
 def load_references():
     dfReferences = pd.read_csv('https://drive.google.com/uc?id=1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek', encoding= 'unicode_escape')
     return dfReferences
 
-@st.cache_data_data
+@st.cache_data
 def load_images():
     dfImages = pd.read_csv('https://drive.google.com/uc?id=1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi', encoding= 'unicode_escape')
     return dfImages

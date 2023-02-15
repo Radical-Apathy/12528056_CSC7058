@@ -215,8 +215,7 @@ def upload_image():
 
 def link_image(results):
     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    #if not merged_image_df.empty and len(merged_image_df) > 0:
-    if  merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+    if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
         upload_image()
     else:
         col1.write("Image from amphibiaweb.org")
@@ -225,9 +224,10 @@ def link_image(results):
 
 def link_embedded_image(results):
     embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    #if not embedded_image_df.empty and len(embedded_image_df) > 0:
-    if  embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+    if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
         return embedded_image_df["Embedded Link"].iloc[0]
+    else:
+        return None
 
 
 def update_user_json(original_results_json, user_df_json):

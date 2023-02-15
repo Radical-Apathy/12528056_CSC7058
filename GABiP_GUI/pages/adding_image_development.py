@@ -78,6 +78,34 @@ def get_latest_ds(key):
 
 latestds=get_latest_ds(approvedordered[0])
 
+def get_latest_ds(key):
+    for database in databases:
+        if database["key"] ==key:
+            return database["Dataset_In_Use"]
+
+
+latest_approved_ds=get_latest_ds(approvedordered[0])
+
+folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+
+def get_latest_file_id(latest_approved_ds):
+     
+     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+     items = results.get('files', [])
+
+     if not items:
+         st.write('No files found.')
+     else:
+        for item in items:
+             if item['name'] == latest_approved_ds:
+                 
+                 return item['id']
+
+
+
+latest_id=get_latest_file_id(latest_approved_ds)
+
+
 
 @st.cache
 def load_latest():
@@ -148,6 +176,7 @@ submit_image=st.button("Submit image")
 
 st.image("https://drive.google.com/uc?id=1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br")
 
+image_id=""
 if submit_image and uploaded_image:
     bytes_data = uploaded_image.getvalue()
     try:
@@ -159,28 +188,14 @@ if submit_image and uploaded_image:
            #media = googleapiclient.http.MediaIoBaseUpload(user_image, mimetype='image/jpeg')
             media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            image_id = file.get('id')
             st.success(f'Successfully uploaded {uploaded_image.name} to Google Drive!')
+          
     except HttpError as error:
             st.error(f'An error occurred: {error}')
     
-   
-def get_uploaded_image_id(uploaded_image):
-     
-     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-     items = results.get('files', [])
-
-     if not items:
-         st.write('No files found.')
-     else:
-        for item in items:
-             if item['name'] == uploaded_image:
-                 
-                 return item['id']
-
-google_drive_id=get_uploaded_image_id(uploaded_image)
-
-st.write(google_drive_id)
-
+st.write(image_id)
+st.write(paths)
 #----------------------------------------------------------------------------------------------------------------------------------#
 # def add_new_image():
 #             newDataset=current.append(user_changes, ignore_index=True)
