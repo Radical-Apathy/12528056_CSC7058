@@ -210,8 +210,8 @@ def update_missing_results(show_missing_info):
 now=datetime.now()
 
 image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
-image_id=""
 
+image_id=""
 def upload_image():
     col1.markdown("**No images available**")
     uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
@@ -219,6 +219,7 @@ def upload_image():
         col1.image(uploaded_image)
 
     submit_image=col1.button("Submit image")
+    image_id=None
     if submit_image and uploaded_image:
         bytes_data = uploaded_image.getvalue()
         try:
@@ -230,18 +231,19 @@ def upload_image():
                 media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
                 image_id = file.get('id')
+                
                 st.success(f'Image uploaded!')
-                st.write(image_id)     
         except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
-    
+    return image_id   
+
 
 
 
 def link_image(results):
     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-        upload_image()
+       upload_image()  
     else:
         col1.write("Image from amphibiaweb.org")
         return merged_image_df["Display Image"].iloc[0]
@@ -419,7 +421,7 @@ if preview_updated_dataset:
     # "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
     if commit_addition:
-        
+        st.write(image_id)
         st.write("Thank you! Your submission has been sent to admin for review. You'll be notified by e-mail on decision")
 
 

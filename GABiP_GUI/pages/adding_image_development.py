@@ -189,7 +189,7 @@ if submit_image and uploaded_image:
             media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             image_id = file.get('id')
-            st.success(f'Successfully uploaded {uploaded_image.name} to Google Drive!')
+            st.success(f'Image uploaded!')
           
     except:
             st.error("Please try again. Be sure to check your file type is in the correct format")
