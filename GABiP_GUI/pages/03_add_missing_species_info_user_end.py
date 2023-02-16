@@ -346,7 +346,7 @@ summary_dataframe=[]
 def create_source_fields(show_missing_info):
        for option in show_missing_info:
                user_source=st.text_input("Please enter a source for "+option, key=option+" source")
-
+    
        for option in show_missing_info:
            if user_source and user_source!="":
                st.session_state[option+" source"]==user_source
@@ -384,13 +384,9 @@ compared=species_results.iloc[0].equals(results_updated.iloc[0])
 
 if show_results and compared:
     st.write("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-    #methodcol1, methodcol2, methodcol3=st.columns(3)
-    #methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
-    #diff_mask = species_results != results_updated
-
-    #compare=st.button("Compare")
-    #if compare:
-elif show_results and not compared:   
+elif len(show_missing_info) != len(user_missing_info):
+    st.warning("**Please ensure values are added for each field selected**")
+elif show_results and not compared: 
     comparecol1,comparecol2, comparecol3=st.columns(3)
     comparecol1.write("**Original Species**")
     comparecol1.dataframe(species_results.iloc[0], width=300)
@@ -436,10 +432,16 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
 if preview_updated_dataset:
+    
+    if len(show_missing_info) != len(user_missing_info):
+        st.warning("**Please ensure values are added for each field selected**")
+    if len(show_missing_info) != len(additional_info_sources):
+        st.warning("**Please ensure sources are added for each field selected**")
+    preview_success=False
+
     results_index=species_results.index[0]
     updated_db=current.copy()
     search_results_to_json=species_results.to_json(orient="columns")
-   
     try:
         pd.DataFrame(user_missing_info, show_missing_info)
         user_changes=pd.DataFrame(user_missing_info, show_missing_info)
@@ -450,9 +452,9 @@ if preview_updated_dataset:
         st.dataframe(updated_db)
         preview_success=True
     except:
-        st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
+       st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
         #st.warning()
-        preview_success=False
+        
 
     if preview_success:
      user_comments = st.text_area("**Additional comments (optional)**", height=30)
