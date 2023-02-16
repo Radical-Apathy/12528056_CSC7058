@@ -224,38 +224,7 @@ now=datetime.now()
 image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
 
 image_id=[]
-# def upload_image():
-#     if 'image_id' in st.session_state:
-#         return st.session_state['image_id']
 
-#     col1.markdown("**No images available**")
-#     uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-#     if uploaded_image is not None:
-#         col1.image(uploaded_image)
-
-#     submit_image=col1.button("Submit image")
-#     image_id=None
-#     if submit_image and uploaded_image:
-#         bytes_data = uploaded_image.getvalue()
-#         try:
-#                 file_metadata = {
-#                     'name': uploaded_image.name,
-#                     'parents': [image_folder_id],
-#                     'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-#                 }
-#                 media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-#                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-#                 image_id = file.get('id')
-                
-#                 st.success(f'Image uploaded!')
-#                 st.session_state['image_id'] = image_id
-                
-#                 uploaded_image=None
-#                 return image_id 
-#         except:
-#                 st.error("Please try again. Be sure to check your file type is in the correct format")
-#     st.write(image_id)
-#     return image_id
       
 def upload_image():
     if 'image_ids' in st.session_state:
@@ -281,7 +250,7 @@ def upload_image():
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             image_id = file.get('id')
 
-            st.success(f'Image uploaded!')
+            st.success(f'Image uploaded! You can choose to upload more')
             image_ids.append(image_id)
             st.session_state['image_ids'] = image_ids
 
@@ -462,11 +431,11 @@ if preview_updated_dataset:
         updated_db.loc[results_index] =(updated_row.loc[results_index])
         st.dataframe(updated_db)
     except:
-        st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx")
+        st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
         #st.warning()
 
     
-    user_comments = st.text_area("Additional comments (optional)")
+    user_comments = st.text_area("**Additional comments (optional)**", height=30)
     
     
     commit_addition=st.button("Submit Addition")
@@ -474,19 +443,17 @@ if preview_updated_dataset:
 
     if user_comments=="":
         user_comments="n/a"
-#    def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
-#      """adding user"""
-#      #defining the email as the key
-#      return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
-#      "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
     
 
-    if commit_addition:
+    if commit_addition and additional_info_sources:
        
         #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-        #if 'image_ids' in st.session_state:
-         #   del st.session_state['image_ids']
-        st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+        if 'image_ids' in st.session_state:
+           del st.session_state['image_ids']
+           st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+    else:
+        st.warning("**Please ensure all information and their sources have been provided for each information point and try submitting again**")
+
    
 
 
