@@ -430,29 +430,31 @@ if preview_updated_dataset:
         updated_row=pd.read_json(updated_json)
         updated_db.loc[results_index] =(updated_row.loc[results_index])
         st.dataframe(updated_db)
+        preview_success=True
     except:
         st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
         #st.warning()
+        preview_success=False
 
+    if preview_success:
+     user_comments = st.text_area("**Additional comments (optional)**", height=30)
     
-    user_comments = st.text_area("**Additional comments (optional)**", height=30)
     
-    
-    commit_addition=st.button("Submit Addition")
-    
-
-    if user_comments=="":
-        user_comments="n/a"
+     commit_addition=st.button("Submit Addition")
     
 
-    if commit_addition and additional_info_sources:
-       
-        #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+     if user_comments=="":
+         user_comments="n/a"
+    
+     if commit_addition: #and additional_info_sources:
+        add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
         if 'image_ids' in st.session_state:
-           del st.session_state['image_ids']
-           st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-    else:
-        st.warning("**Please ensure all information and their sources have been provided for each information point and try submitting again**")
+         del st.session_state['image_ids']
+        st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+
+          
+    
+        
 
    
 
