@@ -310,9 +310,9 @@ def update_user_json(original_results_json, user_df_json):
 #sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
 #st.write("<div class='my-class'>This text has the white font color.</div>", unsafe_allow_html=True)
 headercol1, headercol2, headercol3=st.columns(3)
-headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
+#headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
 headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
+#headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
 current=load_latest()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -380,22 +380,23 @@ results_updated=update_missing_results(show_missing_info)
 
 show_results=st.checkbox("Show updates")
  
+compared=species_results.iloc[0].equals(results_updated.iloc[0])
 
+if show_results and compared:
+    st.write("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
+    #methodcol1, methodcol2, methodcol3=st.columns(3)
+    #methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
+    #diff_mask = species_results != results_updated
 
-if show_results:
-    methodcol1, methodcol2, methodcol3=st.columns(3)
-    methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
-    diff_mask = species_results != results_updated
-
-    compare=st.button("Compare")
-    if compare:
-       
-        comparecol1,comparecol2, comparecol3=st.columns(3)
-        comparecol1.write("Original Species")
-        comparecol1.dataframe(species_results.iloc[0], width=300)
-        comparecol2.write("Updated Species Info")
-        comparecol2.dataframe(results_updated.iloc[0], width=300)
-        comparecol3.write("Differences highlighted?")     
+    #compare=st.button("Compare")
+    #if compare:
+elif show_results and not compared:   
+    comparecol1,comparecol2, comparecol3=st.columns(3)
+    comparecol1.write("**Original Species**")
+    comparecol1.dataframe(species_results.iloc[0], width=300)
+    comparecol3.write("**Updated Species Info**")
+    comparecol3.dataframe(results_updated.iloc[0], width=300)
+        #comparecol3.write("Differences highlighted?")     
 
 sourcecol1,sourcecol2,sourcecol3=st.columns(3)
 sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
@@ -432,7 +433,7 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 
 
 
-preview_updated_dataset=st.checkbox("Preview updated dataset")
+preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
 if preview_updated_dataset:
     results_index=species_results.index[0]
