@@ -383,8 +383,8 @@ show_results=st.checkbox("Show updates")
 compared=species_results.iloc[0].equals(results_updated.iloc[0])
 
 if show_results and compared:
-    st.write("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-elif len(show_missing_info) != len(user_missing_info):
+    st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
+elif show_results and len(show_missing_info) != len(user_missing_info):
     st.warning("**Please ensure values are added for each field selected**")
 elif show_results and not compared: 
     comparecol1,comparecol2, comparecol3=st.columns(3)
@@ -431,14 +431,17 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 
 preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
-if preview_updated_dataset:
-    
-    if len(show_missing_info) != len(user_missing_info):
+if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
         st.warning("**Please ensure values are added for each field selected**")
-    if len(show_missing_info) != len(additional_info_sources):
+preview_success= False
+    
+    
+if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
         st.warning("**Please ensure sources are added for each field selected**")
-    preview_success=False
+preview_success=False
 
+if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
+    
     results_index=species_results.index[0]
     updated_db=current.copy()
     search_results_to_json=species_results.to_json(orient="columns")
@@ -466,11 +469,13 @@ if preview_updated_dataset:
      if user_comments=="":
          user_comments="n/a"
     
-     if commit_addition: #and additional_info_sources:
-        add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+     if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
+        #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
         if 'image_ids' in st.session_state:
          del st.session_state['image_ids']
         st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     else:
+        st.markdown("Please check all fields selected and sources have been provided in order to submit")
 
           
     
