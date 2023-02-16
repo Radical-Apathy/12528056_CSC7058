@@ -18,20 +18,35 @@ from googleapiclient.http import MediaIoBaseUpload
 import io
 
 # def add_bg_from_url():
-#      st.markdown(
-#           f"""
-#           <style>
-#           .stApp {{
-#               background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr30l_orig.jpg");
-#               background-attachment: fixed;
-#               background-size: cover
-#               background-position: right;
-#           }}
-#           </style>
-#           """,
-#           unsafe_allow_html=True
-#       )
+#       st.markdown(
+#            f"""
+#            <style>
+#            .stApp {{
+#                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+#                background-attachment: fixed;
+#                background-size: cover;
+#                background-position: center;
+#                opacity: 0.1
+#                color: #ffffff; 
+#            }}
+#            </style>
+#            """,
+#            unsafe_allow_html=True
+#        )
 
+
+
+# st.markdown(
+#     f"""
+#     <style>
+#     .my-class {{
+#         color: #ffffff; /* set font color to white */
+#     }}
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
+#  #https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg
 # add_bg_from_url() 
 
 #------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
@@ -292,6 +307,7 @@ def update_user_json(original_results_json, user_df_json):
 #st.image("amphibs.jpeg", width=200)
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg"
 #sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+#st.write("<div class='my-class'>This text has the white font color.</div>", unsafe_allow_html=True)
 headercol1, headercol2, headercol3=st.columns(3)
 headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
 headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
