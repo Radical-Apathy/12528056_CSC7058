@@ -17,22 +17,22 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
 
-# def add_bg_from_url():
-#       st.markdown(
-#            f"""
-#            <style>
-#            .stApp {{
-#                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
-#                background-attachment: fixed;
-#                background-size: cover;
-#                background-position: center;
-#                opacity: 0.1
-#                color: #ffffff; 
-#            }}
-#            </style>
-#            """,
-#            unsafe_allow_html=True
-#        )
+def add_bg_from_url():
+       st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 
@@ -47,7 +47,7 @@ import io
 #     unsafe_allow_html=True
 # )
 #  #https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg
-# add_bg_from_url() 
+add_bg_from_url() 
 
 #------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -250,6 +250,7 @@ def upload_image():
     col1.markdown("**No images available**")
     uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
     if uploaded_image is not None:
+        col1.write("**Image preview**")
         col1.image(uploaded_image)
 
     submit_image=col1.button("Submit image")
