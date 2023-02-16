@@ -195,7 +195,7 @@ if submit_image and uploaded_image:
             st.error("Please try again. Be sure to check your file type is in the correct format")
     
 st.write(image_id)
-st.write(paths)
+#st.write(get)
 #----------------------------------------------------------------------------------------------------------------------------------#
 # def add_new_image():
 #             newDataset=current.append(user_changes, ignore_index=True)

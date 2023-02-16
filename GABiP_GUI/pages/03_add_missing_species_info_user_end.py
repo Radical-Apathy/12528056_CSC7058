@@ -163,7 +163,20 @@ def create_session_states_source(dbColumns):
         if [column+" source"] not in st.session_state:
            st.session_state[column+ "source"] =""
 
+if 'addition_comment' not in st.session_state:
+    st.session_state['addition_comment']="n/a"
+
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
+
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
+
+
+
+
 
 @st.cache_data
 def load_references():
@@ -412,17 +425,25 @@ if preview_updated_dataset:
         st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx")
         #st.warning()
 
+    
+    user_comments = st.text_area("Additional comments (optional)", key="addition_comment")
+    
+    
     commit_addition=st.button("Submit Addition")
 
-    # def insert_csv(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
-    # """adding user"""
-    # #defining the email as the key
-    # return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
-    # "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
+    if user_comments=="":
+        user_comments="n/a"
+#    def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+#      """adding user"""
+#      #defining the email as the key
+#      return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+#      "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
+
 
     if commit_addition:
-        st.write(image_id)
-        st.write("Thank you! Your submission has been sent to admin for review. You'll be notified by e-mail on decision")
+        #st.write(sources_review_json)
+        add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_id  )
+        st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
 
 
   
