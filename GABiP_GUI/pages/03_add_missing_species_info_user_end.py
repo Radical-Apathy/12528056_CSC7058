@@ -163,8 +163,6 @@ def create_session_states_source(dbColumns):
         if [column+" source"] not in st.session_state:
            st.session_state[column+ "source"] =""
 
-if 'addition_comment' not in st.session_state:
-    st.session_state['addition_comment']="n/a"
 
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
@@ -226,6 +224,9 @@ image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
 
 image_id=""
 def upload_image():
+    if 'image_id' in st.session_state:
+        return st.session_state['image_id']
+
     col1.markdown("**No images available**")
     uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
     if uploaded_image is not None:
@@ -246,9 +247,14 @@ def upload_image():
                 image_id = file.get('id')
                 
                 st.success(f'Image uploaded!')
+                st.session_state['image_id'] = image_id
+                uploaded_image==None
+                return image_id 
         except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
-    return image_id   
+    st.write(image_id)
+    return image_id
+      
 
 
 
@@ -407,7 +413,7 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 
 
 preview_updated_dataset=st.checkbox("Preview updated dataset")
-
+st.write(st.session_state)
 if preview_updated_dataset:
     results_index=species_results.index[0]
     updated_db=current.copy()
@@ -426,10 +432,11 @@ if preview_updated_dataset:
         #st.warning()
 
     
-    user_comments = st.text_area("Additional comments (optional)", key="addition_comment")
+    user_comments = st.text_area("Additional comments (optional)")
     
     
     commit_addition=st.button("Submit Addition")
+    
 
     if user_comments=="":
         user_comments="n/a"
@@ -438,12 +445,16 @@ if preview_updated_dataset:
 #      #defining the email as the key
 #      return metaData.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
 #      "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
-
+    
 
     if commit_addition:
-        #st.write(sources_review_json)
-        add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_id  )
+       
+        
+        #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_id'] )
+        if 'image_id' in st.session_state:
+            del st.session_state['image_id']
         st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+   
 
 
   
