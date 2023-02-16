@@ -222,7 +222,8 @@ now=datetime.now()
 
 image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
 
-image_id=""
+image_id=[]
+images=[]
 def upload_image():
     if 'image_id' in st.session_state:
         return st.session_state['image_id']
@@ -247,13 +248,18 @@ def upload_image():
                 image_id = file.get('id')
                 
                 st.success(f'Image uploaded!')
-                st.session_state['image_id'] = image_id
-                uploaded_image==None
-                return image_id 
+                #st.session_state['image_id'] = image_id
+                # Add the image ID to the session state array
+                st.session_state.setdefault('image_ids', []).append(image_id)
+                
+                #return image_id 
+                # Clear the uploaded image so that a new one can be selected
+                st.session_state['uploaded_image'] = None
         except:
-                st.error("Please try again. Be sure to check your file type is in the correct format")
+                st.error("Please try again. Be sure to check your file type is in the correct format and is less than 200MB")
     st.write(image_id)
-    return image_id
+    #return image_id
+    return st.session_state.get('image_ids', [])
       
 
 
@@ -449,7 +455,7 @@ if preview_updated_dataset:
 
     if commit_addition:
        
-        
+        st.write(images)
         #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_id'] )
         if 'image_id' in st.session_state:
             del st.session_state['image_id']
