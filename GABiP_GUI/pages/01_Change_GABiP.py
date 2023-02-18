@@ -332,11 +332,10 @@ def add_entry_page():
      dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
      dftojson=dftojsondict.to_json(orient="columns")
      
-     add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved())
+     add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
      st.write("commented out for development")    
 
-    
     
     
     
