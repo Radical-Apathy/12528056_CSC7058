@@ -665,49 +665,38 @@ def sendEmail(email_receiver):
 
 st.header(":lower_left_ballpoint_pen: :lower_left_fountain_pen: :pencil: :pencil2: :lizard: Change GABiP")
 
-
-
-authenticator = stauth.Authenticate(email, username, hashed_passwords,
-    "change_database", "abcdef")
+authenticator = stauth.Authenticate(email, username, hashed_passwords, "change_database", "abcdef")
 
 username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position
 
-
 if authentication_status == False:
-      st.error("Username/password is not recognised")
+    st.error("Username/password is not recognised")
+    st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
 
-if authentication_status == None:
-      st.warning("Please enter username and password")
-
-       
-
-
-if authentication_status:
-        
+    sendReminder = st.checkbox("Send Password Reminder")
+    if sendReminder:
+        email=st.text_input("Email address")
+        sendbutton=st.button("Send reminder")
+        if sendbutton and email:
+            sendEmail(email)
+            st.success("Email sent...please check your inbox for a password reset link")
+        elif sendbutton:
+            st.warning("Please enter an email address")
+elif authentication_status == None:
+    st.warning("Please enter username and password")
+else:
     for user in users:
         if user["username"] == st.session_state['username'] and user["approved"] == "False":
             st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
-        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
+        elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
             welcome_screen(), show_options()         
-        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
+        elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
             st.write(f"Welcome ",user["firstname"], " you're a trusted member")
             welcome_screen(), show_options()
-        
 
 authenticator.logout("Logout", "sidebar")
 
 
 
-#------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#
 
-st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
 
-sendReminder = st.checkbox("Send Password Reminder")
-if sendReminder:
-    email=st.text_input("Email address")
-    sendbutton=st.button("Send reminder")
-    if sendbutton and email:
-        sendEmail(email)
-        st.success("Email sent...please check your inbox for a password reset link")
-    elif sendbutton:
-        st.warning("Please enter an email address")
