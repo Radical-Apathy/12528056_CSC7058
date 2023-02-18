@@ -328,10 +328,10 @@ def add_entry_page():
     
 
 #--------------------------------------------------------------------------ADD SPECIES INFORMATION PAGE------------------------------------------------------------------------------------#
-#----------------------------------------------METHODS SPECIFIC TO ADD NEW SPECIES INFORMATION-----------------------------------------------------------------------------------------------------#
+#----------------------------------------------METHODS SPECIFIC TO ADD NEW SPECIES INFORMATION---------------------------------------------#
 def add_species_information():
     def add_bg_from_url():
-       st.markdown(
+        st.markdown(
             f"""
             <style>
             .stApp {{
@@ -348,6 +348,92 @@ def add_species_information():
         )
 
     add_bg_from_url()
+
+    missingInfoColumns = []
+    def get_missing_info_columns(results):
+        for column in dbColumns:
+            if results[column].isna().any():
+                missingInfoColumns.append(results[column].name)
+        return missingInfoColumns
+
+    user_missing_info = []
+    def get_missing_userinfo():
+        for option in show_missing_info:
+            userText = st.text_input(option, key=option)
+            if userText:
+                user_missing_info.append(st.session_state[option])
+        return user_missing_info
+
+    def update_missing_results(show_missing_info):
+        speciesIndex = species_results.index[0]
+        results_updated = species_results.copy()
+        for column in show_missing_info:
+            results_updated.at[speciesIndex, column] = st.session_state[column]
+        return results_updated
+
+    now = datetime.now()
+    image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+    image_id=[]
+
+    def upload_image():
+        if 'image_ids' in st.session_state:
+            image_ids = st.session_state['image_ids']
+        else:
+            image_ids = []
+
+        col1.markdown("**No images available**")
+        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        if uploaded_image is not None:
+            col1.write("**Image preview**")
+            col1.image(uploaded_image)
+
+        submit_image=col1.button("Submit image")
+        if submit_image and uploaded_image:
+            bytes_data = uploaded_image.getvalue()
+            try:
+                file_metadata = {
+                    'name': uploaded_image.name,
+                    'parents': [image_folder_id],
+                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+                }
+                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+                image_id = file.get('id')
+
+                st.success(f'Image uploaded! You can choose to upload more')
+                image_ids.append(image_id)
+                st.session_state['image_ids'] = image_ids
+
+                uploaded_image = None
+            except:
+                st.error("Please try again. Be sure to check your file type is in the correct format")
+    
+    def link_image(results):
+        merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         upload_image()  
+        else:
+            col1.write("Image from amphibiaweb.org")
+            return merged_image_df["Display Image"].iloc[0]
+        
+    def link_embedded_image(results):
+        embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+            return embedded_image_df["Embedded Link"].iloc[0]
+        else:
+            return None
+
+    def update_user_json(original_results_json, user_df_json):
+        data = json.loads(original_results_json)
+        new_keys_data = json.loads(user_df_json)
+
+        for key, value in new_keys_data["0"].items():
+            if key in data:
+                data[key][str(results_index)] = value
+        return data
+   
+   #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
+    
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
