@@ -150,28 +150,35 @@ def load_latest():
 
 current_db=load_latest()
 
+#-------------------------------------------------------------CONNECTING TO IMAGES AND REFERENCES CSVS FROM GOOGLE DRIVE---------------------------------------------------------#
+@st.cache_data
+def load_references():
+    dfReferences = pd.read_csv('https://drive.google.com/uc?id=1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek', encoding= 'unicode_escape')
+    return dfReferences
+
+@st.cache_data
+def load_images():
+    dfImages = pd.read_csv('https://drive.google.com/uc?id=1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi', encoding= 'unicode_escape')
+    return dfImages
+
+dfReferences = load_references()
+dfImages = load_images()
+
+
 #------------------------------------------------------------SESSION STATE INITIATION--------------------------------------------------------------------------------------------#
 
 if 'comment' not in st.session_state:
     st.session_state['comment']=""
 
-#creating session state variables for each column in dataset
-#columnstates=[]
+
 def create_session_states(dbColumns):
     for column in dbColumns:
         if column not in st.session_state:
            st.session_state[column] =""
         
 
-#columnstates=[]
-#def create_session_states(dbColumns):
-#    for column in dbColumns:
-#        if column not in st.session_state:
-#           st.session_state[column] =""
-#        columnstates.append(st.session_state[column])
-#    return columnstates
-         
-#st.session_state
+if 'image_ids' not in st.session_state:
+        st.session_state['image_ids']=[]
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
 def welcome_screen():
@@ -195,16 +202,6 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
-  
-    #sets session state values for optional extra fields
-    #def get_extra_userinfo():
-    # for option in more_options:
-        
-    #    userText=st.text_input(option, key=option)
-    #    if userText:
-    #     st.session_state[option] == userText
-    #    elif not userText :
-    #        st.session_state[option]==None
 
     def get_extra_userinfo():
      for option in more_options:
@@ -229,11 +226,7 @@ def add_entry_page():
         if genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
             st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
 
-    #contructs a dataframe for user to see summary of their addition
-    #def construct_review_dataframe(userinfo, columns=current_db.columns):
-    #    completed = pd.DataFrame(userInfo, current_db.columns)
-        #st.write(completed)
-    #    st.dataframe(completed, width=300) 
+    
 
     #creates a csv file with users addition
     def create_csv(columnrow, inforow):
