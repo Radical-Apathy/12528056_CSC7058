@@ -1,9 +1,8 @@
 [theme]
 
-primaryColor = "#000000"
-secondaryColor = "#ffffff"
+primaryTextColour = "#000000"
+secondaryTextColor = "#ffffff"
 backgroundColor="#000000" #this is the colour of dataframes etc
 secondaryBackgroundColor="#006400"
 textColor="#ffffff"
 font="sans serif"
-#current favourite green = #006400
