@@ -17,22 +17,37 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
 
-# def add_bg_from_url():
-#      st.markdown(
-#           f"""
-#           <style>
-#           .stApp {{
-#               background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr30l_orig.jpg");
-#               background-attachment: fixed;
-#               background-size: cover
-#               background-position: right;
-#           }}
-#           </style>
-#           """,
-#           unsafe_allow_html=True
-#       )
+def add_bg_from_url():
+       st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
-# add_bg_from_url() 
+
+
+# st.markdown(
+#     f"""
+#     <style>
+#     .my-class {{
+#         color: #ffffff; /* set font color to white */
+#     }}
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
+#  #https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg
+add_bg_from_url() 
 
 #------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -111,13 +126,13 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     return current_db
 
 
-@st.cache
+@st.cache_data
 def load_full():
     dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
     return dfFull
@@ -163,14 +178,26 @@ def create_session_states_source(dbColumns):
         if [column+" source"] not in st.session_state:
            st.session_state[column+ "source"] =""
 
+if 'image_ids' not in st.session_state:
+        st.session_state['image_ids']=[]
 #------------------------------------------------------------METHODS -----------------------------------------------------------------------------------------#
 
-@st.cache
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
+
+
+
+
+
+@st.cache_data
 def load_references():
     dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
     return dfReferences
 
-@st.cache
+@st.cache_data
 def load_images():
     dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
     return dfImages
@@ -209,14 +236,52 @@ def update_missing_results(show_missing_info):
 
 now=datetime.now()
 
+image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+
+image_id=[]
+
+      
 def upload_image():
+    if 'image_ids' in st.session_state:
+        image_ids = st.session_state['image_ids']
+    else:
+        image_ids = []
+
     col1.markdown("**No images available**")
-    uploaded_file = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+    uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+    if uploaded_image is not None:
+        col1.write("**Image preview**")
+        col1.image(uploaded_image)
+
+    submit_image=col1.button("Submit image")
+    if submit_image and uploaded_image:
+        bytes_data = uploaded_image.getvalue()
+        try:
+            file_metadata = {
+                'name': uploaded_image.name,
+                'parents': [image_folder_id],
+                'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+            }
+            media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            image_id = file.get('id')
+
+            st.success(f'Image uploaded! You can choose to upload more')
+            image_ids.append(image_id)
+            st.session_state['image_ids'] = image_ids
+
+            uploaded_image = None
+        except:
+            st.error("Please try again. Be sure to check your file type is in the correct format")
+    
+
+
+
 
 def link_image(results):
     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    if  merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-        upload_image()
+    if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+       upload_image()  
     else:
         col1.write("Image from amphibiaweb.org")
         return merged_image_df["Display Image"].iloc[0]
@@ -224,8 +289,10 @@ def link_image(results):
 
 def link_embedded_image(results):
     embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    if  embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+    if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
         return embedded_image_df["Embedded Link"].iloc[0]
+    else:
+        return None
 
 
 def update_user_json(original_results_json, user_df_json):
@@ -241,10 +308,11 @@ def update_user_json(original_results_json, user_df_json):
 #st.image("amphibs.jpeg", width=200)
 #"C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/gabip images/black_and_green_frog.jpg"
 #sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+#st.write("<div class='my-class'>This text has the white font color.</div>", unsafe_allow_html=True)
 headercol1, headercol2, headercol3=st.columns(3)
-headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
+#headercol1.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr47_orig.jpg")
 headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
+#headercol3.image("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg")
 current=load_latest()
 dbColumns=current.columns
 create_session_states(dbColumns)
@@ -278,7 +346,7 @@ summary_dataframe=[]
 def create_source_fields(show_missing_info):
        for option in show_missing_info:
                user_source=st.text_input("Please enter a source for "+option, key=option+" source")
-
+    
        for option in show_missing_info:
            if user_source and user_source!="":
                st.session_state[option+" source"]==user_source
@@ -312,22 +380,19 @@ results_updated=update_missing_results(show_missing_info)
 
 show_results=st.checkbox("Show updates")
  
+compared=species_results.iloc[0].equals(results_updated.iloc[0])
 
-
-if show_results:
-    methodcol1, methodcol2, methodcol3=st.columns(3)
-    methodcol2.dataframe(update_missing_results(show_missing_info).iloc[0], width=300)
-    diff_mask = species_results != results_updated
-
-    compare=st.button("Compare")
-    if compare:
-       
-        comparecol1,comparecol2, comparecol3=st.columns(3)
-        comparecol1.write("Original Species")
-        comparecol1.dataframe(species_results.iloc[0], width=300)
-        comparecol2.write("Updated Species Info")
-        comparecol2.dataframe(results_updated.iloc[0], width=300)
-        comparecol3.write("Differences highlighted?")     
+if show_results and compared:
+    st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
+elif show_results and len(show_missing_info) != len(user_missing_info):
+    st.warning("**Please ensure values are added for each field selected**")
+elif show_results and not compared: 
+    comparecol1,comparecol2, comparecol3=st.columns(3)
+    comparecol1.write("**Original Species**")
+    comparecol1.dataframe(species_results.iloc[0], width=300)
+    comparecol3.write("**Updated Species Info**")
+    comparecol3.dataframe(results_updated.iloc[0], width=300)
+        #comparecol3.write("Differences highlighted?")     
 
 sourcecol1,sourcecol2,sourcecol3=st.columns(3)
 sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
@@ -364,13 +429,22 @@ st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><s
 
 
 
-preview_updated_dataset=st.checkbox("Preview updated dataset")
+preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
-if preview_updated_dataset:
+if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
+        st.warning("**Please ensure values are added for each field selected**")
+preview_success= False
+    
+    
+if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
+        st.warning("**Please ensure sources are added for each field selected**")
+preview_success=False
+
+if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
+    
     results_index=species_results.index[0]
     updated_db=current.copy()
     search_results_to_json=species_results.to_json(orient="columns")
-   
     try:
         pd.DataFrame(user_missing_info, show_missing_info)
         user_changes=pd.DataFrame(user_missing_info, show_missing_info)
@@ -379,14 +453,35 @@ if preview_updated_dataset:
         updated_row=pd.read_json(updated_json)
         updated_db.loc[results_index] =(updated_row.loc[results_index])
         st.dataframe(updated_db)
+        preview_success=True
     except:
-        st.warning("Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx")
+       st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
         #st.warning()
+        
 
-    commit_addition=st.button("Submit Addition")
+    if preview_success:
+     user_comments = st.text_area("**Additional comments (optional)**", height=30)
+    
+    
+     commit_addition=st.button("Submit Addition")
+    
 
-    if commit_addition:
-        st.write("Thank you! Your submission has been sent to admin for review. You'll be notified by e-mail on decision")
+     if user_comments=="":
+         user_comments="n/a"
+    
+     if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
+        #add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+        if 'image_ids' in st.session_state:
+         del st.session_state['image_ids']
+        st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     else:
+        st.markdown("Please check all fields selected and sources have been provided in order to submit")
+
+          
+    
+        
+
+   
 
 
   
