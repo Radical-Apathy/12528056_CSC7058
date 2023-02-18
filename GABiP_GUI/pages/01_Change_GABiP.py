@@ -686,13 +686,34 @@ elif authentication_status == None:
     st.warning("Please enter username and password")
 else:
     for user in users:
-        if user["username"] == st.session_state['username'] and user["approved"] == "False":
-            st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
-        elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-            welcome_screen(), show_options()         
-        elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-            st.write(f"Welcome ",user["firstname"], " you're a trusted member")
-            welcome_screen(), show_options()
+     if user["username"] == st.session_state['username'] and user["admin"] == "True":
+        st.write("Welcome, you're an admin.")
+        welcome_screen(), show_options()         
+     elif user["username"] == st.session_state['username'] and user["approved"] == "True":
+        st.write(f"Welcome {user['firstname']}, you're a trusted member.")
+        welcome_screen(), show_options()
+     elif user["username"] == st.session_state['username']:
+        st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+    # for user in users:
+     
+    #  if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
+    #     st.write("Welcome, you're an admin.")
+    #     welcome_screen(), show_options()         
+    #  elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
+    #     st.write(f"Welcome {user['firstname']}, you're a trusted member.")
+    #     welcome_screen(), show_options()
+    # else:
+        #user["username"] == st.session_state['username'] and user["approved"] == "False" and user["admin"] == "False":
+         #st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+    # for user in users:
+    #     if user["username"] == st.session_state['username'] and user["approved"] == "False" and user["admin"] == "False":
+    #         st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
+    #     elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
+    #         st.write("Youre an admin")
+    #         welcome_screen(), show_options()         
+    #     elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
+    #         st.write(f"Welcome ",user["firstname"], " you're a trusted member")
+    #         welcome_screen(), show_options()
 
 authenticator.logout("Logout", "sidebar")
 
