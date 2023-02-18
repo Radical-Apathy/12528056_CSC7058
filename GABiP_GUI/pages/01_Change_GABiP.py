@@ -280,14 +280,8 @@ def add_entry_page():
    
     review_information=st.button("Review Information")
     #altering populate userinfo method to create json array
+      
     
-    
-    
-  
-    
-
-
-
     if review_information:
     
      populate_userinfo()
@@ -340,8 +334,27 @@ def add_entry_page():
     
     
 
+#--------------------------------------------------------------------------ADD SPECIES INFORMATION PAGE------------------------------------------------------------------------------------#
+#----------------------------------------------METHODS SPECIFIC TO ADD NEW SPECIES INFORMATION-----------------------------------------------------------------------------------------------------#
+def add_species_information():
+    def add_bg_from_url():
+       st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
-
+    add_bg_from_url()
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
@@ -352,7 +365,7 @@ def show_options():
     if options == "New Species Entry":
         add_entry_page()
     if options == 'Add Species Information':
-        st.write("species addition page")
+        add_species_information()
 
 
 
