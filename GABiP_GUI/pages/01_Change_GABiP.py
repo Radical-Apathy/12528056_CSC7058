@@ -433,7 +433,166 @@ def add_species_information():
         return data
    
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
+    headercol1, headercol2, headercol3=st.columns(3)
+    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+    current=load_latest()
+    dbColumns=current.columns
+    create_session_states(dbColumns)
+    all_genus=[]
+    def get_genus(species_dropdown):
+        all_genus=current.loc[current["Species"]==species_dropdown]
+        return all_genus
+
+
+    additional_info=[]
+
+    species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
+
+    additional_info_sources=[]
+
+    species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
+
+    species_genus=current.loc[current["Species"]==species_dropdown]
+
+    genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
+
+    genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
+
+    species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
+
+    source_fields=[]
+    summary_dataframe=[]
+    def create_source_fields(show_missing_info):
+       for option in show_missing_info:
+               user_source=st.text_input("Please enter a source for "+option, key=option+" source")
     
+       for option in show_missing_info:
+           if user_source and user_source!="":
+               st.session_state[option+" source"]==user_source
+               additional_info_sources.append(st.session_state[option+" source"])
+           
+       return additional_info_sources
+   
+    col1, col2, col3 = st.columns(3)
+
+    col3.markdown("**All Genea of** "+species_dropdown)
+
+    col3.dataframe(species_genus["Genus"])
+
+
+    col2.write(f"{genus_dropdown} {species_dropdown} Summary")
+
+    col2.dataframe(species_results.iloc[0], width=500)
+
+    col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
+
+    get_missing_info_columns(species_results)
+    show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
+
+    if show_missing_info:
+        get_missing_userinfo()
+
+    results_copy=species_results.copy()
+
+    results_updated=update_missing_results(show_missing_info)
+
+    show_results=st.checkbox("Show updates")
+ 
+    compared=species_results.iloc[0].equals(results_updated.iloc[0])
+
+    if show_results and compared:
+        st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
+    elif show_results and len(show_missing_info) != len(user_missing_info):
+        st.warning("**Please ensure values are added for each field selected**")
+    elif show_results and not compared: 
+        comparecol1,comparecol2, comparecol3=st.columns(3)
+        comparecol1.write("**Original Species**")
+        comparecol1.dataframe(species_results.iloc[0], width=300)
+        comparecol3.write("**Updated Species Info**")
+        comparecol3.dataframe(results_updated.iloc[0], width=300)
+    
+    sourcecol1,sourcecol2,sourcecol3=st.columns(3)
+    sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
+    sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    create_source_fields(show_missing_info)
+
+    sourcesum1, sourcesum2,sourcesum3=st.columns(3)
+    source_summary=sourcesum2.button("Review Sources Summary")
+    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
+    sources_review_json=sources_review_dataframe.to_json(orient="columns")
+    if source_summary:
+    
+        sumcol1,sumcol2,sumcol3=st.columns(3)
+        if not additional_info_sources:
+
+         st.warning("Please ensure sources are provided for each information point")
+        else:
+            
+            sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+            sumcol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+            sources_parsed=json.loads(sources_review_json)
+            for key, value in sources_parsed.items():
+                for inner_key, inner_value in value.items():
+                    sumcol1.markdown("***")
+                    sumcol1.markdown("**"+inner_key+"**")
+                    sumcol3.markdown("***")
+                    sumcol3.markdown("*"+inner_value+"*")
+                    
+
+    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+
+    preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
+
+    if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
+            st.warning("**Please ensure values are added for each field selected**")
+    preview_success= False
+        
+        
+    if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
+            st.warning("**Please ensure sources are added for each field selected**")
+    preview_success=False
+
+    if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
+    
+        results_index=species_results.index[0]
+        updated_db=current.copy()
+        search_results_to_json=species_results.to_json(orient="columns")
+        try:
+            pd.DataFrame(user_missing_info, show_missing_info)
+            user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+            user_changes_json=user_changes.to_json()    
+            updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+            updated_row=pd.read_json(updated_json)
+            updated_db.loc[results_index] =(updated_row.loc[results_index])
+            st.dataframe(updated_db)
+            preview_success=True
+        except:
+            st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
+                #st.warning()
+        if preview_success:
+         user_comments = st.text_area("**Additional comments (optional)**", height=30)
+        
+        
+        commit_addition=st.button("Submit Addition")
+        
+
+        if user_comments=="":
+            user_comments="n/a"
+        
+        if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
+            add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+            if 'image_ids' in st.session_state:
+             del st.session_state['image_ids']
+            st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+        elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources):
+            st.markdown("Please check all fields selected and sources have been provided in order to submit")
+
+
+
+
+
+
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
