@@ -254,10 +254,40 @@ def new_information_review():
                     tab2_col1.markdown("**"+inner_key+"**")
                     tab2_col2.markdown("***")
                     tab2_col2.markdown("*"+inner_value+"*")
-                    
-    
+        #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    user_images=database["User_Images"]
         
+        new_info_tab3.write(user_images)
 
+        image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+        
+        # results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+        # items = results.get('files', [])
+
+        # if not items:
+        #     st.write('No files found.')
+        # else:
+        #     for item in items:
+        #         for value in user_images:
+        #          if item['id'] == value:
+                    
+        #             st.image(item['id']) 
+        results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+        items = results.get('files', [])
+        if not items:
+            st.write('No files found.')
+        else:
+            for item in items:
+                for value in user_images:
+                  if item['id'] == value:
+                    new_info_tab3.write(value)
+                    
+                    new_info_tab3.write(item['id']) 
+
+        
+        new_info_tab3.image("https://drive.google.com/file/d/1iR1MEEYUaL9GNfSsLGVTAOp8uKHJmkkb")
    
 
 
