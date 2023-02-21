@@ -341,7 +341,24 @@ def new_species_review():
 
 
 def welcome_screen():
-    st.image("amphibs.jpeg", width=200)
+    def load_welcome_bg():
+        st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg.jpg");
+                    background-attachment: fixed;
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 0.1
+                    color: #ffffff; 
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+    load_welcome_bg()
+    
 
 def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Add Species Information',  'Remove Species Information', 'Edit Species Information'), key='admin_current_option')
@@ -417,7 +434,24 @@ def sendEmail(email_receiver):
 
 #-----------------------------------------------------------------------HOME PAGE-----------------------------------------------------------------------------------------------------------------------------#  
 
-st.header("**************************:lock:Admin Section:lock_with_ink_pen:**************************")
+def load_login_bg():
+        st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr31l_orig.jpg");
+                        background-attachment: fixed;
+                        background-size: cover;
+                        background-position: center;
+                        opacity: 0.1
+                        color: #ffffff; 
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+load_login_bg()
 
 
 
@@ -428,39 +462,55 @@ username, authentication_status, password = authenticator.login("Login", "main")
 
 
 if authentication_status == False:
-      st.error("Username/password is not recognised")
+     st.warning("**Username/password is not recognised**")
+     st.write("**Forgotten username/password? Enter your email below and we'll send a reminder**")
 
-if authentication_status == None:
-      st.warning("Please enter username and password")
+     sendReminder = st.checkbox("Send Password Reminder")
+     if sendReminder:
+         email=st.text_input("Email address")
+         sendbutton=st.button("Send reminder")
+         if sendbutton and email:
+             sendEmail(email)
+             st.success("Email sent...please check your inbox for a password reset link")
+         elif sendbutton:
+             st.warning("Please enter an email address")
+elif authentication_status == None:
+     st.warning("Please enter username and password")
+else:
+     for user in users:
+         if user["username"] == st.session_state['username'] and user["admin"] == "True":
+             st.write("Welcome, you're an admin.")
+             admin_edit_options()         
+         elif user["username"] == st.session_state['username'] and user["admin"] == "False":
+             if user["approved"] == "True" and user["admin"] == "False":
+                 st.write(f"**Welcome {user['firstname']}, you're a trusted member. However, this section is for Admin users only**")
+                 
+             else:
+                 st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+  
+authenticator.logout("Logout", "sidebar")
 
        
 
 
-if authentication_status:
-        
-    for user in users:
-        if user["username"] == st.session_state['username'] and user["approved"] == "False":
-            st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
-        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-            admin_welcome_screen()        
-        if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-            st.write(f"Welcome ",user["firstname"], " you're a trusted member. However, This section is for members with admin status only. You may request admin status")
+
+
           
         
 
-authenticator.logout("Logout", "sidebar")
+
 
 
 #------------------------------------------------------------PASSWORD REMINDER SECTION-----------------------------------------------------------------------------------------#
 
-st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+# st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
 
-sendReminder = st.checkbox("Send Password Reminder")
-if sendReminder:
-    email=st.text_input("Email address")
-    sendbutton=st.button("Send reminder")
-    if sendbutton and email:
-        sendEmail(email)
-        st.success("Email sent...please check your inbox for a password reset link")
-    elif sendbutton:
-        st.warning("Please enter an email address")
+# sendReminder = st.checkbox("Send Password Reminder")
+# if sendReminder:
+#     email=st.text_input("Email address")
+#     sendbutton=st.button("Send reminder")
+#     if sendbutton and email:
+#         sendEmail(email)
+#         st.success("Email sent...please check your inbox for a password reset link")
+#     elif sendbutton:
+#         st.warning("Please enter an email address")
