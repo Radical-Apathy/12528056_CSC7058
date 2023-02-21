@@ -227,14 +227,18 @@ def new_information_review():
         
         before_jsonn=json.loads(species_before)
         species_index = list(before_jsonn['Order'].keys())[0]
+        
         with new_info_tab1:
-            tab1_col1, tab1_col2=st.columns(2)
+            tab1_col1, tab1_col2, tab1_col3=st.columns(3)
         
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
         tab1_col1.markdown("**Species Before**")
         tab1_col1.write(pd.read_json(species_before).iloc[0])
         tab1_col2.markdown("**Species After Addition**")
         tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
+        compared=pd.read_json(species_before).iloc[0].compare(pd.read_json(updated_species_json).iloc[0])
+        tab1_col3.write(compared)
+
         
         #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
         for database in databases:
