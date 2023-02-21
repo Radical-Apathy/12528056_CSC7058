@@ -202,9 +202,9 @@ def new_information_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-    namecol1, namecol2, namecol3=st.columns(3)
-    namecol1.markdown(f"**{genus_added_to}**") 
-    namecol2.markdown(f"**{species_added_to}**")
+    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to},      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+    
 
     def update_user_json(species_before, species_after):
         data = json.loads(species_before)
