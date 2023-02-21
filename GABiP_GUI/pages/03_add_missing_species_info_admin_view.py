@@ -283,11 +283,12 @@ def new_information_review():
                 for value in user_images:
                   if item['id'] == value:
                     new_info_tab3.write(value)
-                    
-                    new_info_tab3.write(item['id']) 
+                    new_info_tab3.write(item['name'])
+                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}") 
 
         
-        new_info_tab3.image("https://drive.google.com/file/d/1iR1MEEYUaL9GNfSsLGVTAOp8uKHJmkkb")
+        #st.image("https://drive.google.com/uc?id=1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br")
+        #st.image("https://drive.google.com/uc?id=1HWbCB51cGr08iB2PoUd3kXl1VA-t5V2d")
    
 
 
