@@ -122,15 +122,22 @@ def load_latest():
     return current_db
 
 
-@st.cache_data
-def load_full():
-    dfFull = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/dataset_clean.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfFull
-def add_changes(dataframe, dataframe2):
-    updated=dataframe.append(dataframe2, ignore_index = True)
-    return updated
+#get submissions for species info addition
 
 
+pending=[]
+
+
+def get_pending():
+    for database in databases:
+        
+            if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
+                
+             pending.append(database["key"])
+
+get_pending()
+
+submission_ordered=sorted(pending,reverse=True)
 
 
 #------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
@@ -180,29 +187,58 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
      return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
      "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
-
-
-
-
-@st.cache_data
-def load_references():
-    dfReferences = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/Reference_List.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfReferences
-
-@st.cache_data
-def load_images():
-    dfImages = pd.read_csv('C:/Users/Littl/OneDrive/Desktop/image_database.csv', encoding= 'unicode_escape', low_memory=False)
-    return dfImages
-
-dfReferences = load_references()
-dfImages = load_images()
-
-
-
 #------------------------------------------------------------ADMIN SPECIES INFO ADDITION PAGE-----------------------------------------------------------------------------------------#
 
+def new_information_review():
+    current=load_latest()
 
-          
+    st.write("**New species Information in order of date submitted**")
+    datesubmitted = st.selectbox(
+        'Date submitted',
+        (submission_ordered))
+    
+    for database in databases:
+                if database["key"]==datesubmitted:
+                    genus_added_to=database["Genus_Affected"]
+                    species_added_to=database["Species_Affected"]
+    
+    namecol1, namecol2=st.columns(2)
+    namecol1.markdown(f"**{genus_added_to}**") 
+    namecol2.markdown(f"**{species_added_to}**")
+
+    def update_user_json(species_before, species_after):
+        data = json.loads(species_before)
+        new_keys_data = json.loads(species_after)
+
+        for key, value in new_keys_data["0"].items():
+            if key in data:
+                data[key][str(before_df.index)] = value
+        return data
+
+
+    if datesubmitted:
+        new_info_tab1, new_into_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Information Added", "Information Sources", "Images Submitted", "Species Edit History","User Info", "User Comment"])
+       
+        #tab1 display
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    species_before=database["Dataset_Pre_Change"]
+                    species_after=database["Changes"]
+        
+        new_info_tab1.write(species_after)
+        #species_after=json.dumps(update_user_json(species_before, species_after))
+        st.write(species_before)
+        before_df=pd.read_json(species_before)
+        species_index=before_df.index
+        st.write(before_df.iloc[0])
+        #new_info_tab1.write(before_df.iloc[0])
+        updated_species=json.dumps(update_user_json(species_before, species_after))
+        # #     st.write(user_changes_json)
+        # #     st.write(search_results_to_json)
+        # #     st.write(updated_json)
+        new_info_tab1.write(pd.read_json(updated_species))
+        
+        
     
         
 
@@ -212,5 +248,5 @@ dfImages = load_images()
   
   
     
-
+new_information_review()
 
