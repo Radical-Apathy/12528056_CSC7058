@@ -217,7 +217,7 @@ def new_information_review():
 
 
     if datesubmitted:
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Overview", "Information Breakdown", "Images Submitted", "Species Edit History","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted", "Species Edit History","User Info", "User Comment"])
        
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
@@ -257,20 +257,34 @@ def new_information_review():
                 if database["key"]==datesubmitted:
                     user_images=database["User_Images"]
         
+        approved_images=[]
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+        with new_info_tab3:
+            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
         
+
+
         results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
         items = results.get('files', [])
         if not items:
-            st.write('No files found.')
+            new_info_tab3.markdown("**No Images Submitted**")
         else:
+            # for item in items:
+            #     for value in user_images:
+            #       if item['id'] == value:
+            #         new_info_tab3.write(item['name'])
+            #         new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+            new_info_tab3.write("***")
             for item in items:
                 for value in user_images:
-                  if item['id'] == value:
-                    new_info_tab3.write(item['name'])
-                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-            
+                   if item['id'] == value:
+                    #with new_info_tab3.form(item['name']):
+                        new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+                        accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
+                        deny_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+                        new_info_tab3.write("***")
+           # st.markdown("***")
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
     with new_info_tab5:
 
@@ -304,7 +318,19 @@ def new_information_review():
         new_info_tab6.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Additional Comments: </strong></em></p>', unsafe_allow_html=True)
         new_info_tab6.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
   
-  
-    
+    st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+
+    preview_updated_dataset=st.checkbox("**View updated dataset **")
+
+    if preview_updated_dataset:
+        st.write("Dataset preview")
+
+
+
+
+
+
+
+
 new_information_review()
 
