@@ -217,9 +217,9 @@ def new_information_review():
 
 
     if datesubmitted:
-        new_info_tab1, new_into_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Information Added", "Information Sources", "Images Submitted", "Species Edit History","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Information Added", "Information Sources", "Images Submitted", "Species Edit History","User Info", "User Comment"])
        
-        #tab1 display
+        #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
                     species_before=database["Dataset_Pre_Change"]
@@ -227,10 +227,10 @@ def new_information_review():
         
         new_info_tab1.write(species_after)
         #species_after=json.dumps(update_user_json(species_before, species_after))
-        st.write(species_before)
+        new_info_tab1.write(species_before)
         before_df=pd.read_json(species_before)
         species_index=before_df.index
-        st.write(before_df.iloc[0])
+        new_info_tab1.write(before_df.iloc[0])
         #new_info_tab1.write(before_df.iloc[0])
         updated_species=json.dumps(update_user_json(species_before, species_after))
         # #     st.write(user_changes_json)
@@ -238,7 +238,23 @@ def new_information_review():
         # #     st.write(updated_json)
         new_info_tab1.write(pd.read_json(updated_species))
         
+        #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    user_sources=database["User_Sources"]
         
+        with new_info_tab2:
+            tab2_col1, tab2_col2 = st.columns(2)
+            tab2_col1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+            sources_parsed=json.loads(user_sources)
+            for key, value in sources_parsed.items():
+                for inner_key, inner_value in value.items():
+                    tab2_col1.markdown("***")
+                    tab2_col1.markdown("**"+inner_key+"**")
+                    tab2_col2.markdown("***")
+                    tab2_col2.markdown("*"+inner_value+"*")
+                    
     
         
 
