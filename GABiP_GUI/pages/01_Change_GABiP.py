@@ -669,6 +669,7 @@ authenticator = stauth.Authenticate(email, username, hashed_passwords, "change_d
 
 username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position
 
+
 if authentication_status == False:
     st.error("Username/password is not recognised")
     st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
@@ -685,36 +686,81 @@ if authentication_status == False:
 elif authentication_status == None:
     st.warning("Please enter username and password")
 else:
+    user_found = False
     for user in users:
-     if user["username"] == st.session_state['username'] and user["admin"] == "True":
-        st.write("Welcome, you're an admin.")
-        welcome_screen(), show_options()         
-     elif user["username"] == st.session_state['username'] and user["approved"] == "True":
-        st.write(f"Welcome {user['firstname']}, you're a trusted member.")
-        welcome_screen(), show_options()
-     elif user["username"] == st.session_state['username']:
-        st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
-    # for user in users:
-     
-    #  if user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-    #     st.write("Welcome, you're an admin.")
-    #     welcome_screen(), show_options()         
-    #  elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-    #     st.write(f"Welcome {user['firstname']}, you're a trusted member.")
-    #     welcome_screen(), show_options()
-    # else:
-        #user["username"] == st.session_state['username'] and user["approved"] == "False" and user["admin"] == "False":
-         #st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
-    # for user in users:
-    #     if user["username"] == st.session_state['username'] and user["approved"] == "False" and user["admin"] == "False":
-    #         st.write(f"Welcome ",user["firstname"], " your access request is pending approval. We'll send you an e-mail alert to inform you of the status")
-    #     elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "True":
-    #         st.write("Youre an admin")
-    #         welcome_screen(), show_options()         
-    #     elif user["username"] == st.session_state['username'] and user["approved"] == "True" and user["admin"] == "False":
-    #         st.write(f"Welcome ",user["firstname"], " you're a trusted member")
-    #         welcome_screen(), show_options()
+        if user["username"] == st.session_state['username']:
+            user_found = True
+            if user["admin"] == "True" and user["approved"] == "True":
+                st.write("Welcome, you're an admin.")
+                welcome_screen(), show_options()         
+            elif user["admin"] == "False":
+                if user["approved"] == "True":
+                    st.write(f"Welcome {user['firstname']}, you're a trusted member.")
+                    welcome_screen(), show_options()
+                else:
+                    st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+    if not user_found:
+        st.error("Username/password is not recognised")
 
+# if authentication_status == False:
+#     st.error("Username/password is not recognised")
+#     st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+
+#     sendReminder = st.checkbox("Send Password Reminder")
+#     if sendReminder:
+#         email=st.text_input("Email address")
+#         sendbutton=st.button("Send reminder")
+#         if sendbutton and email:
+#             sendEmail(email)
+#             st.success("Email sent...please check your inbox for a password reset link")
+#         elif sendbutton:
+#             st.warning("Please enter an email address")
+# elif authentication_status == None:
+#     st.warning("Please enter username and password")
+# else:
+#     user_found = False
+#     for user in users:
+#         if user["username"] == st.session_state['username']:
+#             user_found = True
+#             if user["admin"] == "True":
+#                 st.write("Welcome, you're an admin.")
+#                 welcome_screen(), show_options()         
+#             elif user["admin"] == "False":
+#                 if user["approved"] == "True":
+#                     st.write(f"Welcome {user['firstname']}, you're a trusted member.")
+#                     welcome_screen(), show_options()
+#                 else:
+#                     st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+#     if not user_found:
+#         st.error("Username/password is not recognised")
+
+# if authentication_status == False:
+#     st.error("Username/password is not recognised")
+#     st.write("Forgotten username/password? Enter your email below and we'll send a reminder")
+
+#     sendReminder = st.checkbox("Send Password Reminder")
+#     if sendReminder:
+#         email=st.text_input("Email address")
+#         sendbutton=st.button("Send reminder")
+#         if sendbutton and email:
+#             sendEmail(email)
+#             st.success("Email sent...please check your inbox for a password reset link")
+#         elif sendbutton:
+#             st.warning("Please enter an email address")
+# elif authentication_status == None:
+#     st.warning("Please enter username and password")
+# else:
+#     for user in users:
+#         if user["username"] == st.session_state['username'] and user["admin"] == "True":
+#             st.write("Welcome, you're an admin.")
+#             welcome_screen(), show_options()         
+#         elif user["username"] == st.session_state['username'] and user["admin"] == "False":
+#             if user["approved"] == "True":
+#                 st.write(f"Welcome {user['firstname']}, you're a trusted member.")
+#                 welcome_screen(), show_options()
+#             else:
+#                 st.write(f"Welcome {user['firstname']}, your access request is pending approval. We'll send you an e-mail alert to inform you of the status.")
+  
 authenticator.logout("Logout", "sidebar")
 
 
