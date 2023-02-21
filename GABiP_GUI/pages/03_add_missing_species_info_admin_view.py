@@ -202,7 +202,7 @@ def new_information_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-    namecol1, namecol2=st.columns(2)
+    namecol1, namecol2, namecol3=st.columns(3)
     namecol1.markdown(f"**{genus_added_to}**") 
     namecol2.markdown(f"**{species_added_to}**")
 
@@ -217,7 +217,7 @@ def new_information_review():
 
 
     if datesubmitted:
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Information Added", "Information Sources", "Images Submitted", "Species Edit History","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6 = st.tabs([ "Overview", "Information Breakdown", "Images Submitted", "Species Edit History","User Info", "User Comment"])
        
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
@@ -229,10 +229,8 @@ def new_information_review():
         species_index = list(before_jsonn['Order'].keys())[0]
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
-        #new_info_tab1.write(before_df.iloc[0])
+        
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
-        # #     st.write(user_changes_json)
-        # #     st.write(search_results_to_json)
         tab1_col1.markdown("**Species Before**")
         tab1_col1.write(pd.read_json(species_before).iloc[0])
         tab1_col2.markdown("**Species After Addition**")
@@ -254,12 +252,11 @@ def new_information_review():
                     tab2_col1.markdown("**"+inner_key+"**")
                     tab2_col2.markdown("***")
                     tab2_col2.markdown("*"+inner_value+"*")
-        #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
+        #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
                     user_images=database["User_Images"]
         
-        new_info_tab3.write(user_images)
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
         
@@ -273,18 +270,34 @@ def new_information_review():
                   if item['id'] == value:
                     new_info_tab3.write(item['name'])
                     new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}")
-            # with st.container():
-            #     for item in items:
-            #       for value in user_images:
-            #         if item['id'] == value:
-            #             st.write(item['name'])
-            #             st.image(f"https://drive.google.com/uc?id={item['id']}")
-                    
+            
+    #-------------------------------------------------------------user info display--------------------------------------------------------------------#
+    with new_info_tab5:
 
-        
-        #st.image("https://drive.google.com/uc?id=1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br")
-        #st.image("https://drive.google.com/uc?id=1HWbCB51cGr08iB2PoUd3kXl1VA-t5V2d")
-   
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    author=database["Edited_By"]
+                    authorComment=database["User_Comment"]
+        for user in users:
+                if user["username"]==author:
+                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                    first_name=user["firstname"]
+                    surname = user["surname"] 
+                    user_email= user["key"]
+                    user_name=user['username']
+
+    with new_info_tab5:
+        tab5_col1, tab5_col2 = st.columns(2)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
 
 
   
