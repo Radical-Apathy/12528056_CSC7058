@@ -263,17 +263,6 @@ def new_information_review():
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
         
-        # results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-        # items = results.get('files', [])
-
-        # if not items:
-        #     st.write('No files found.')
-        # else:
-        #     for item in items:
-        #         for value in user_images:
-        #          if item['id'] == value:
-                    
-        #             st.image(item['id']) 
         results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
         items = results.get('files', [])
         if not items:
