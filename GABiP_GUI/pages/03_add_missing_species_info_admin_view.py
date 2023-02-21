@@ -212,7 +212,7 @@ def new_information_review():
 
         for key, value in new_keys_data["0"].items():
             if key in data:
-                data[key][str(before_df.index)] = value
+                data[key][str(species_index)] = value
         return data
 
 
@@ -225,18 +225,18 @@ def new_information_review():
                     species_before=database["Dataset_Pre_Change"]
                     species_after=database["Changes"]
         
-        new_info_tab1.write(species_after)
-        #species_after=json.dumps(update_user_json(species_before, species_after))
-        new_info_tab1.write(species_before)
-        before_df=pd.read_json(species_before)
-        species_index=before_df.index
-        new_info_tab1.write(before_df.iloc[0])
+        before_jsonn=json.loads(species_before)
+        species_index = list(before_jsonn['Order'].keys())[0]
+        with new_info_tab1:
+            tab1_col1, tab1_col2=st.columns(2)
         #new_info_tab1.write(before_df.iloc[0])
-        updated_species=json.dumps(update_user_json(species_before, species_after))
+        updated_species_json=json.dumps(update_user_json(species_before, species_after))
         # #     st.write(user_changes_json)
         # #     st.write(search_results_to_json)
-        # #     st.write(updated_json)
-        new_info_tab1.write(pd.read_json(updated_species))
+        tab1_col1.markdown("**Species Before**")
+        tab1_col1.write(pd.read_json(species_before).iloc[0])
+        tab1_col2.markdown("**Species After Addition**")
+        tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
         
         #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
         for database in databases:
@@ -271,9 +271,15 @@ def new_information_review():
             for item in items:
                 for value in user_images:
                   if item['id'] == value:
-                    new_info_tab3.write(value)
                     new_info_tab3.write(item['name'])
-                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}") 
+                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}")
+            # with st.container():
+            #     for item in items:
+            #       for value in user_images:
+            #         if item['id'] == value:
+            #             st.write(item['name'])
+            #             st.image(f"https://drive.google.com/uc?id={item['id']}")
+                    
 
         
         #st.image("https://drive.google.com/uc?id=1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br")
