@@ -246,16 +246,25 @@ def new_information_review():
                     user_sources=database["User_Sources"]
         
         with new_info_tab2:
-            tab2_col1, tab2_col2 = st.columns(2)
-            tab2_col1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+            tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
+            tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
+            tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
+            tab2_col4.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Proposed Value</em></p>', unsafe_allow_html=True)
+
             sources_parsed=json.loads(user_sources)
+            changes_parsed=json.loads(species_after)
             for key, value in sources_parsed.items():
                 for inner_key, inner_value in value.items():
                     tab2_col1.markdown("***")
                     tab2_col1.markdown("**"+inner_key+"**")
                     tab2_col2.markdown("***")
                     tab2_col2.markdown("*"+inner_value+"*")
+            values_parsed=json.loads(species_after)
+            st.write(sources_parsed)
+            st.write(changes_parsed)
+
+                    
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
