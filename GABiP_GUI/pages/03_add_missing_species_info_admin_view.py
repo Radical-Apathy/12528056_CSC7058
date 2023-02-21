@@ -269,7 +269,7 @@ def new_information_review():
                 for value in user_images:
                   if item['id'] == value:
                     new_info_tab3.write(item['name'])
-                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}")
+                    new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
             
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
     with new_info_tab5:
