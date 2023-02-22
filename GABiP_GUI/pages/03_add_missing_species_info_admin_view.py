@@ -235,8 +235,6 @@ def new_information_review():
         
         
         def list_fields():
-            #field_names=""
-            #field_names += inner_key + "  "
             tab1_col1.markdown("Information has been added for: ")
             for key, value in changes_parsed.items():
                 for inner_key, inner_value in value.items():
@@ -277,21 +275,36 @@ def new_information_review():
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
-            # for key, value in sources_parsed.items():
-            #     for inner_key, inner_value in value.items():
-            #         tab2_col1.markdown("**"+inner_key+"**")
-            #         tab2_col1.markdown("***")
-            #         tab2_col3.markdown("*"+inner_value+"*")
-            #         tab2_col3.markdown("***")
-                    
-            # for key, value in changes_parsed.items():
-            #     for inner_key, inner_value in value.items():
-            #         tab2_col2.markdown("*"+inner_value+"*")
-            #         tab2_col2.markdown("***")
+            original_parsed=json.loads(species_before)
+            #species_before=json.loads(species_before)
+            species_index = list(before_jsonn['Order'].keys())[0]
+            new_info_tab2.write(species_index)
+            
+            new_info_tab2.write("Before method")
+               
+            def get_current_values(species_after, species_before):
+              changed_fields_current_data = json.loads(species_after)
+              current_data = json.loads(species_before)
 
+              for key in changed_fields_current_data["0"].keys():
+                    if key in current_data:
+                        changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
+              return json.dumps(changed_fields_current_data)
+                       
+            
+                
+
+            changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
+            new_info_tab2.write(changed_fields_current_data)
+            
+            
+
+          
             source_rows=[]
             source_values=[]
             new_values=[]
+            current_values=[]
+            get_current_values(species_after, species_before)
             for key, value in sources_parsed.items():
                 for inner_key, inner_value in value.items():
                      source_row=inner_key
@@ -303,18 +316,18 @@ def new_information_review():
                  for inner_key, inner_value in value.items():
                      new_value=inner_value
                      new_values.append(new_value)
+
+            for key, value in changed_fields_current_data.items():
+                 for inner_key, inner_value in value.items():
+                     current_value=inner_value
+                     current_values.append(current_value)
             
-            df = pd.DataFrame({"Information": source_rows, "Proposed Values": new_values, "Sources": source_values, })
+            df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
             
 
             st.dataframe(df)
             
-            # table_rows = []
-            # for row, value in zip(source_rows, source_values):
-            #     table_rows.append([row, value])
-
-            # st.table(table_rows)
-                    
+            
                     
                 
 
