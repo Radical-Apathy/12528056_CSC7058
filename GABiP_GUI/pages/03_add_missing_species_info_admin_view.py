@@ -141,12 +141,6 @@ submission_ordered=sorted(pending,reverse=True)
 
 
 #------------------------------------------------------------USERS_DB DATABASE CONNECTION-----------------------------------------------------------------------------------------#
-load_dotenv("C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/.env.txt")
-deta_key=os.getenv("deta_key")
-
-
-#initialising a deta object
-deta_connection= Deta(deta_key)
 
 users_db=deta_connection.Base("users_db")
 
@@ -164,7 +158,12 @@ hashed_passwords=[user ["password"] for user in users]
 isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
-#-----------------------------------------------------------SESSION STATES---------------------------------------------------------------------#
+#------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+users_images=deta_connection.Base("user_images")
+
+def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+     return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
+#-----------------------------------------------------------SESSION STATES--------------------------------------------------------------------------------------------------------#
 
 #creating session state variables for each column in dataset
 def create_session_states(dbColumns):
@@ -364,9 +363,12 @@ def new_information_review():
                         #with new_info_tab3.form(item['name']):
                             new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
                             accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-                            deny_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-                            if accept_image and deny_image:
+                            reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+                            if accept_image and reject_image:
                                     new_info_tab3.error("Warning! Both options have been selected. Please review decision")
+                            elif accept_image:
+                                approved_images.append(item['id'])
+
                             new_info_tab3.write("***")
             # st.markdown("***")
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
@@ -408,6 +410,31 @@ def new_information_review():
 
      #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
     
+    #adding global methods temporarily from admin page for testing
+    #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+    now=datetime.now()
+    version=now.strftime("%d.%m.%Y-%H.%M.%S")
+        
+    newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+
+    def create_new_updated_dataset_google():
+            newDataset=updated_db
+            csv_bytes = io.StringIO()
+            newDataset.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    
+    def update_GABiP():
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            database_metadata.update(updates, datesubmitted)
+
+    def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+       return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
     
     if preview_updated_dataset:
         try:
@@ -428,14 +455,19 @@ def new_information_review():
              reject_information=pre_col4.button("Deny Addition")
 
              if accept_information:
-                    #create_new_dataset_google()
+                    #create_new_updated_dataset_google() #<-------- working
                     #update_GABiP()
+                    #pre_col1.write(approved_images)
+                    st.write(get_latest_file_id(latest_approved_ds))
+                    #add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
                     pre_col1.write("GABiP updated!")
-            
-             reason_decline_new_info=pre_col4.text_area("Reasons for declining") 
+                    #pre_col1.write(approved_images)
+                    #st.caching.clear_cache()
+        show_current_approved_db=st.button("show current approved db")
 
-             if reject_information:
-                pre_col4.write(reason_decline_new_info)
+        if show_current_approved_db:
+            st.write(current)
+            
 
 
 
