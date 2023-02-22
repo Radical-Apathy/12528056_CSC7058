@@ -235,10 +235,10 @@ def new_information_review():
         
         
         def list_fields():
-            tab1_col1.markdown("Information has been added for: ")
+            
             for key, value in changes_parsed.items():
                 for inner_key, inner_value in value.items():
-                    tab1_col2.markdown(inner_key)
+                    tab1_col1.markdown(inner_key)
 
                
         image_count=len(user_images)
@@ -247,10 +247,11 @@ def new_information_review():
         
         
         with new_info_tab1:
-            tab1_col1, tab1_col2, tab1_col3=st.columns(3)
-        
+            tab1_col1, tab1_col2=st.columns(2)
+        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
         list_fields()
-        tab1_col3.write(f"{image_count} images have been added")
+        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Added</em></p>', unsafe_allow_html=True)
+        tab1_col2.write(f"{image_count} images have been added")
         #tab1_col2.write(f"{image_count} images have been added")
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
         #tab1_col1.markdown("**Species Before**")
@@ -270,17 +271,16 @@ def new_information_review():
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
             #tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
             #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Breakdown</em></p>', unsafe_allow_html=True)
-            #tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
+            #tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Breakdown</em></p>', unsafe_allow_html=True)
+            new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
             original_parsed=json.loads(species_before)
             #species_before=json.loads(species_before)
             species_index = list(before_jsonn['Order'].keys())[0]
-            new_info_tab2.write(species_index)
             
-            new_info_tab2.write("Before method")
                
             def get_current_values(species_after, species_before):
               changed_fields_current_data = json.loads(species_after)
@@ -295,16 +295,13 @@ def new_information_review():
                 
 
             changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
-            new_info_tab2.write(changed_fields_current_data)
-            
-            
-
+        
           
             source_rows=[]
             source_values=[]
             new_values=[]
             current_values=[]
-            get_current_values(species_after, species_before)
+
             for key, value in sources_parsed.items():
                 for inner_key, inner_value in value.items():
                      source_row=inner_key
@@ -407,7 +404,9 @@ def new_information_review():
 
     preview_updated_dataset=st.checkbox("**View updated dataset **")
 
+     #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
     if preview_updated_dataset:
+        updated_db=current.copy()
         st.write("Dataset preview")
 
 
