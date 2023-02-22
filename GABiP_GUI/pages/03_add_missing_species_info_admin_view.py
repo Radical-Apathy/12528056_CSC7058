@@ -219,7 +219,7 @@ def new_information_review():
     if datesubmitted:
 
 
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted", "Species Edit History","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
         
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
@@ -252,7 +252,7 @@ def new_information_review():
             tab1_col1, tab1_col2, tab1_col3=st.columns(3)
         
         list_fields()
-        tab1_col1.write(f"{image_count} images have been added")
+        tab1_col3.write(f"{image_count} images have been added")
         #tab1_col2.write(f"{image_count} images have been added")
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
         #tab1_col1.markdown("**Species Before**")
@@ -272,7 +272,7 @@ def new_information_review():
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
             #tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
             #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Breakdown</em></p>', unsafe_allow_html=True)
             #tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
 
             sources_parsed=json.loads(user_sources)
@@ -326,34 +326,37 @@ def new_information_review():
                 if database["key"]==datesubmitted:
                     user_images=database["User_Images"]
         
+        image_count=len(user_images)
         approved_images=[]
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
         with new_info_tab3:
             tab3_col1,tab3_col2,tab3_col3=st.columns(3)
         
+        if image_count <1:
+            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Submitted</em></p>', unsafe_allow_html=True)
 
-
-        results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-        items = results.get('files', [])
-        if not items:
-            new_info_tab3.markdown("**No Images Submitted**")
+        
+            
+            
         else:
-            # for item in items:
-            #     for value in user_images:
-            #       if item['id'] == value:
-            #         new_info_tab3.write(item['name'])
-            #         new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+            results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+            items = results.get('files', [])
+                # for item in items:
+                #     for value in user_images:
+                #       if item['id'] == value:
+                #         new_info_tab3.write(item['name'])
+                #         new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
             new_info_tab3.write("***")
             for item in items:
                 for value in user_images:
-                   if item['id'] == value:
-                    #with new_info_tab3.form(item['name']):
-                        new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-                        accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-                        deny_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-                        new_info_tab3.write("***")
-           # st.markdown("***")
+                    if item['id'] == value:
+                        #with new_info_tab3.form(item['name']):
+                            new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+                            accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
+                            deny_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+                            new_info_tab3.write("***")
+            # st.markdown("***")
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
     with new_info_tab5:
 
