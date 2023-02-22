@@ -236,11 +236,12 @@ def new_information_review():
         tab1_col1.write(pd.read_json(species_before).iloc[0])
         tab1_col2.markdown("**Species After Addition**")
         tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
-        compared=pd.read_json(species_before).iloc[0].compare(pd.read_json(updated_species_json).iloc[0])
-        tab1_col3.write(compared)
+        #compared=pd.read_json(species_before).iloc[0].compare(pd.read_json(updated_species_json).iloc[0])
+        #tab1_col3.write(compared)
 
         
-        #-------------------------------------------------------------information sources display--------------------------------------------------------------------#
+                
+        #-------------------------------------------------------------information breakdown display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
                     user_sources=database["User_Sources"]
@@ -248,9 +249,9 @@ def new_information_review():
         with new_info_tab2:
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
             tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
-            tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
-            tab2_col4.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Proposed Value</em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
+            tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Proposed Value</em></p>', unsafe_allow_html=True)
+            tab2_col4.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
@@ -258,11 +259,14 @@ def new_information_review():
                 for inner_key, inner_value in value.items():
                     tab2_col1.markdown("***")
                     tab2_col1.markdown("**"+inner_key+"**")
-                    tab2_col2.markdown("***")
-                    tab2_col2.markdown("*"+inner_value+"*")
-            values_parsed=json.loads(species_after)
-            st.write(sources_parsed)
-            st.write(changes_parsed)
+                    tab2_col4.markdown("***")
+                    tab2_col4.markdown("*"+inner_value+"*")
+                    
+            for key, value in changes_parsed.items():
+                for inner_key, inner_value in value.items():
+                    tab2_col3.markdown("***")
+                    tab2_col3.markdown("*"+inner_value+"*")
+                    
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
