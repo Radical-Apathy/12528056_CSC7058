@@ -117,7 +117,7 @@ latest_id=get_latest_file_id(latest_approved_ds)
 
 
 @st.cache_data
-def load_latest(latest_id):
+def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     return current_db
 
@@ -189,7 +189,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 #------------------------------------------------------------ADMIN SPECIES INFO ADDITION PAGE-----------------------------------------------------------------------------------------#
 
 def new_information_review():
-    current=load_latest(latest_id)
+    current=load_latest()
 
     st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
@@ -461,7 +461,7 @@ def new_information_review():
                     #st.write(get_latest_file_id(latest_approved_ds))
                     #add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
                     pre_col1.write("GABiP updated!")
-                    load_latest.clear_cache(latest_id)
+                    #load_latest.clear_cache(latest_id)
 
                     #st.caching.clear_cache()
         #show_current_approved_db=st.button("show current approved db")

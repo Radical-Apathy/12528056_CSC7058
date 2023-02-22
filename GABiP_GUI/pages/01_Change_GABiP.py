@@ -143,12 +143,12 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 
 @st.cache_data
-def load_latest(latest_id):
+def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
 
 
-current_db=load_latest(latest_id)
+current_db=load_latest()
 
 #-------------------------------------------------------------CONNECTING TO IMAGES AND REFERENCES CSVS FROM GOOGLE DRIVE---------------------------------------------------------#
 @st.cache_data
@@ -456,7 +456,7 @@ def add_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest(latest_id)
+    current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
