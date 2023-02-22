@@ -365,6 +365,8 @@ def new_information_review():
                             new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
                             accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
                             deny_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+                            if accept_image and deny_image:
+                                    new_info_tab3.error("Warning! Both options have been selected. Please review decision")
                             new_info_tab3.write("***")
             # st.markdown("***")
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
@@ -405,9 +407,36 @@ def new_information_review():
     preview_updated_dataset=st.checkbox("**View updated dataset **")
 
      #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
+    
+    
     if preview_updated_dataset:
-        updated_db=current.copy()
-        st.write("Dataset preview")
+        try:
+            updated_db=current.copy()
+            updated_json=json.dumps(update_user_json(species_before, species_after))
+            updated_row=pd.read_json(updated_json)
+            updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
+            preview_new=True
+        except:
+            st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
+            preview_new=False
+
+        if preview_new:
+            
+             st.dataframe(updated_db)
+             pre_col1, pre_col2, pre_col3, pre_col4=st.columns(4)
+             accept_information=pre_col1.button("Approve Addition")
+             reject_information=pre_col4.button("Deny Addition")
+
+             if accept_information:
+                    #create_new_dataset_google()
+                    #update_GABiP()
+                    pre_col1.write("GABiP updated!")
+            
+             reason_decline_new_info=pre_col4.text_area("Reasons for declining") 
+
+             if reject_information:
+                pre_col4.write(reason_decline_new_info)
+
 
 
 
