@@ -192,7 +192,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 def new_information_review():
     current=load_latest()
 
-    st.write("**New species Information in order of date submitted**")
+    st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
         'Date submitted',
         (submission_ordered))
@@ -217,25 +217,50 @@ def new_information_review():
 
 
     if datesubmitted:
+
+
         new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab4, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted", "Species Edit History","User Info", "User Comment"])
-       
+        
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
                     species_before=database["Dataset_Pre_Change"]
                     species_after=database["Changes"]
+                    user_images=database["User_Images"]
         
         before_jsonn=json.loads(species_before)
         species_index = list(before_jsonn['Order'].keys())[0]
+        changes_parsed=json.loads(species_after)
+        
+        
+        
+        def list_fields():
+            #field_names=""
+            #field_names += inner_key + "  "
+            tab1_col1.markdown("Information has been added for: ")
+            for key, value in changes_parsed.items():
+                for inner_key, inner_value in value.items():
+                    tab1_col2.markdown(inner_key)
+
+               
+        image_count=len(user_images)
+        
+
+        
         
         with new_info_tab1:
             tab1_col1, tab1_col2, tab1_col3=st.columns(3)
         
+        list_fields()
+        tab1_col1.write(f"{image_count} images have been added")
+        #tab1_col2.write(f"{image_count} images have been added")
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
-        tab1_col1.markdown("**Species Before**")
-        tab1_col1.write(pd.read_json(species_before).iloc[0])
-        tab1_col2.markdown("**Species After Addition**")
-        tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
+        #tab1_col1.markdown("**Species Before**")
+        #tab1_col1.write(pd.read_json(species_before).iloc[0])
+        #tab1_col2.markdown("**Species After Addition**")
+        #tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
+
+        
                
                 
         #-------------------------------------------------------------information breakdown display--------------------------------------------------------------------#
@@ -245,25 +270,55 @@ def new_information_review():
         
         with new_info_tab2:
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
-            tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
-            tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Proposed Value</em></p>', unsafe_allow_html=True)
-            tab2_col4.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
+            #tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
+            #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
+            #tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Source</em></p>', unsafe_allow_html=True)
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
+            # for key, value in sources_parsed.items():
+            #     for inner_key, inner_value in value.items():
+            #         tab2_col1.markdown("**"+inner_key+"**")
+            #         tab2_col1.markdown("***")
+            #         tab2_col3.markdown("*"+inner_value+"*")
+            #         tab2_col3.markdown("***")
+                    
+            # for key, value in changes_parsed.items():
+            #     for inner_key, inner_value in value.items():
+            #         tab2_col2.markdown("*"+inner_value+"*")
+            #         tab2_col2.markdown("***")
+
+            source_rows=[]
+            source_values=[]
+            new_values=[]
             for key, value in sources_parsed.items():
                 for inner_key, inner_value in value.items():
-                    tab2_col1.markdown("***")
-                    tab2_col1.markdown("**"+inner_key+"**")
-                    tab2_col4.markdown("***")
-                    tab2_col4.markdown("*"+inner_value+"*")
-                    
+                     source_row=inner_key
+                     source_rows.append(source_row)
+                     source_value=inner_value
+                     source_values.append(source_value)
+            
             for key, value in changes_parsed.items():
-                for inner_key, inner_value in value.items():
-                    tab2_col3.markdown("***")
-                    tab2_col3.markdown("*"+inner_value+"*")
+                 for inner_key, inner_value in value.items():
+                     new_value=inner_value
+                     new_values.append(new_value)
+            
+            df = pd.DataFrame({"Information": source_rows, "Proposed Values": new_values, "Sources": source_values, })
+            
+
+            st.dataframe(df)
+            
+            # table_rows = []
+            # for row, value in zip(source_rows, source_values):
+            #     table_rows.append([row, value])
+
+            # st.table(table_rows)
                     
+                    
+                
+
+            
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
