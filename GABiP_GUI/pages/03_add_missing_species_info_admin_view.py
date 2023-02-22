@@ -189,7 +189,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 #------------------------------------------------------------ADMIN SPECIES INFO ADDITION PAGE-----------------------------------------------------------------------------------------#
 
 def new_information_review():
-    current=load_latest()
+    current=load_latest(latest_id)
 
     st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
