@@ -250,7 +250,7 @@ def new_information_review():
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
         list_fields()
-        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Added</em></p>', unsafe_allow_html=True)
+        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
         tab1_col2.write(f"{image_count} images have been added")
         #tab1_col2.write(f"{image_count} images have been added")
         updated_species_json=json.dumps(update_user_json(species_before, species_after))
