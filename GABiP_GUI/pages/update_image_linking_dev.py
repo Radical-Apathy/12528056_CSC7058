@@ -163,6 +163,10 @@ users_images=deta_connection.Base("user_images")
 
 def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
      return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
+
+def get_all_user_images():
+    res = users_images.fetch()
+    return res.items
 #-----------------------------------------------------------SESSION STATES--------------------------------------------------------------------------------------------------------#
 
 #creating session state variables for each column in dataset
@@ -188,4 +192,120 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 #------------------------------------------------------------SPECIES SEARCH-----------------------------------------------------------------------------------------#
 
+@st.cache_data
+def load_references():
+    dfReferences = pd.read_csv('https://drive.google.com/uc?id=1h1UKe6xOy5C_maVOyGtbLCr4g0aH1Eek', encoding= 'unicode_escape')
+    return dfReferences
 
+@st.cache_data
+def load_images():
+    dfImages = pd.read_csv('https://drive.google.com/uc?id=1AfojhCdyKPk2HKCUyfXaVpnUZwWgBxwi', encoding= 'unicode_escape')
+    return dfImages
+
+dfReferences = load_references()
+dfImages = load_images()
+
+
+image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+image_id=[]
+#current image linking methods
+def upload_image():
+        if 'image_ids' in st.session_state:
+            image_ids = st.session_state['image_ids']
+        else:
+            image_ids = []
+
+        col1.markdown("**No images available**")
+        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        if uploaded_image is not None:
+            col1.write("**Image preview**")
+            col1.image(uploaded_image)
+
+        submit_image=col1.button("Submit image")
+        if submit_image and uploaded_image:
+            bytes_data = uploaded_image.getvalue()
+            try:
+                file_metadata = {
+                    'name': uploaded_image.name,
+                    'parents': [image_folder_id],
+                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+                }
+                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+                image_id = file.get('id')
+
+                st.success(f'Image uploaded! You can choose to upload more')
+                image_ids.append(image_id)
+                st.session_state['image_ids'] = image_ids
+
+                uploaded_image = None
+            except:
+                st.error("Please try again. Be sure to check your file type is in the correct format")
+
+def link_image(results):
+        merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         upload_image()  
+        else:
+            col1.write("Image from amphibiaweb.org")
+            return merged_image_df["Display Image"].iloc[0]
+        
+def link_embedded_image(results):
+        embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+            return embedded_image_df["Embedded Link"].iloc[0]
+        else:
+            return None
+
+
+headercol1, headercol2, headercol3=st.columns(3)
+headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+current=load_latest()
+dbColumns=current.columns
+create_session_states(dbColumns)
+all_genus=[]
+def get_genus(species_dropdown):
+    all_genus=current.loc[current["Species"]==species_dropdown]
+    return all_genus
+
+
+additional_info=[]
+
+species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
+
+additional_info_sources=[]
+
+species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
+
+species_genus=current.loc[current["Species"]==species_dropdown]
+genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
+
+genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
+
+species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
+
+source_fields=[]
+summary_dataframe=[]
+def create_source_fields(show_missing_info):
+    for option in show_missing_info:
+         user_source=st.text_input("Please enter a source for "+option, key=option+" source")
+    
+    for option in show_missing_info:
+        if user_source and user_source!="":
+               st.session_state[option+" source"]==user_source
+               additional_info_sources.append(st.session_state[option+" source"])
+           
+    return additional_info_sources
+   
+col1, col2, col3 = st.columns(3)
+
+col3.markdown("**All Genea of** "+species_dropdown)
+
+col3.dataframe(species_genus["Genus"])
+
+
+col2.write(f"{genus_dropdown} {species_dropdown} Summary")
+
+col2.dataframe(species_results.iloc[0], width=500)
+
+col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
