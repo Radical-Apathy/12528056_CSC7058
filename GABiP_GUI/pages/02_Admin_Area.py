@@ -349,7 +349,7 @@ def welcome_screen():
     
 #-----------------------------------------------------------------------------------EDIT REQUEST OPTIONS SCREEN-------------------------------------------------------------------------------------------------------#
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Add Species Information',  'Remove Species Information', 'Edit Species Information'), key='admin_current_option')
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Information', 'Species Edit Requests', 'Information Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
         current=load_latest()
@@ -358,9 +358,13 @@ def admin_edit_options():
 
     if options == "New Species Entry":
         new_species_review()
+    if options== "New Species Information":
+        st.write("coming soon")
 
 
 
+
+#---------------------------------------------------------------------------------MAIN WELCOME SCREEN--------------------------------------------------------------------------------------------------------#
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
