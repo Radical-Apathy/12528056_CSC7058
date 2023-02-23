@@ -17,7 +17,7 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
 
-def add_bg_from_url():
+def add_new_info_bg():
        st.markdown(
             f"""
             <style>
@@ -37,7 +37,7 @@ def add_bg_from_url():
 
 
 
-add_bg_from_url() 
+add_new_info_bg()
 
 #------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
 # Use the client ID and secret to create an OAuth 2.0 flow

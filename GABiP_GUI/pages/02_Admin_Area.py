@@ -304,6 +304,25 @@ def new_species_review():
 
 #-----------------------------------------------------------------------NEW INFORMATION ADDITION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
 def information_addition_review():
+    def add_new_info_bg():
+       st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    add_new_info_bg()
     current=load_latest()
 
     st.write("**Information Addition in order of date submitted**")
@@ -650,7 +669,7 @@ def admin_edit_options():
     if options == "New Species Entry":
         new_species_review()
     if options== "New Species Information":
-        st.write("coming soon")
+        information_addition_review()
 
 
 
