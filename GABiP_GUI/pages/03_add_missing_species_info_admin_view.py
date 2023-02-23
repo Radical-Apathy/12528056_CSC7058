@@ -460,6 +460,11 @@ def new_information_review():
                     
                     add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
                     pre_col1.write("GABiP updated!")
+             if reject_information:
+
+                    reject_addition=st.text_area("Reasons for rejection for user")                    
+                    
+                    pre_col1.write("GABiP updated!")
                     
 
          
