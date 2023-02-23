@@ -331,7 +331,7 @@ def information_addition_review():
             unsafe_allow_html=True
         )
 
-
+    #loading background image
     add_new_info_bg()
     current=load_latest()
 
