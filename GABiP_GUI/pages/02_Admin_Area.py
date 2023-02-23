@@ -127,19 +127,31 @@ def add_changes(dataframe, dataframe2):
     return updated
 
 #gets dates for new species additions needing approval
-pending=[]
+pending_new_rows=[]
 
 
-def get_pending():
+def get_pending_row_additions():
     for database in databases:
         
             if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
                 
-             pending.append(database["key"])
+             pending_new_rows.append(database["key"])
 
-get_pending()
+get_pending_row_additions()
 
-submissions_ordered=sorted(pending,reverse=True)
+new_additions_submissions=sorted(pending_new_rows,reverse=True)
+
+pending_new_info=[]
+def get_pending_new_info():
+    for database in databases:
+        
+            if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
+                
+             get_pending_new_info.append(database["key"])
+
+get_pending_new_info()
+
+new_info_submissions=sorted(pending_new_info,reverse=True)
 
 #------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 users_images=deta_connection.Base("user_images")
@@ -189,7 +201,7 @@ def new_species_review():
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
-    (submissions_ordered))
+    (new_additions_submissions))
 
 
 
@@ -328,7 +340,7 @@ def information_addition_review():
     st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
         'Date submitted',
-        (submissions_ordered))
+        (new_info_submissions))
     
     for database in databases:
                 if database["key"]==datesubmitted:
