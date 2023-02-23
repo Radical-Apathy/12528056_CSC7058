@@ -146,7 +146,7 @@ users_images=deta_connection.Base("user_images")
 def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
      return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
 
-     
+
 #-------------------------------------------------------------ADMIN USERS_DB METHODS--------------------------------------------------------------------------------------------#
 
 def get_current_user(email):
@@ -332,7 +332,7 @@ def new_species_review():
 
 
 
-
+#------------------------------------------------------------------------------------------------WELCOME SCREEN BACKGROUND------------------------------------------------------------#
 
 def welcome_screen():
     def load_welcome_bg():
