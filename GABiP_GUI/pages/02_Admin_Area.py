@@ -261,7 +261,6 @@ def new_species_review():
 
         def create_new_addition_dataset():
 
-            
             newDataset=current.append(user_changes, ignore_index=True)
             csv_bytes = io.StringIO()
             newDataset.to_csv(csv_bytes, index=False)
@@ -272,7 +271,6 @@ def new_species_review():
             media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-       
         
         #updates the status, 
         def update_GABiP():
@@ -377,8 +375,6 @@ def information_addition_review():
         species_index = list(before_jsonn['Order'].keys())[0]
         changes_parsed=json.loads(species_after)
         
-        
-        
         def list_fields():
             
             for key, value in changes_parsed.items():
@@ -388,17 +384,13 @@ def information_addition_review():
                
         image_count=len(user_images)
         
-
-        
-        
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
         list_fields()
         tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
         tab1_col2.write(f"{image_count} images have been added")
-        #tab1_col2.write(f"{image_count} images have been added")
-        updated_species_json=json.dumps(update_user_json(species_before, species_after))
+        #updated_species_json=json.dumps(update_user_json(species_before, species_after))
         #tab1_col1.markdown("**Species Before**")
         #tab1_col1.write(pd.read_json(species_before).iloc[0])
         #tab1_col2.markdown("**Species After Addition**")
@@ -414,16 +406,14 @@ def information_addition_review():
         
         with new_info_tab2:
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
-            #tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information</em></p>', unsafe_allow_html=True)
-            #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Value Before</em></p>', unsafe_allow_html=True)
+            
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
-            #tab2_col3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Breakdown</em></p>', unsafe_allow_html=True)
             new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
             original_parsed=json.loads(species_before)
-            #species_before=json.loads(species_before)
+            
             species_index = list(before_jsonn['Order'].keys())[0]
             
                
@@ -469,11 +459,6 @@ def information_addition_review():
 
             st.dataframe(df)
             
-            
-                    
-                
-
-            
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
@@ -497,11 +482,7 @@ def information_addition_review():
         else:
             results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
-                # for item in items:
-                #     for value in user_images:
-                #       if item['id'] == value:
-                #         new_info_tab3.write(item['name'])
-                #         new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+             
             new_info_tab3.write("***")
             for item in items:
                 for value in user_images:
@@ -516,7 +497,7 @@ def information_addition_review():
                                 approved_images.append(item['id'])
 
                             new_info_tab3.write("***")
-            # st.markdown("***")
+            
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
     with new_info_tab5:
 
