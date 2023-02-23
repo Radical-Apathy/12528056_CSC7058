@@ -18,6 +18,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
+import json
 st.set_page_config(page_icon='amphibs.jpeg')
 
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -116,7 +117,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -126,19 +127,37 @@ def add_changes(dataframe, dataframe2):
     return updated
 
 #gets dates for new species additions needing approval
-pending=[]
+pending_new_rows=[]
 
 
-def get_pending():
+def get_pending_row_additions():
     for database in databases:
         
             if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
                 
-             pending.append(database["key"])
+             pending_new_rows.append(database["key"])
 
-get_pending()
+get_pending_row_additions()
 
-ordered=sorted(pending,reverse=True)
+new_additions_submissions=sorted(pending_new_rows,reverse=True)
+
+pending_new_info=[]
+def get_pending_new_info():
+    for database in databases:
+        
+            if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
+                
+             pending_new_info.append(database["key"])
+
+get_pending_new_info()
+
+new_info_submissions=sorted(pending_new_info,reverse=True)
+
+#------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+users_images=deta_connection.Base("user_images")
+
+def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+     return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
 
 
 #-------------------------------------------------------------ADMIN USERS_DB METHODS--------------------------------------------------------------------------------------------#
@@ -174,19 +193,17 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
-#-----------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
-
+#-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
+     #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
     current=load_latest()
 
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
-    (ordered))
+    (new_additions_submissions))
 
 
-    
-    #get_changes_csv(ordered[0])
 
     if datesubmitted:
 
@@ -211,7 +228,6 @@ def new_species_review():
                     authorComment=database["User_Comment"]
         for user in users:
                 if user["username"]==author:
-                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
                     authorName=user["firstname"]
                     authorSurname = user["surname"] 
                     authorEmail= user["key"]
@@ -238,8 +254,6 @@ def new_species_review():
             st.dataframe(proposed)
             
 
-
-
         now=datetime.now()
         version=now.strftime("%d.%m.%Y-%H.%M.%S")
         
@@ -247,11 +261,6 @@ def new_species_review():
 
         def create_new_addition_dataset():
 
-            # newDataset=current.append(user_changes, ignore_index=True)
-            # newDataset.to_csv(newPath, index=False)
-            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
-            # media = MediaFileUpload(newPath, mimetype='text/csv')
-            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             newDataset=current.append(user_changes, ignore_index=True)
             csv_bytes = io.StringIO()
             newDataset.to_csv(csv_bytes, index=False)
@@ -262,10 +271,6 @@ def new_species_review():
             media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-
-        # def create_new_dataset():
-        #     newDataset=current.append(user_changes, ignore_index=True)
-        #     newDataset.to_csv(newPath, index=False)
         
         #updates the status, 
         def update_GABiP():
@@ -307,8 +312,294 @@ def new_species_review():
              st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
                 
 
+#-----------------------------------------------------------------------NEW INFORMATION ADDITION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
+def information_addition_review():
+    def add_new_info_bg():
+       st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
 
+    add_new_info_bg()
+    current=load_latest()
+
+    st.write("**Information Addition in order of date submitted**")
+    datesubmitted = st.selectbox(
+        'Date submitted',
+        (new_info_submissions))
+    
+    for database in databases:
+                if database["key"]==datesubmitted:
+                    genus_added_to=database["Genus_Affected"]
+                    species_added_to=database["Species_Affected"]
+    
+    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to},      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+    
+
+    def update_user_json(species_before, species_after):
+        data = json.loads(species_before)
+        new_keys_data = json.loads(species_after)
+
+        for key, value in new_keys_data["0"].items():
+            if key in data:
+                data[key][str(species_index)] = value
+        return data
+
+
+    if datesubmitted:
+
+
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
+        
+        #-------------------------------------------------------------information added display--------------------------------------------------------------------#
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    species_before=database["Dataset_Pre_Change"]
+                    species_after=database["Changes"]
+                    user_images=database["User_Images"]
+        
+        before_jsonn=json.loads(species_before)
+        species_index = list(before_jsonn['Order'].keys())[0]
+        changes_parsed=json.loads(species_after)
+        
+        def list_fields():
+            
+            for key, value in changes_parsed.items():
+                for inner_key, inner_value in value.items():
+                    tab1_col1.markdown(inner_key)
+
+               
+        image_count=len(user_images)
+        
+        with new_info_tab1:
+            tab1_col1, tab1_col2=st.columns(2)
+        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
+        list_fields()
+        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
+        tab1_col2.write(f"{image_count} images have been added")
+        #updated_species_json=json.dumps(update_user_json(species_before, species_after))
+        #tab1_col1.markdown("**Species Before**")
+        #tab1_col1.write(pd.read_json(species_before).iloc[0])
+        #tab1_col2.markdown("**Species After Addition**")
+        #tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
+
+        
+               
+                
+        #-------------------------------------------------------------information breakdown display--------------------------------------------------------------------#
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    user_sources=database["User_Sources"]
+        
+        with new_info_tab2:
+            tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
+            
+            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
+            new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
+
+            sources_parsed=json.loads(user_sources)
+            changes_parsed=json.loads(species_after)
+            original_parsed=json.loads(species_before)
+            
+            species_index = list(before_jsonn['Order'].keys())[0]
+            
+               
+            def get_current_values(species_after, species_before):
+              changed_fields_current_data = json.loads(species_after)
+              current_data = json.loads(species_before)
+
+              for key in changed_fields_current_data["0"].keys():
+                    if key in current_data:
+                        changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
+              return json.dumps(changed_fields_current_data)
+                       
+            
+                
+
+            changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
+        
+          
+            source_rows=[]
+            source_values=[]
+            new_values=[]
+            current_values=[]
+
+            for key, value in sources_parsed.items():
+                for inner_key, inner_value in value.items():
+                     source_row=inner_key
+                     source_rows.append(source_row)
+                     source_value=inner_value
+                     source_values.append(source_value)
+            
+            for key, value in changes_parsed.items():
+                 for inner_key, inner_value in value.items():
+                     new_value=inner_value
+                     new_values.append(new_value)
+
+            for key, value in changed_fields_current_data.items():
+                 for inner_key, inner_value in value.items():
+                     current_value=inner_value
+                     current_values.append(current_value)
+            
+            df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+            
+
+            st.dataframe(df)
+            
+
+                    
+        #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    user_images=database["User_Images"]
+        
+        image_count=len(user_images)
+        approved_images=[]
+
+        image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+        with new_info_tab3:
+            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
+        
+        if image_count <1:
+            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Submitted</em></p>', unsafe_allow_html=True)
+
+        
+            
+            
+        else:
+            results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+            items = results.get('files', [])
+             
+            new_info_tab3.write("***")
+            for item in items:
+                for value in user_images:
+                    if item['id'] == value:
+                        #with new_info_tab3.form(item['name']):
+                            new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+                            accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
+                            reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+                            if accept_image and reject_image:
+                                    new_info_tab3.error("Warning! Both options have been selected. Please review decision")
+                            elif accept_image:
+                                approved_images.append(item['id'])
+
+                            new_info_tab3.write("***")
+            
+    #-------------------------------------------------------------user info display--------------------------------------------------------------------#
+    with new_info_tab5:
+
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    author=database["Edited_By"]
+                    authorComment=database["User_Comment"]
+        for user in users:
+                if user["username"]==author:
+                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                    first_name=user["firstname"]
+                    surname = user["surname"] 
+                    user_email= user["key"]
+                    user_name=user['username']
+
+    with new_info_tab5:
+        tab5_col1, tab5_col2 = st.columns(2)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
+        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
+    
+    #-------------------------------------------------------------user comment display--------------------------------------------------------------------#
+    with new_info_tab6:
+        new_info_tab6.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Additional Comments: </strong></em></p>', unsafe_allow_html=True)
+        new_info_tab6.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
+  
+    st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+
+    preview_updated_dataset=st.checkbox("**View updated dataset **")
+
+     #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
+    
+    #adding global methods temporarily from admin page for testing
+    #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+    now=datetime.now()
+    version=now.strftime("%d.%m.%Y-%H.%M.%S")
+        
+    newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+
+    def create_new_updated_dataset_google():
+            newDataset=updated_db
+            csv_bytes = io.StringIO()
+            newDataset.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    
+    def update_GABiP():
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            metaData.update(updates, datesubmitted)
+
+    def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+       return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
+    
+    def reject_new_addition():
+            updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            metaData.update(updates, datesubmitted)
+
+    if preview_updated_dataset:
+        try:
+            updated_db=current.copy()
+            updated_json=json.dumps(update_user_json(species_before, species_after))
+            updated_row=pd.read_json(updated_json)
+            updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
+            preview_new=True
+        except:
+            st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
+            preview_new=False
+
+        if preview_new:
+            
+             st.dataframe(updated_db)
+             pre_col1, pre_col2, pre_col3=st.columns(3)
+             accept_information=pre_col1.button("Approve Addition")
+             reject_information=pre_col3.button("Deny Addition")
+             reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+
+             if accept_information:
+                    create_new_updated_dataset_google() #<-------- working
+                    update_GABiP()
+                    
+                    add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                    pre_col1.write("GABiP updated!")
+             if reject_information and reject_new_info_reason:
+                        reject_new_addition()
+                        pre_col3.write("Reason sent to user")
+             elif reject_information:
+                    pre_col3.warning("Please add a reason for rejection for user to review")
+
+         
+            
     
     
 
@@ -338,7 +629,7 @@ def new_species_review():
 
 
 
-
+#------------------------------------------------------------------------------------------------WELCOME SCREEN BACKGROUND------------------------------------------------------------#
 
 def welcome_screen():
     def load_welcome_bg():
@@ -359,9 +650,9 @@ def welcome_screen():
             )
     load_welcome_bg()
     
-
+#-----------------------------------------------------------------------------------EDIT REQUEST OPTIONS SCREEN-------------------------------------------------------------------------------------------------------#
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Add Species Information',  'Remove Species Information', 'Edit Species Information'), key='admin_current_option')
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Information', 'Species Edit Requests', 'Information Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
         current=load_latest()
@@ -370,9 +661,13 @@ def admin_edit_options():
 
     if options == "New Species Entry":
         new_species_review()
+    if options== "New Species Information":
+        information_addition_review()
 
 
 
+
+#---------------------------------------------------------------------------------MAIN WELCOME SCREEN--------------------------------------------------------------------------------------------------------#
 def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
@@ -480,7 +775,7 @@ else:
      for user in users:
          if user["username"] == st.session_state['username'] and user["admin"] == "True":
              st.write("Welcome, you're an admin.")
-             admin_edit_options()         
+             admin_welcome_screen()         
          elif user["username"] == st.session_state['username'] and user["admin"] == "False":
              if user["approved"] == "True" and user["admin"] == "False":
                  st.write(f"**Welcome {user['firstname']}, you're a trusted member. However, this section is for Admin users only**")

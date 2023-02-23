@@ -142,7 +142,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db

@@ -17,7 +17,7 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
 
-def add_bg_from_url():
+def add_new_info_bg():
        st.markdown(
             f"""
             <style>
@@ -37,7 +37,7 @@ def add_bg_from_url():
 
 
 
-add_bg_from_url() 
+add_new_info_bg()
 
 #------------------------------------------------------------GOOGLE DRIVE CONNECTION---------------------------------------------------------------------------------#
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -188,7 +188,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 #------------------------------------------------------------ADMIN SPECIES INFO ADDITION PAGE-----------------------------------------------------------------------------------------#
 
-def new_information_review():
+def information_addition_review():
     current=load_latest()
 
     st.write("**Information Addition in order of date submitted**")
@@ -481,6 +481,5 @@ def new_information_review():
 
 
 
-
-new_information_review()
+information_addition_review()
 
