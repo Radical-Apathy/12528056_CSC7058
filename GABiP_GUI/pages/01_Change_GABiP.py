@@ -142,7 +142,7 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
@@ -209,7 +209,9 @@ def show_db():
                 )
 
     load_db_bg()
-    st.write(current_db)
+
+    db_col1,db_col2=st.columns(2)
+    st.dataframe(current_db, width=600)
 
 #--------------------------------------------------------------------------ADD ENTRY PAGE------------------------------------------------------------------------------------#
 
@@ -340,7 +342,7 @@ def add_entry_page():
      
      add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-     st.write("commented out for development")    
+       
 
     
     
@@ -701,7 +703,7 @@ def load_login_bg():
                 )
 
 load_login_bg()
-
+#https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg
 authenticator = stauth.Authenticate(email, username, hashed_passwords, "change_database", "abcdef")
 
 username, authentication_status, password = authenticator.login("Login", "main") #main here refers to position

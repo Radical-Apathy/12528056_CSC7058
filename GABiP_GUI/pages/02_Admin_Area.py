@@ -116,7 +116,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -245,7 +245,7 @@ def new_species_review():
         
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        def create_new_dataset_google():
+        def create_new_addition_dataset():
 
             # newDataset=current.append(user_changes, ignore_index=True)
             # newDataset.to_csv(newPath, index=False)
@@ -272,7 +272,7 @@ def new_species_review():
             updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
         
-        def reject_addition():
+        def reject_new_addition():
             updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
@@ -288,7 +288,7 @@ def new_species_review():
 
                         
                 if accept:
-                    create_new_dataset_google()
+                    create_new_addition_dataset()
                     update_GABiP()
                     st.write("GABiP updated!")
 
@@ -299,7 +299,7 @@ def new_species_review():
                 
 
                 if reject and reason:           
-                    reject_addition()
+                    reject_new_addition()
                     col2.write("Addition rejected")
                 elif reject:
                     col2.warning("Please add a reason for rejection")
