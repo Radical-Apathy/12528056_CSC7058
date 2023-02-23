@@ -174,8 +174,8 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
-#-----------------------------------------------------------------------DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
-
+#-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
+     #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
     current=load_latest()
 
@@ -185,8 +185,6 @@ def new_species_review():
     (ordered))
 
 
-    
-    #get_changes_csv(ordered[0])
 
     if datesubmitted:
 
@@ -211,7 +209,6 @@ def new_species_review():
                     authorComment=database["User_Comment"]
         for user in users:
                 if user["username"]==author:
-                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
                     authorName=user["firstname"]
                     authorSurname = user["surname"] 
                     authorEmail= user["key"]
@@ -238,8 +235,6 @@ def new_species_review():
             st.dataframe(proposed)
             
 
-
-
         now=datetime.now()
         version=now.strftime("%d.%m.%Y-%H.%M.%S")
         
@@ -247,11 +242,7 @@ def new_species_review():
 
         def create_new_addition_dataset():
 
-            # newDataset=current.append(user_changes, ignore_index=True)
-            # newDataset.to_csv(newPath, index=False)
-            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'application/vnd.ms-excel'}
-            # media = MediaFileUpload(newPath, mimetype='text/csv')
-            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            
             newDataset=current.append(user_changes, ignore_index=True)
             csv_bytes = io.StringIO()
             newDataset.to_csv(csv_bytes, index=False)
@@ -262,10 +253,7 @@ def new_species_review():
             media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-
-        # def create_new_dataset():
-        #     newDataset=current.append(user_changes, ignore_index=True)
-        #     newDataset.to_csv(newPath, index=False)
+       
         
         #updates the status, 
         def update_GABiP():
@@ -307,7 +295,7 @@ def new_species_review():
              st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
                 
 
-
+#-----------------------------------------------------------------------NEW INFORMATION ADDITION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
 
     
     
@@ -359,7 +347,7 @@ def welcome_screen():
             )
     load_welcome_bg()
     
-
+#-----------------------------------------------------------------------------------EDIT REQUEST OPTIONS SCREEN-------------------------------------------------------------------------------------------------------#
 def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'Add Species Information',  'Remove Species Information', 'Edit Species Information'), key='admin_current_option')
     if options == "Show Current Database":
