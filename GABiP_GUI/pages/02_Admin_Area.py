@@ -245,7 +245,7 @@ def new_species_review():
         
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        def create_new_dataset_google():
+        def create_new_addition_dataset():
 
             # newDataset=current.append(user_changes, ignore_index=True)
             # newDataset.to_csv(newPath, index=False)
@@ -288,7 +288,7 @@ def new_species_review():
 
                         
                 if accept:
-                    create_new_dataset_google()
+                    create_new_addition_dataset()
                     update_GABiP()
                     st.write("GABiP updated!")
 

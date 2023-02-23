@@ -459,7 +459,7 @@ def new_information_review():
                     update_GABiP()
                     #pre_col1.write(approved_images)
                     #st.write(get_latest_file_id(latest_approved_ds))
-                    #add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                    add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
                     pre_col1.write("GABiP updated!")
                     #load_latest.clear_cache(latest_id)
 
