@@ -272,7 +272,7 @@ def new_species_review():
             updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
         
-        def reject_addition():
+        def reject_new_addition():
             updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
@@ -299,7 +299,7 @@ def new_species_review():
                 
 
                 if reject and reason:           
-                    reject_addition()
+                    reject_new_addition()
                     col2.write("Addition rejected")
                 elif reject:
                     col2.warning("Please add a reason for rejection")

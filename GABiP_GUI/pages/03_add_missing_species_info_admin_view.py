@@ -436,6 +436,10 @@ def new_information_review():
     def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
        return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
     
+    def reject_new_addition():
+            updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            database_metadata.update(updates, datesubmitted)
+
     if preview_updated_dataset:
         try:
             updated_db=current.copy()
@@ -450,9 +454,10 @@ def new_information_review():
         if preview_new:
             
              st.dataframe(updated_db)
-             pre_col1, pre_col2, pre_col3, pre_col4=st.columns(4)
+             pre_col1, pre_col2, pre_col3=st.columns(3)
              accept_information=pre_col1.button("Approve Addition")
-             reject_information=pre_col4.button("Deny Addition")
+             reject_information=pre_col3.button("Deny Addition")
+             reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
 
              if accept_information:
                     create_new_updated_dataset_google() #<-------- working
@@ -460,12 +465,11 @@ def new_information_review():
                     
                     add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
                     pre_col1.write("GABiP updated!")
-             if reject_information:
-
-                    reject_addition=st.text_area("Reasons for rejection for user")                    
-                    
-                    pre_col1.write("GABiP updated!")
-                    
+             if reject_information and reject_new_info_reason:
+                        reject_new_addition()
+                        pre_col3.write("Reason sent to user")
+             elif reject_information:
+                    pre_col3.warning("Please add a reason for rejection for user to review")
 
          
             
