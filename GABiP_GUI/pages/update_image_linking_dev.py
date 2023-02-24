@@ -216,7 +216,8 @@ def upload_image():
             image_ids = []
 
         #col1.markdown("**No images available**")
-        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        #uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        uploaded_image = st.file_uploader("Choose a JPEG image", type="jpg")
         if uploaded_image is not None:
             col1.write("**Image preview**")
             col1.image(uploaded_image)
@@ -242,40 +243,29 @@ def upload_image():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
+
 def check_user_image(species_dropdown, genus_dropdown):
-    image_found=False
-    for user_image in user_images:
-        if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
-             #st.write(user_image["Images"])
-             
-             col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-             col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-             image_found=True  
-             break
-    if not image_found: 
-     col1.write("No Images Available")
-     upload_image()
-         
+     image_found=False
+     for user_image in user_images:
+         if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+              #st.write(user_image["Images"])
+              col1.write("User Image")
+              col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+              col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+              image_found=True  
+              break
+     if not image_found: 
+      col1.write("No Images Available")
+      upload_image()
+                   
 
 def link_image(results):
-          merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-          if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-           check_user_image(species_dropdown, genus_dropdown) 
-          elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-              #col1.write("Image from amphibiaweb.org")
-             return merged_image_df["Display Image"].iloc[0]
-          
-
-# def link_image(results):
-#     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-#     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-#         check_user_image(species_dropdown, genus_dropdown) 
-#     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-#         col1.image(merged_image_df["Display Image"].iloc[0])
-    
-#     #return None
-
-
+     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         check_user_image(species_dropdown, genus_dropdown)
+     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+         return merged_image_df["Display Image"].iloc[0]
+     
         
 def link_embedded_image(results):
         embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -361,5 +351,4 @@ col2.write(f"{genus_dropdown} {species_dropdown} Summary")
 
 col2.dataframe(species_results.iloc[0], width=500)
 
-#col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
-col1.markdown(link_image(species_results))
+col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
