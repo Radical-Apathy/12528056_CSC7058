@@ -216,8 +216,7 @@ def upload_image():
             image_ids = []
 
         #col1.markdown("**No images available**")
-        #uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-        uploaded_image = st.file_uploader("Choose a JPEG image", type="jpg")
+        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
         if uploaded_image is not None:
             col1.write("**Image preview**")
             col1.image(uploaded_image)
@@ -244,12 +243,14 @@ def upload_image():
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
 
+
+
 def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
-     for user_image in user_images:
+     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
               #st.write(user_image["Images"])
-              col1.write("User Image")
+              col1.write("Image")
               col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
               col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
               image_found=True  
@@ -305,7 +306,11 @@ species_results=current.loc[(current["Species"] == species_dropdown) & (current[
 
 
 user_images=get_all_user_images()
+#date_time= sorted([database["key"] for database in databases], reverse=True)
 
+
+
+#check_user_image_recent(species_dropdown, genus_dropdown)
 
 def get_all_users_images(username):
      for user_image in user_images:
