@@ -242,13 +242,28 @@ def upload_image():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
+def check_user_image(species_dropdown, genus_dropdown):
+    for user_image in user_images:
+        if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+             #st.write(user_image["Images"])
+             #st.write(user_image["Submitted_By"])
+             col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+             col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}")
+             break
+        #else:
+         #   upload_image()
+
+# def link_image(results):
+#         merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+#         if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+#          check_user_image(species_dropdown, genus_dropdown) 
+#         else:
+#             col1.write("Image from amphibiaweb.org")
+#             return merged_image_df["Display Image"].iloc[0]
+        
 def link_image(results):
-        merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-        if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-         upload_image()  
-        else:
-            col1.write("Image from amphibiaweb.org")
-            return merged_image_df["Display Image"].iloc[0]
+     pass
+     
         
 def link_embedded_image(results):
         embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -277,12 +292,40 @@ additional_info_sources=[]
 
 species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
 
+st.write(species_dropdown)
+
 species_genus=current.loc[current["Species"]==species_dropdown]
 genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
 
 genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
 
+st.write(genus_dropdown)
+
 species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
+
+
+user_images=get_all_user_images()
+
+
+def get_all_users_images(username):
+     for user_image in user_images:
+        if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown and user_image["Submitted_By"]==username:
+             for image in user_image["Images"]:
+                  st.image(f"https://drive.google.com/uc?id={image}")
+
+def see_all_user_images(species_dropdown, genus_dropdown):
+     for user_image in user_images:
+        if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+             for image in user_image["Images"]:
+                  st.image(f"https://drive.google.com/uc?id={image}")
+             
+     
+
+
+#st.image("https://drive.google.com/uc?id=1Ia0_w4MoKcF385VL_j5p3TYgcMH7iP42")
+
+#get_all_users_images("notadmin")
+
 
 source_fields=[]
 summary_dataframe=[]
