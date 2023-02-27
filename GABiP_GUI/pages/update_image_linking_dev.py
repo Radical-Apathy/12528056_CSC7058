@@ -258,7 +258,16 @@ def check_user_image(species_dropdown, genus_dropdown):
      if not image_found: 
       col1.write("No Images Available")
       upload_image()
+
+def get_all_users_images(species_dropdown, genus_dropdown):
+     for user_image in user_images:
+        if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown and user_image["Submitted_By"]==username:
+             for image in user_image["Images"]:
+                  st.image(f"https://drive.google.com/uc?id={image}")
+
                    
+
+
 
 def link_image(results):
      merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -286,6 +295,9 @@ def get_genus(species_dropdown):
     all_genus=current.loc[current["Species"]==species_dropdown]
     return all_genus
 
+#https://drive.google.com/file/d/165JYelgotP_WqwYC64HxQBmMbAEkkNEd/view?usp=sharing
+#https://drive.google.com/file/d/1S1Sl5Bx6pFjMGNPzEJnsKy0vn70W_X1c/view?usp=sharing
+st.write(latest_id)
 
 additional_info=[]
 
