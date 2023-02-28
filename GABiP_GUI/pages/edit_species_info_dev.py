@@ -215,10 +215,10 @@ def edit_species_information():
             f"""
             <style>
             .stApp {{
-                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg");
                 background-attachment: fixed;
                 background-size: cover;
-                background-position: center;
+                background-position: 60.00% 64.97% ;
                 opacity: 0.1
                 color: #ffffff; 
             }}
@@ -226,7 +226,7 @@ def edit_species_information():
             """,
             unsafe_allow_html=True
         )
-
+ #url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg"
     add_bg_from_url()
     
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
@@ -269,12 +269,12 @@ def edit_species_information():
 
 
 
-    missingInfoColumns = []
+    existing_info_columns = []
     def get_missing_info_columns(results):
         for column in dbColumns:
-            if results[column].isna().any():
-                missingInfoColumns.append(results[column].name)
-        return missingInfoColumns
+            if  not results[column].isna().any():
+                existing_info_columns.append(results[column].name)
+        return existing_info_columns
 
     user_missing_info = []
     def get_missing_userinfo():
@@ -420,7 +420,7 @@ def edit_species_information():
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
     get_missing_info_columns(species_results)
-    show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
+    show_missing_info=st.multiselect("Edit Current Information", existing_info_columns)
 
     if show_missing_info:
         get_missing_userinfo()
@@ -514,7 +514,7 @@ def edit_species_information():
             user_comments="n/a"
         
         if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
-            add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+            add_to_database(str(now), user_changes_json, search_results_to_json, "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
              del st.session_state['image_ids']
             st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
