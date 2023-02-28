@@ -150,6 +150,15 @@ def load_latest():
 
 current_db=load_latest()
 
+#------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
+users_images=deta_connection.Base("user_images")
+
+def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+     return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
+
+def get_all_user_images():
+    res = users_images.fetch()
+    return res.items
 #-------------------------------------------------------------CONNECTING TO IMAGES AND REFERENCES CSVS FROM GOOGLE DRIVE---------------------------------------------------------#
 @st.cache_data
 def load_references():
@@ -428,14 +437,27 @@ def add_species_information():
                 uploaded_image = None
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
-    
+
+    def check_user_image(species_dropdown, genus_dropdown):
+     image_found=False
+     for user_image in sorted(users_images, key=lambda x: x["key"], reverse=True):
+         if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+              #st.write(user_image["Images"])
+              col1.write("Image")
+              col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+              col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+              image_found=True  
+              break
+     if not image_found: 
+      col1.write("No Images Available")
+      upload_image()
+
     def link_image(results):
-        merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-        if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-         upload_image()  
-        else:
-            col1.write("Image from amphibiaweb.org")
-            return merged_image_df["Display Image"].iloc[0]
+     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         check_user_image(species_dropdown, genus_dropdown)
+     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+         return merged_image_df["Display Image"].iloc[0]
         
     def link_embedded_image(results):
         embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')

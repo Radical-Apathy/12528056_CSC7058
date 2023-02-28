@@ -170,7 +170,8 @@ if uploaded_image is not None:
     st.image(uploaded_image)
 
 #1ponSB-fWVG_UW0MYI5o0lpS0NX6wG-Br
- 
+ #https://drive.google.com/file/d/1qppGCkBHTqB59BN2c4pSt1YPLC5MGg3v/view?usp=sharing
+ #https://drive.google.com/file/d/1B5ZFSm8RhtMKOKV9fe_AMBx_zUssYkeD/view?usp=sharing
  
 submit_image=st.button("Submit image")
 
