@@ -159,6 +159,7 @@ def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date
 def get_all_user_images():
     res = users_images.fetch()
     return res.items
+user_images=get_all_user_images()
 #-------------------------------------------------------------CONNECTING TO IMAGES AND REFERENCES CSVS FROM GOOGLE DRIVE---------------------------------------------------------#
 @st.cache_data
 def load_references():
@@ -411,7 +412,7 @@ def add_species_information():
         else:
             image_ids = []
 
-        col1.markdown("**No images available**")
+       
         uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
         if uploaded_image is not None:
             col1.write("**Image preview**")
@@ -440,7 +441,7 @@ def add_species_information():
 
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
-     for user_image in sorted(users_images, key=lambda x: x["key"], reverse=True):
+     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
               #st.write(user_image["Images"])
               col1.write("Image")
@@ -639,7 +640,7 @@ def add_species_information():
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
-    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Information',  'Delete an Entry'), key='current_option')     
+    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Information','Edit Species Information' , 'Delete an Entry'), key='current_option')     
     
     if options == "Show Full Database":
         show_db()
