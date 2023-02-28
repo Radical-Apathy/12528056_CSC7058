@@ -442,13 +442,13 @@ def add_species_information():
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
-         if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
-              #st.write(user_image["Images"])
-              col1.write("Image")
-              col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-              col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-              image_found=True  
-              break
+          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+            if user_image['Images']:
+                col1.write("Image")
+                col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+                image_found=True  
+            break
      if not image_found: 
       col1.write("No Images Available")
       upload_image()
