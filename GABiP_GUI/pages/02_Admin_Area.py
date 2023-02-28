@@ -117,7 +117,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -331,7 +331,7 @@ def information_addition_review():
             unsafe_allow_html=True
         )
 
-
+    #loading background image
     add_new_info_bg()
     current=load_latest()
 
@@ -346,7 +346,7 @@ def information_addition_review():
                     species_added_to=database["Species_Affected"]
     
     #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to},      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
     
 
     def update_user_json(species_before, species_after):
