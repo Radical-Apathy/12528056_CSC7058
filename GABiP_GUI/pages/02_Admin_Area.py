@@ -153,6 +153,22 @@ get_pending_new_info()
 
 new_info_submissions=sorted(pending_new_info,reverse=True)
 
+pending_edit_info=[]
+
+
+
+
+def get_pending_edit_info():
+    for database in databases:
+        
+            if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
+                
+             pending_edit_info.append(database["key"])
+
+get_pending_edit_info()
+
+new_edit_submissions=sorted(pending_edit_info,reverse=True)
+
 #------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 users_images=deta_connection.Base("user_images")
 
