@@ -342,7 +342,6 @@ def remove_species():
 
 
     additional_info=[]
-
     species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
 
     additional_info_sources=[]
@@ -357,6 +356,7 @@ def remove_species():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
+    search_results_to_json=species_results.to_json()
     # source_fields=[]
     # summary_dataframe=[]
     # def create_source_fields(show_missing_info):
@@ -385,9 +385,18 @@ def remove_species():
 
     species_index=species_results.index[0]
     #st.write(species_index)
+     
+    def add_removal_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
     remove_species=st.checkbox(f"Remove {genus_dropdown} {species_dropdown} ")
-    removal_species_to_json=species_results.to_json(orient="columns")
+    #species_results=species_results.to_json(orient="columns")
+    species_dataframe=pd.DataFrame(species_results)
+    results_to_json=species_dataframe.to_json(orient="columns")
+   
     if remove_species:
         with st.form(f"{genus_dropdown} {species_dropdown}"):
             st.warning(f"Are you sure you'd like to remove {genus_dropdown}, {species_dropdown} ? Please Include a reason")
@@ -396,10 +405,14 @@ def remove_species():
             # Every form must have a submit button.
             confirm_removal = st.form_submit_button("Submit")
             if confirm_removal and removal_reason:
-                st.write(removal_reason)
-                st.write("Thank you! You're request for species removal has been submitted to an admin for review")
-                st.write(removal_species_to_json)
-            if confirm_removal:
+                
+                #st.write(search_results_to_json)
+                add_removal_to_database(str(now), search_results_to_json, latest_approved_ds, "Removal", species_dropdown, genus_dropdown, st.session_state['username'], removal_reason, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, "n/a", "n/a")
+                
+                #st.write(species_results)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Thank you! Your request has been submitted</strong></em></p>', unsafe_allow_html=True)
+                #st.write(removal_species_to_json)
+            if confirm_removal and not removal_reason:
                 st.warning(f"Please include a reason for the removal of {genus_dropdown} {species_dropdown}")
 
 
