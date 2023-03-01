@@ -961,7 +961,7 @@ def edit_species_information():
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
-    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Information','Edit Species Information' , 'Delete an Entry'), key='current_option')     
+    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Information','Edit Species Information' , 'Remove a Species', 'Remove Species Data'), key='current_option')     
     
     if options == "Show Full Database":
         show_db()

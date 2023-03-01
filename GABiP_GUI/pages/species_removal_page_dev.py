@@ -233,27 +233,6 @@ def remove_species():
 
     add_bg_from_url()
 
-    # missingInfoColumns = []
-    # def get_missing_info_columns(results):
-    #     for column in dbColumns:
-    #         if results[column].isna().any():
-    #             missingInfoColumns.append(results[column].name)
-    #     return missingInfoColumns
-
-    # user_missing_info = []
-    # def get_missing_userinfo():
-    #     for option in show_missing_info:
-    #         userText = st.text_input(option, key=option)
-    #         if userText:
-    #             user_missing_info.append(st.session_state[option])
-    #     return user_missing_info
-
-    # def update_missing_results(show_missing_info):
-    #     speciesIndex = species_results.index[0]
-    #     results_updated = species_results.copy()
-    #     for column in show_missing_info:
-    #         results_updated.at[speciesIndex, column] = st.session_state[column]
-    #     return results_updated
 
     now = datetime.now()
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
@@ -320,15 +299,7 @@ def remove_species():
         else:
             return None
 
-    # def update_user_json(original_results_json, user_df_json):
-    #     data = json.loads(original_results_json)
-    #     new_keys_data = json.loads(user_df_json)
-
-    #     for key, value in new_keys_data["0"].items():
-    #         if key in data:
-    #             data[key][str(results_index)] = value
-    #     return data
-   
+  
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove a Species</strong></em></p>', unsafe_allow_html=True)
@@ -357,19 +328,7 @@ def remove_species():
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
     search_results_to_json=species_results.to_json()
-    # source_fields=[]
-    # summary_dataframe=[]
-    # def create_source_fields(show_missing_info):
-    #    for option in show_missing_info:
-    #            user_source=st.text_input("Please enter a source for "+option, key=option+" source")
-    
-    #    for option in show_missing_info:
-    #        if user_source and user_source!="":
-    #            st.session_state[option+" source"]==user_source
-    #            additional_info_sources.append(st.session_state[option+" source"])
-           
-    #    return additional_info_sources
-   
+      
     col1, col2, col3 = st.columns(3)
 
     col3.markdown("**All Genea of** "+species_dropdown)
