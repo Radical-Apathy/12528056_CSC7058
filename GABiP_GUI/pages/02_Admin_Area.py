@@ -708,7 +708,7 @@ def information_edit_review():
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
             
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
-            new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
+            
 
             sources_parsed=json.loads(user_sources)
             changes_parsed=json.loads(species_after)
