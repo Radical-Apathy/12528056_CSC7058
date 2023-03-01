@@ -126,6 +126,7 @@ def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
 
+current=load_latest()
 #gets dates for new species additions needing approval
 pending_new_rows=[]
 
@@ -201,7 +202,7 @@ def display_pending_users():
 #-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
-    current=load_latest()
+    #current=load_latest()
 
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
@@ -338,7 +339,7 @@ def information_addition_review():
 
     #loading background image
     add_new_info_bg()
-    current=load_latest()
+    #current=load_latest()
 
     st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
@@ -633,7 +634,7 @@ def information_edit_review():
     get_pending_edit_info()
 
     new_edit_submissions=sorted(pending_edit_info,reverse=True)
-    current=load_latest()
+    #current=load_latest()
     st.write("New species edits in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',

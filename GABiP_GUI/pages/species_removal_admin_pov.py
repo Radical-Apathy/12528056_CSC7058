@@ -235,6 +235,23 @@ def remove_species_admin():
 
 
     now = datetime.now()
+    pending_removal_info=[]
+    def get_pending_removal_info():
+        for database in databases:
+            
+                if database["Edit_Type"]=="Removal" and database["Status"] =="Pending":
+                    
+                  pending_removal_info.append(database["key"])
+
+    get_pending_removal_info()
+
+    removal_info_submissions=sorted(pending_removal_info,reverse=True)
+
+
+    def check_species_existence(species, genus):
+        pass
+
+    
     
 
 
