@@ -377,7 +377,7 @@ def remove_species_admin():
         
 
 
-remove_species_admin()
+#remove_species_admin()
 
 def latest_id_improval():
     approved=[]
@@ -404,14 +404,16 @@ def latest_id_improval():
 
     folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
 
+    #adding modified time to try and increase accuracy
     def get_latest_file_id(latest_approved_ds):
         
-        results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
-        items = results.get('files', [])
+       query = "mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}' and name='{1}'".format(folder_id, latest_approved_ds)
+       results = service.files().list(q=query, fields="nextPageToken, files(id, name, modifiedTime)", orderBy="modifiedTime desc").execute()
+       items = results.get('files', [])
 
-        if not items:
+       if not items:
             st.write('No files found.')
-        else:
+       else:
             for item in items:
                 if item['name'] == latest_approved_ds:
                     
@@ -434,3 +436,7 @@ def latest_id_improval():
 
 
     current=load_latest()
+    st.write(approved)
+
+
+latest_id_improval()
