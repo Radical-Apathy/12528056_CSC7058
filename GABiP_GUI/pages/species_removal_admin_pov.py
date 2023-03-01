@@ -116,7 +116,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     return current_db
@@ -127,7 +127,7 @@ def load_latest():
 pending_edit_info=[]
 
 
-
+current=load_latest()
 
 def get_pending_edit_info():
     for database in databases:
@@ -247,13 +247,190 @@ def remove_species_admin():
 
     removal_info_submissions=sorted(pending_removal_info,reverse=True)
 
+    st.write("New species additions in order of date submitted")
 
-    def check_species_existence(species, genus):
-        pass
+    datesubmitted = st.selectbox(
+    'Date submitted',
+    (removal_info_submissions))
+
+    for database in databases:
+        if database["key"]==datesubmitted:
+            species=database["Species_Affected"]
+            genus=database["Genus_Affected"]
+
+    def check_species_existence_admin_end(species, genus):
+          if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
+            return True
 
     
+    check_species_existence_admin_end(species, genus)
+   
+    if datesubmitted and  check_species_existence_admin_end(species, genus):
+        st.write(f"{genus} {species} has already been removed. Check Species Audit History for more Information")
     
+
+    if datesubmitted and not check_species_existence_admin_end(species, genus):
+
+        tab1, tab2, tab3= st.tabs(["Species to be Removed", "User Info", "User Comment"])
+
+        #tab1 methods
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    newAdd=database["Changes"]
+        
+        user_changes= pd.read_json(newAdd)
+        
+
+        tab1.write("Species Info")
+        tab1.dataframe(user_changes.iloc[0], width=300)
+        
+
+
+        #tab2 methods
+        for database in databases:
+                if database["key"]==datesubmitted:
+                    author=database["Edited_By"]
+                    authorComment=database["User_Comment"]
+        for user in users:
+                if user["username"]==author:
+                    authorName=user["firstname"]
+                    authorSurname = user["surname"] 
+                    authorEmail= user["key"]
+                    
+        tab2.write("Author firstname: "+" "+" "+authorName)
+        tab2.write("Author surname: "+" "+" "+authorSurname)
+        tab2.write("Author email: "+" "+" "+authorEmail)
+
+        tab3.write("User comments: "+ " "+" "+ authorComment)
+
+        
+
+        preview=st.checkbox("Preview dataset with removal ")
+
+
+
+
+        
+            
+
+        now=datetime.now()
+        version=now.strftime("%d.%m.%Y-%H.%M.%S")
+        
+        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+
+        def create_new_addition_dataset():
+            proposed_removal=current.copy()
+            proposed_removal.drop(user_changes.index[0], inplace=True)
+            
+            csv_bytes = io.StringIO()
+            proposed_removal.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+        
+        #updates the status, 
+        def update_GABiP():
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            database_metadata.update(updates, datesubmitted)
+        
+        def reject_new_addition():
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            database_metadata.update(updates, datesubmitted)
+
+
+        st.write(approvedordered)
+        if preview:
+            try:
+                proposed_removal=current.copy()
+                proposed_removal.drop(user_changes.index[0], inplace=True)
+                st.dataframe(proposed_removal)
+                
+                col1,col2=st.columns(2)
+
+                accept=col1.button("Approve Addition")
+                reject=col2.button("Deny Addition")
+
+                        
+                if accept:
+                    create_new_addition_dataset()
+                    update_GABiP()
+                    st.write("GABiP updated!")
+
+
+            
+                reason=col2.text_area("Reasons for declining", key='reason') 
+
+                
+
+                if reject and reason:           
+                    reject_new_addition()
+                    col2.write("Addition rejected")
+                elif reject:
+                    col2.warning("Please add a reason for rejection")
+            except:
+             st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
+
+        
 
 
 remove_species_admin()
 
+def latest_id_improval():
+    approved=[]
+    def get_approved():
+        for database in databases:
+            
+                #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+                    if database["Status"] =="Approved":
+                    
+                     approved.append(database["key"])
+
+    get_approved()
+
+    approvedordered=sorted(approved,reverse=True)
+
+
+    def get_latest_ds(key):
+        for database in databases:
+            if database["key"] ==key:
+                return database["Dataset_In_Use"]
+
+
+    latest_approved_ds=get_latest_ds(approvedordered[0])
+
+    folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"
+
+    def get_latest_file_id(latest_approved_ds):
+        
+        results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(folder_id), fields="nextPageToken, files(id, name)").execute()
+        items = results.get('files', [])
+
+        if not items:
+            st.write('No files found.')
+        else:
+            for item in items:
+                if item['name'] == latest_approved_ds:
+                    
+                    return item['id']
+
+
+
+    latest_id=get_latest_file_id(latest_approved_ds)
+
+
+    #@st.cache_data
+    def load_latest():
+        current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
+        return current_db
+
+
+    #get submissions for species info addition
+
+    pending_edit_info=[]
+
+
+    current=load_latest()
