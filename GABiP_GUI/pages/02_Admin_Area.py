@@ -155,15 +155,12 @@ new_info_submissions=sorted(pending_new_info,reverse=True)
 
 pending_edit_info=[]
 
-
-
-
 def get_pending_edit_info():
     for database in databases:
         
             if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
                 
-             pending_edit_info.append(database["key"])
+             pending_new_info.append(database["key"])
 
 get_pending_edit_info()
 
@@ -636,11 +633,10 @@ def information_edit_review():
     #loading background image
     add_new_info_bg()
     current=load_latest()
-
-    st.write("**Information Addition in order of date submitted**")
+    st.write("New species edits in order of date submitted")
     datesubmitted = st.selectbox(
-        'Date submitted',
-        (new_info_submissions))
+    'Date submitted',
+    (new_edit_submissions))
     
     for database in databases:
                 if database["key"]==datesubmitted:
