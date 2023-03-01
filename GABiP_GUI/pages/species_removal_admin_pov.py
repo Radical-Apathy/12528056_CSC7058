@@ -213,7 +213,7 @@ dfImages = load_images()
   #---------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
 #-----------------------------------------------------------------------REMOVE SPECIES DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
-def remove_species():
+def remove_species_admin():
     def add_bg_from_url():
         st.markdown(
             f"""
@@ -235,156 +235,8 @@ def remove_species():
 
 
     now = datetime.now()
-    image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
-    image_id=[]
-
-    def upload_image():
-        if 'image_ids' in st.session_state:
-            image_ids = st.session_state['image_ids']
-        else:
-            image_ids = []
-
-       
-        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-        if uploaded_image is not None:
-            col1.write("**Image preview**")
-            col1.image(uploaded_image)
-
-        submit_image=col1.button("Submit image")
-        if submit_image and uploaded_image:
-            bytes_data = uploaded_image.getvalue()
-            try:
-                file_metadata = {
-                    'name': uploaded_image.name,
-                    'parents': [image_folder_id],
-                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-                }
-                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-                image_id = file.get('id')
-
-                st.success(f'Image uploaded! You can choose to upload more')
-                image_ids.append(image_id)
-                st.session_state['image_ids'] = image_ids
-
-                uploaded_image = None
-            except:
-                st.error("Please try again. Be sure to check your file type is in the correct format")
-
-    def check_user_image(species_dropdown, genus_dropdown):
-     image_found=False
-     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
-          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
-            if user_image['Images']:
-                col1.write("Image")
-                col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-                col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                image_found=True  
-            break
-     if not image_found: 
-      col1.write("No Images Available")
-      #upload_image()
-
-    def link_image(results):
-     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-         check_user_image(species_dropdown, genus_dropdown)
-     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-         return merged_image_df["Display Image"].iloc[0]
-        
-    def link_embedded_image(results):
-        embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-        if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-            return embedded_image_df["Embedded Link"].iloc[0]
-        else:
-            return None
-
-  
-   #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
-    headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove a Species</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
-    dbColumns=current.columns
-    create_session_states(dbColumns)
-    all_genus=[]
-    def get_genus(species_dropdown):
-        all_genus=current.loc[current["Species"]==species_dropdown]
-        return all_genus
+    
 
 
-    additional_info=[]
-    species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
+remove_species_admin()
 
-    additional_info_sources=[]
-
-    species_dropdown=st.selectbox("Select a species to remove: ", (species_alphabetical))
-
-    species_genus=current.loc[current["Species"]==species_dropdown]
-
-    genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
-
-    genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
-
-    species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
-
-    search_results_to_json=species_results.to_json()
-      
-    col1, col2, col3 = st.columns(3)
-
-    col3.markdown("**All Genea of** "+species_dropdown)
-
-    col3.dataframe(species_genus["Genus"])
-
-
-    col2.write(f"{genus_dropdown} {species_dropdown} Summary")
-
-    col2.dataframe(species_results.iloc[0], width=500)
-
-    col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
-
-    species_index=species_results.index[0]
-    #st.write(species_index)
-     
-    def add_removal_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
-     """adding user"""
-     #defining the email as the key
-     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
-     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
-
-    remove_species=st.checkbox(f"Remove {genus_dropdown} {species_dropdown} ")
-    #species_results=species_results.to_json(orient="columns")
-    species_dataframe=pd.DataFrame(species_results)
-    results_to_json=species_dataframe.to_json(orient="columns")
-   
-    if remove_species:
-        with st.form(f"{genus_dropdown} {species_dropdown}"):
-            st.warning(f"Are you sure you'd like to remove {genus_dropdown}, {species_dropdown} ? Please Include a reason")
-            
-            removal_reason=st.text_area("Removal Reason")
-            # Every form must have a submit button.
-            confirm_removal = st.form_submit_button("Submit")
-            if confirm_removal and removal_reason:
-                
-                #st.write(search_results_to_json)
-                add_removal_to_database(str(now), search_results_to_json, latest_approved_ds, "Removal", species_dropdown, genus_dropdown, st.session_state['username'], removal_reason, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, "n/a", "n/a")
-                
-                #st.write(species_results)
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Thank you! Your request has been submitted</strong></em></p>', unsafe_allow_html=True)
-                #st.write(removal_species_to_json)
-            if confirm_removal and not removal_reason:
-                st.warning(f"Please include a reason for the removal of {genus_dropdown} {species_dropdown}")
-
-
-
-
-remove_species()
-
-# with st.form("my_form"):
-#    st.write("Inside the form")
-#    slider_val = st.slider("Form slider")
-#    checkbox_val = st.checkbox("Form checkbox")
-
-#    # Every form must have a submit button.
-#    submitted = st.form_submit_button("Submit")
-#    if submitted:
-#        st.write("slider", slider_val, "checkbox", checkbox_val)
