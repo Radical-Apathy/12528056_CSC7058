@@ -19,6 +19,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
+from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 st.set_page_config(page_icon='amphibs.jpeg')
 
 #-----------------------------------------------------------GOOGLE DRIVE CONNECTIONS-----------------------------------------------------------------------------#
@@ -221,7 +223,14 @@ def show_db():
     load_db_bg()
 
     db_col1,db_col2=st.columns(2)
-    st.dataframe(current_db, width=600)
+    try:
+        st.dataframe(current_db, width=600)
+    except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+    except RefreshError:
+        st.write("The credentials could not be refreshed.")
+    except Exception as error:
+        st.write(f"An error occurred: {error}")
 
 #--------------------------------------------------------------------------ADD ENTRY PAGE------------------------------------------------------------------------------------#
 
