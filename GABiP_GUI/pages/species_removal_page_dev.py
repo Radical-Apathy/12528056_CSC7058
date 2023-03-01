@@ -212,14 +212,14 @@ dfImages = load_images()
 
   #---------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
-#-----------------------------------------------------------------------NEW INFORMATION ADDITION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
-def information_edit_review():
-    def add_new_info_bg():
-       st.markdown(
+#-----------------------------------------------------------------------REMOVE SPECIES DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
+def remove_species():
+    def add_bg_from_url():
+        st.markdown(
             f"""
             <style>
             .stApp {{
-                background-image: url(""https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg"");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr4_orig.jpg");
                 background-attachment: fixed;
                 background-size: cover;
                 background-position: center;
@@ -230,282 +230,189 @@ def information_edit_review():
             """,
             unsafe_allow_html=True
         )
-    add_new_info_bg()
-    # def get_pending_edit_info():
-    #  for database in databases:
-        
-    #         if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
-                
-    #          pending_new_info.append(database["key"])
 
-    # get_pending_edit_info()
+    add_bg_from_url()
 
-    #new_edit_submissions=sorted(pending_edit_info,reverse=True)
-    #loading background image
-   
-    current=load_latest()
-    st.write("New species edits in order of date submitted")
-    datesubmitted = st.selectbox(
-    'Date submitted',
-    (new_edit_submissions))
-    
+    # missingInfoColumns = []
+    # def get_missing_info_columns(results):
+    #     for column in dbColumns:
+    #         if results[column].isna().any():
+    #             missingInfoColumns.append(results[column].name)
+    #     return missingInfoColumns
 
+    # user_missing_info = []
+    # def get_missing_userinfo():
+    #     for option in show_missing_info:
+    #         userText = st.text_input(option, key=option)
+    #         if userText:
+    #             user_missing_info.append(st.session_state[option])
+    #     return user_missing_info
 
-    if datesubmitted:
-        for database in databases:
-             
-            if database["key"]==datesubmitted:
-                    genus_added_to=database["Genus_Affected"]
-                    species_added_to=database["Species_Affected"]
-    
-        #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
-    
+    # def update_missing_results(show_missing_info):
+    #     speciesIndex = species_results.index[0]
+    #     results_updated = species_results.copy()
+    #     for column in show_missing_info:
+    #         results_updated.at[speciesIndex, column] = st.session_state[column]
+    #     return results_updated
 
-        def update_user_json(species_before, species_after):
-            data = json.loads(species_before)
-            new_keys_data = json.loads(species_after)
+    now = datetime.now()
+    image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+    image_id=[]
 
-            for key, value in new_keys_data["0"].items():
-                if key in data:
-                    data[key][str(species_index)] = value
-            return data
-
-
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
-        
-        #-------------------------------------------------------------information added display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    species_before=database["Dataset_Pre_Change"]
-                    species_after=database["Changes"]
-                    user_images=database["User_Images"]
-        
-        before_jsonn=json.loads(species_before)
-        species_index = list(before_jsonn['Order'].keys())[0]
-        changes_parsed=json.loads(species_after)
-        
-        def list_fields():
-            
-            for key, value in changes_parsed.items():
-                for inner_key, inner_value in value.items():
-                    tab1_col1.markdown(inner_key)
-
-               
-        image_count=len(user_images)
-        
-        with new_info_tab1:
-            tab1_col1, tab1_col2=st.columns(2)
-        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
-        list_fields()
-        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
-        tab1_col2.write(f"{image_count} images have been added")
-        #updated_species_json=json.dumps(update_user_json(species_before, species_after))
-        #tab1_col1.markdown("**Species Before**")
-        #tab1_col1.write(pd.read_json(species_before).iloc[0])
-        #tab1_col2.markdown("**Species After Addition**")
-        #tab1_col2.write(pd.read_json(updated_species_json).iloc[0])
-
-        
-               
-                
-        #-------------------------------------------------------------information breakdown display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    user_sources=database["User_Sources"]
-        
-        with new_info_tab2:
-            tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
-            
-            tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
-            new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
-
-            sources_parsed=json.loads(user_sources)
-            changes_parsed=json.loads(species_after)
-            original_parsed=json.loads(species_before)
-            
-            species_index = list(before_jsonn['Order'].keys())[0]
-            
-               
-            def get_current_values(species_after, species_before):
-              changed_fields_current_data = json.loads(species_after)
-              current_data = json.loads(species_before)
-
-              for key in changed_fields_current_data["0"].keys():
-                    if key in current_data:
-                        changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
-              return json.dumps(changed_fields_current_data)
-                       
-            
-                
-
-            changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
-        
-          
-            source_rows=[]
-            source_values=[]
-            new_values=[]
-            current_values=[]
-
-            for key, value in sources_parsed.items():
-                for inner_key, inner_value in value.items():
-                     source_row=inner_key
-                     source_rows.append(source_row)
-                     source_value=inner_value
-                     source_values.append(source_value)
-            
-            for key, value in changes_parsed.items():
-                 for inner_key, inner_value in value.items():
-                     new_value=inner_value
-                     new_values.append(new_value)
-
-            for key, value in changed_fields_current_data.items():
-                 for inner_key, inner_value in value.items():
-                     current_value=inner_value
-                     current_values.append(current_value)
-            
-            df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
-            
-
-            st.dataframe(df)
-            
-
-                    
-        #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    user_images=database["User_Images"]
-        
-        image_count=len(user_images)
-        approved_images=[]
-
-        image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
-        with new_info_tab3:
-            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
-        
-        if image_count <1:
-            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Submitted</em></p>', unsafe_allow_html=True)
-
-        
-            
-            
+    def upload_image():
+        if 'image_ids' in st.session_state:
+            image_ids = st.session_state['image_ids']
         else:
-            results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-            items = results.get('files', [])
-             
-            new_info_tab3.write("***")
-            for item in items:
-                for value in user_images:
-                    if item['id'] == value:
-                        #with new_info_tab3.form(item['name']):
-                            new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-                            accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-                            reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-                            if accept_image and reject_image:
-                                    new_info_tab3.error("Warning! Both options have been selected. Please review decision")
-                            elif accept_image:
-                                approved_images.append(item['id'])
+            image_ids = []
 
-                            new_info_tab3.write("***")
-            
-    #-------------------------------------------------------------user info display--------------------------------------------------------------------#
-        with new_info_tab5:
+       
+        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        if uploaded_image is not None:
+            col1.write("**Image preview**")
+            col1.image(uploaded_image)
 
-            for database in databases:
-                    if database["key"]==datesubmitted:
-                        author=database["Edited_By"]
-                        authorComment=database["User_Comment"]
-            for user in users:
-                    if user["username"]==author:
-                        #tab2.write(((user["firstname"],user["surname"], user["key"])))
-                        first_name=user["firstname"]
-                        surname = user["surname"] 
-                        user_email= user["key"]
-                        user_name=user['username']
-
-        with new_info_tab5:
-            tab5_col1, tab5_col2 = st.columns(2)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
-            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
-            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
-            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
-            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
-        
-        #-------------------------------------------------------------user comment display--------------------------------------------------------------------#
-        with new_info_tab6:
-            new_info_tab6.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Additional Comments: </strong></em></p>', unsafe_allow_html=True)
-            new_info_tab6.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
-    
-        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
-
-        preview_updated_dataset=st.checkbox("**View updated dataset **")
-
-     #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
-    
-        #adding global methods temporarily from admin page for testing
-        #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
-        now=datetime.now()
-        version=now.strftime("%d.%m.%Y-%H.%M.%S")
-            
-        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
-
-        def create_new_updated_dataset_google():
-                newDataset=updated_db
-                csv_bytes = io.StringIO()
-                newDataset.to_csv(csv_bytes, index=False)
-                csv_bytes = csv_bytes.getvalue().encode('utf-8')
-        
-                # upload bytes to Google Drive
-                file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-                media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
-    
-        def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
-                database_metadata.update(updates, datesubmitted)
-
-        def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
-         return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
-        
-        def reject_new_addition():
-                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
-                database_metadata.update(updates, datesubmitted)
-
-        if preview_updated_dataset:
+        submit_image=col1.button("Submit image")
+        if submit_image and uploaded_image:
+            bytes_data = uploaded_image.getvalue()
             try:
-                updated_db=current.copy()
-                updated_json=json.dumps(update_user_json(species_before, species_after))
-                updated_row=pd.read_json(updated_json)
-                updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
-                preview_new=True
+                file_metadata = {
+                    'name': uploaded_image.name,
+                    'parents': [image_folder_id],
+                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+                }
+                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+                image_id = file.get('id')
+
+                st.success(f'Image uploaded! You can choose to upload more')
+                image_ids.append(image_id)
+                st.session_state['image_ids'] = image_ids
+
+                uploaded_image = None
             except:
-                st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
-                preview_new=False
+                st.error("Please try again. Be sure to check your file type is in the correct format")
 
-            if preview_new:
-                
-                st.dataframe(updated_db)
-                pre_col1, pre_col2, pre_col3=st.columns(3)
-                accept_information=pre_col1.button("Approve Addition")
-                reject_information=pre_col3.button("Deny Addition")
-                reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+    def check_user_image(species_dropdown, genus_dropdown):
+     image_found=False
+     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
+          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+            if user_image['Images']:
+                col1.write("Image")
+                col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+                image_found=True  
+            break
+     if not image_found: 
+      col1.write("No Images Available")
+      #upload_image()
 
-                if accept_information:
-                        create_new_updated_dataset_google() #<-------- working
-                        update_GABiP()
-                        
-                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
-                        pre_col1.write("GABiP updated!")
-                if reject_information and reject_new_info_reason:
-                            reject_new_addition()
-                            pre_col3.write("Reason sent to user")
-                elif reject_information:
-                        pre_col3.warning("Please add a reason for rejection for user to review")
+    def link_image(results):
+     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         check_user_image(species_dropdown, genus_dropdown)
+     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+         return merged_image_df["Display Image"].iloc[0]
+        
+    def link_embedded_image(results):
+        embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+            return embedded_image_df["Embedded Link"].iloc[0]
+        else:
+            return None
 
-information_edit_review()
+    # def update_user_json(original_results_json, user_df_json):
+    #     data = json.loads(original_results_json)
+    #     new_keys_data = json.loads(user_df_json)
+
+    #     for key, value in new_keys_data["0"].items():
+    #         if key in data:
+    #             data[key][str(results_index)] = value
+    #     return data
+   
+   #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
+    headercol1, headercol2, headercol3=st.columns(3)
+    headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove a Species</strong></em></p>', unsafe_allow_html=True)
+    current=load_latest()
+    dbColumns=current.columns
+    create_session_states(dbColumns)
+    all_genus=[]
+    def get_genus(species_dropdown):
+        all_genus=current.loc[current["Species"]==species_dropdown]
+        return all_genus
+
+
+    additional_info=[]
+
+    species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
+
+    additional_info_sources=[]
+
+    species_dropdown=st.selectbox("Select a species to remove: ", (species_alphabetical))
+
+    species_genus=current.loc[current["Species"]==species_dropdown]
+
+    genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
+
+    genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
+
+    species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
+
+    # source_fields=[]
+    # summary_dataframe=[]
+    # def create_source_fields(show_missing_info):
+    #    for option in show_missing_info:
+    #            user_source=st.text_input("Please enter a source for "+option, key=option+" source")
+    
+    #    for option in show_missing_info:
+    #        if user_source and user_source!="":
+    #            st.session_state[option+" source"]==user_source
+    #            additional_info_sources.append(st.session_state[option+" source"])
+           
+    #    return additional_info_sources
+   
+    col1, col2, col3 = st.columns(3)
+
+    col3.markdown("**All Genea of** "+species_dropdown)
+
+    col3.dataframe(species_genus["Genus"])
+
+
+    col2.write(f"{genus_dropdown} {species_dropdown} Summary")
+
+    col2.dataframe(species_results.iloc[0], width=500)
+
+    col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
+
+    species_index=species_results.index[0]
+    #st.write(species_index)
+
+    remove_species=st.checkbox(f"Remove {genus_dropdown} {species_dropdown} ")
+    removal_species_to_json=species_results.to_json(orient="columns")
+    if remove_species:
+        with st.form(f"{genus_dropdown} {species_dropdown}"):
+            st.warning(f"Are you sure you'd like to remove {genus_dropdown}, {species_dropdown} ? Please Include a reason")
+            
+            removal_reason=st.text_area("Removal Reason")
+            # Every form must have a submit button.
+            confirm_removal = st.form_submit_button("Submit")
+            if confirm_removal and removal_reason:
+                st.write(removal_reason)
+                st.write("Thank you! You're request for species removal has been submitted to an admin for review")
+                st.write(removal_species_to_json)
+            if confirm_removal:
+                st.warning(f"Please include a reason for the removal of {genus_dropdown} {species_dropdown}")
+
+
+
+
+remove_species()
+
+# with st.form("my_form"):
+#    st.write("Inside the form")
+#    slider_val = st.slider("Form slider")
+#    checkbox_val = st.checkbox("Form checkbox")
+
+#    # Every form must have a submit button.
+#    submitted = st.form_submit_button("Submit")
+#    if submitted:
+#        st.write("slider", slider_val, "checkbox", checkbox_val)
