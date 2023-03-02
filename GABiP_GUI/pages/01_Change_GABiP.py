@@ -488,7 +488,21 @@ def add_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    try:
+     current=load_latest()
+    except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+    except RefreshError:
+        st.write("The credentials could not be refreshed.")
+    except Exception as error:
+        st.write(f"An error occurred: {error}")
+
+
+
+
+
+
+
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]

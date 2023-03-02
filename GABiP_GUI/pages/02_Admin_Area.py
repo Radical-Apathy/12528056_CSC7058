@@ -17,6 +17,8 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 import io
 import json
 st.set_page_config(page_icon='amphibs.jpeg')
@@ -126,7 +128,20 @@ def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
 
-current=load_latest()
+try:
+     current=load_latest()
+except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+except RefreshError:
+        st.write("The credentials could not be refreshed.")
+except Exception as error:
+        st.write(f"An error occurred: {error}")
+
+
+
+
+
+
 #gets dates for new species additions needing approval
 pending_new_rows=[]
 
