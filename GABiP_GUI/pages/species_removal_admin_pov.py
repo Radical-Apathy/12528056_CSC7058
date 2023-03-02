@@ -439,4 +439,5 @@ def latest_id_improval():
     st.write(approved)
 
 
-latest_id_improval()
+#latest_id_improval()
+remove_species_admin()
