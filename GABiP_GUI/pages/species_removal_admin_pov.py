@@ -257,6 +257,10 @@ def remove_species_admin():
         if database["key"]==datesubmitted:
             species=database["Species_Affected"]
             genus=database["Genus_Affected"]
+        if database["Status"]=="Approved":
+            decision_date=database["Decision_Date"]
+            approved_by=database["Decided_By"]
+
 
     def check_species_existence_admin_end(species, genus):
           if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
@@ -266,7 +270,7 @@ def remove_species_admin():
     check_species_existence_admin_end(species, genus)
    
     if datesubmitted and  check_species_existence_admin_end(species, genus):
-        st.write(f"{genus} {species} has already been removed. Check Species Audit History for more Information")
+        st.write(f"{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by}")
     
 
     if datesubmitted and not check_species_existence_admin_end(species, genus):
@@ -342,7 +346,7 @@ def remove_species_admin():
             database_metadata.update(updates, datesubmitted)
 
 
-        st.write(approvedordered)
+        #st.write(approvedordered)
         if preview:
             try:
                 proposed_removal=current.copy()
