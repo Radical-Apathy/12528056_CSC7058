@@ -267,10 +267,21 @@ def remove_species_admin():
             return True
 
     
+    #def approve_user(username, updates):
+    #return users_db.update(updates, username)
+    #approve_user(user["key"], updates={"approved": "True"})
+
+    def update_repeat_request(key, updates):
+        return database_metadata.update(updates, key)
     check_species_existence_admin_end(species, genus)
    
     if datesubmitted and  check_species_existence_admin_end(species, genus):
-        st.write(f"{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by}")
+        st.write(f"{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by} For more information, see Species Audit History")
+        update_db_status=st.button("Remove from dropdown")
+        if update_db_status:
+                update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest"})
+                st.write("Request marked as duplicate and will no longer appear on dropdown")
+
     
 
     if datesubmitted and not check_species_existence_admin_end(species, genus):
