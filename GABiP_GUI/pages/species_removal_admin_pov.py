@@ -209,8 +209,9 @@ dfImages = load_images()
 
 
 
+#--------------------------------------------------------------GENERAL CHECK IMAGE METHODS----------------------------------------------------------------------------------------------#
 
-  #---------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
 #-----------------------------------------------------------------------REMOVE SPECIES DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
 def remove_species_admin():
@@ -286,18 +287,20 @@ def remove_species_admin():
 
     if datesubmitted and not check_species_existence_admin_end(species, genus):
 
-        tab1, tab2, tab3= st.tabs(["Species to be Removed", "User Info", "User Comment"])
+        tab1, tab2, tab3= st.tabs(["Species to be Removed", "User Info", "Reason for Removal Request"])
 
-        #tab1 methods
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    newAdd=database["Changes"]
-        
-        user_changes= pd.read_json(newAdd)
-        
+        with tab1:
+            tab1_col1,tab1_col2=st.columns(2)
+            #tab1 methods
+            for database in databases:
+                    if database["key"]==datesubmitted:
+                        newAdd=database["Changes"]
+            
+            user_changes= pd.read_json(newAdd)
+            
 
-        tab1.write("Species Info")
-        tab1.dataframe(user_changes.iloc[0], width=300)
+            tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Species Info </strong></em></p>', unsafe_allow_html=True)
+            tab1_col1.dataframe(user_changes.iloc[0], width=300)
         
 
 
@@ -330,7 +333,7 @@ def remove_species_admin():
             tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
 
         with tab3:
-            tab3.write(authorComment)
+            tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
 
 
         
