@@ -973,10 +973,7 @@ def remove_species_admin():
             return True
 
     
-    #def approve_user(username, updates):
-    #return users_db.update(updates, username)
-    #approve_user(user["key"], updates={"approved": "True"})
-
+    
     def update_repeat_request(key, updates):
         return metaData.update(updates, key)
     
