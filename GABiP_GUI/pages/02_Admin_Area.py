@@ -122,7 +122,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -917,6 +917,210 @@ def information_edit_review():
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
+#------------------------------------------------------------------------------------------------INFORMATION REMOVAL PAGE-------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------SPECIES REMOVAL PAGE-------------------------------------------------------------#
+def remove_species_admin():
+    def add_bg_from_url():
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr4_orig.jpg");
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.1
+                color: #ffffff; 
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    add_bg_from_url()
+
+
+    now = datetime.now()
+    pending_removal_info=[]
+    def get_pending_removal_info():
+        for database in databases:
+            
+                if database["Edit_Type"]=="Removal" and database["Status"] =="Pending":
+                    
+                  pending_removal_info.append(database["key"])
+
+    get_pending_removal_info()
+
+    removal_info_submissions=sorted(pending_removal_info,reverse=True)
+
+    st.write("New species removal request in order of date submitted")
+
+    datesubmitted = st.selectbox(
+    'Date submitted',
+    (removal_info_submissions))
+
+    for database in databases:
+        if database["key"]==datesubmitted:
+            species=database["Species_Affected"]
+            genus=database["Genus_Affected"]
+        if database["Status"]=="Approved":
+            decision_date=database["Decision_Date"]
+            approved_by=database["Decided_By"]
+
+
+    def check_species_existence_admin_end(species, genus):
+          if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
+            return True
+
+    
+    
+    def update_repeat_request(key, updates):
+        return metaData.update(updates, key)
+    
+    if len(removal_info_submissions) >0:
+         
+        check_species_existence_admin_end(species, genus)
+   
+    if datesubmitted and  check_species_existence_admin_end(species, genus):
+        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by} For more information, see Species Audit History </strong></em></p>', unsafe_allow_html=True)
+        update_db_status=st.button("Remove from dropdown")
+        if update_db_status:
+                update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest"})
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request marked as duplicate and will no longer appear on dropdown </strong></em></p>', unsafe_allow_html=True)
+                
+
+    
+
+    if datesubmitted and not check_species_existence_admin_end(species, genus):
+
+        tab1, tab2, tab3= st.tabs(["Species to be Removed", "User Info", "Reason for Removal Request"])
+
+        with tab1:
+            tab1_col1,tab1_col2=st.columns(2)
+            #tab1 methods
+            for database in databases:
+                    if database["key"]==datesubmitted:
+                        newAdd=database["Changes"]
+            
+            user_changes= pd.read_json(newAdd)
+            
+
+            tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Species Info </strong></em></p>', unsafe_allow_html=True)
+            tab1_col1.dataframe(user_changes.iloc[0], width=300)
+        
+
+
+        #tab2 ------------user info
+        with tab2:
+
+            for database in databases:
+                    if database["key"]==datesubmitted:
+                        author=database["Edited_By"]
+                        authorComment=database["User_Comment"]
+            for user in users:
+                    if user["username"]==author:
+                        #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                        first_name=user["firstname"]
+                        surname = user["surname"] 
+                        user_email= user["key"]
+                        user_name=user['username']
+
+        with tab2:
+            tab5_col1, tab5_col2 = st.columns(2)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
+
+        with tab3:
+            tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
+
+
+        
+            
+
+        now=datetime.now()
+        version=now.strftime("%d.%m.%Y-%H.%M.%S")
+        
+        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+
+        def create_new_addition_dataset():
+            proposed_removal=current.copy()
+            proposed_removal.drop(user_changes.index[0], inplace=True)
+            
+            csv_bytes = io.StringIO()
+            proposed_removal.to_csv(csv_bytes, index=False)
+            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # upload bytes to Google Drive
+            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+        
+        #updates the status, 
+        def update_GABiP():
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            metaData.update(updates, datesubmitted)
+        
+        def reject_new_addition():
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            metaData.update(updates, datesubmitted)
+
+        preview=st.checkbox("Preview new updated dataset")
+        #st.write(approvedordered)
+        if preview:
+            try:
+                proposed_removal=current.copy()
+                proposed_removal.drop(user_changes.index[0], inplace=True)
+                st.dataframe(proposed_removal)
+                
+                col1,col2=st.columns(2)
+
+                accept=col1.button("Approve Removal")
+                reject=col2.button("Reject Removal")
+
+                        
+                if accept:
+                    create_new_addition_dataset()
+                    update_GABiP()
+                    st.write("GABiP updated!")
+
+
+            
+                reason=col2.text_area("Reasons for declining", key='reason') 
+
+                
+
+                if reject and reason:           
+                    reject_new_addition()
+                    col2.write("Addition rejected")
+                elif reject:
+                    col2.warning("Please add a reason for rejection")
+            except:
+             st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------------------------------------------WELCOME SCREEN BACKGROUND------------------------------------------------------------#
 
 def welcome_screen():
@@ -953,6 +1157,10 @@ def admin_edit_options():
         information_addition_review()
     if options== "Species Edit Requests":
          information_edit_review()
+    if options == "Information Removal Requests":
+         st.write("Not yet coded")
+    if options == "Species Removal Requests":
+         remove_species_admin()
 
 
 
