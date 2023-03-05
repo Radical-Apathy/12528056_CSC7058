@@ -247,7 +247,7 @@ def remove_species_admin():
 
     removal_info_submissions=sorted(pending_removal_info,reverse=True)
 
-    st.write("New species additions in order of date submitted")
+    st.write("New species removal request in order of date submitted")
 
     datesubmitted = st.selectbox(
     'Date submitted',
