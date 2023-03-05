@@ -301,28 +301,36 @@ def remove_species_admin():
         
 
 
-        #tab2 methods
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    author=database["Edited_By"]
-                    authorComment=database["User_Comment"]
-        for user in users:
-                if user["username"]==author:
-                    authorName=user["firstname"]
-                    authorSurname = user["surname"] 
-                    authorEmail= user["key"]
-                    
-        tab2.write("Author firstname: "+" "+" "+authorName)
-        tab2.write("Author surname: "+" "+" "+authorSurname)
-        tab2.write("Author email: "+" "+" "+authorEmail)
+        #tab2 ------------user info
+        with tab2:
 
-        tab3.write("User comments: "+ " "+" "+ authorComment)
+            for database in databases:
+                    if database["key"]==datesubmitted:
+                        author=database["Edited_By"]
+                        authorComment=database["User_Comment"]
+            for user in users:
+                    if user["username"]==author:
+                        #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                        first_name=user["firstname"]
+                        surname = user["surname"] 
+                        user_email= user["key"]
+                        user_name=user['username']
 
-        
+        with tab2:
+            tab5_col1, tab5_col2 = st.columns(2)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
 
-        preview=st.checkbox("Preview dataset with removal ")
-
-
+        with tab3:
+            tab3.write(authorComment)
 
 
         
@@ -356,7 +364,7 @@ def remove_species_admin():
             updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
             database_metadata.update(updates, datesubmitted)
 
-
+        preview=st.checkbox("Preview new updated dataset")
         #st.write(approvedordered)
         if preview:
             try:
