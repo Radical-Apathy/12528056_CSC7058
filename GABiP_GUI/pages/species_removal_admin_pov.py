@@ -377,7 +377,7 @@ def remove_species_admin():
         
 
 
-#remove_species_admin()
+remove_species_admin()
 
 def latest_id_improval():
     approved=[]
@@ -440,5 +440,5 @@ def latest_id_improval():
     st.write(current)
 
 
-latest_id_improval()
+#latest_id_improval()
 #remove_species_admin()
