@@ -423,7 +423,7 @@ def latest_id_improval():
 
     latest_id=get_latest_file_id(latest_approved_ds)
 
-
+    st.write(latest_id)
     #@st.cache_data
     def load_latest():
         current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
@@ -436,8 +436,9 @@ def latest_id_improval():
 
 
     current=load_latest()
-    st.write(approved)
+    #st.write(approved)
+    st.write(current)
 
 
-#latest_id_improval()
-remove_species_admin()
+latest_id_improval()
+#remove_species_admin()

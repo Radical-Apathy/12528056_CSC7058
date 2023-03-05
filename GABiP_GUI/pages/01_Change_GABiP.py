@@ -144,13 +144,20 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
 
 
-current=load_latest()
+try:
+     current=load_latest()
+except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+except RefreshError:
+        st.write("The credentials could not be refreshed.")
+except Exception as error:
+        st.write(f"An error occurred: {error}")
 
 #------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 users_images=deta_connection.Base("user_images")
@@ -488,14 +495,7 @@ def add_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-    try:
-     current=load_latest()
-    except HttpError as error:
-     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
-    except RefreshError:
-        st.write("The credentials could not be refreshed.")
-    except Exception as error:
-        st.write(f"An error occurred: {error}")
+    
 
 
 
@@ -819,7 +819,7 @@ def edit_species_information():
    #-----------------------------------------------------------------EDIT SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    #current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1063,7 +1063,7 @@ def remove_species():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove a Species</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    #current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
