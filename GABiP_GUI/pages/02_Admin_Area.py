@@ -122,7 +122,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-@st.cache_data
+#@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -979,14 +979,18 @@ def remove_species_admin():
 
     def update_repeat_request(key, updates):
         return metaData.update(updates, key)
-    check_species_existence_admin_end(species, genus)
+    
+    if len(removal_info_submissions) >0:
+         
+        check_species_existence_admin_end(species, genus)
    
     if datesubmitted and  check_species_existence_admin_end(species, genus):
-        st.write(f"{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by} For more information, see Species Audit History")
+        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>{genus} {species} has already been removed. It was removed on {decision_date} by {approved_by} For more information, see Species Audit History </strong></em></p>', unsafe_allow_html=True)
         update_db_status=st.button("Remove from dropdown")
         if update_db_status:
                 update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest"})
-                st.write("Request marked as duplicate and will no longer appear on dropdown")
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request marked as duplicate and will no longer appear on dropdown </strong></em></p>', unsafe_allow_html=True)
+                
 
     
 
