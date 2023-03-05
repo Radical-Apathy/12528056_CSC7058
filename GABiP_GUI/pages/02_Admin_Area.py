@@ -17,8 +17,13 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
+
 import io
 import json
+
+
 st.set_page_config(page_icon='amphibs.jpeg')
 
 # Use the client ID and secret to create an OAuth 2.0 flow
@@ -117,7 +122,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -125,6 +130,20 @@ def load_latest():
 def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
+
+try:
+     current=load_latest()
+except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+except RefreshError:
+        st.write("The credentials could not be refreshed.")
+except Exception as error:
+        st.write(f"An error occurred: {error}")
+
+
+
+
+
 
 #gets dates for new species additions needing approval
 pending_new_rows=[]
@@ -201,7 +220,7 @@ def display_pending_users():
 #-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
-    current=load_latest()
+    #current=load_latest()
 
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
@@ -338,7 +357,7 @@ def information_addition_review():
 
     #loading background image
     add_new_info_bg()
-    current=load_latest()
+    #current=load_latest()
 
     st.write("**Information Addition in order of date submitted**")
     datesubmitted = st.selectbox(
@@ -633,7 +652,7 @@ def information_edit_review():
     get_pending_edit_info()
 
     new_edit_submissions=sorted(pending_edit_info,reverse=True)
-    current=load_latest()
+    #current=load_latest()
     st.write("New species edits in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
@@ -924,9 +943,9 @@ def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Information', 'Species Edit Requests', 'Information Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
-        current=load_latest()
+        st.write(current)
         #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
-        st.write(current) 
+        
 
     if options == "New Species Entry":
         new_species_review()

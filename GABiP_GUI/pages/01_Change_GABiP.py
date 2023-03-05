@@ -144,13 +144,20 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
 
 
-current_db=load_latest()
+try:
+     current=load_latest()
+except HttpError as error:
+     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
+except RefreshError:
+        st.write("The credentials could not be refreshed.")
+except Exception as error:
+        st.write(f"An error occurred: {error}")
 
 #------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 users_images=deta_connection.Base("user_images")
@@ -224,7 +231,7 @@ def show_db():
 
     db_col1,db_col2=st.columns(2)
     try:
-        st.dataframe(current_db, width=600)
+        st.dataframe(current, width=600)
     except HttpError as error:
      st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
     except RefreshError:
@@ -263,7 +270,7 @@ def add_entry_page():
 
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
-        if genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
+        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
             st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
 
     
@@ -280,7 +287,7 @@ def add_entry_page():
 
  #st.write(current_db)
     path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/GABiP_Databases/"
-    dbColumns=current_db.columns
+    dbColumns=current.columns
 
  #creating session state variables for csv columns
     create_session_states(dbColumns)
@@ -320,7 +327,7 @@ def add_entry_page():
      populate_userinfo()
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-     reviewdf = pd.DataFrame(userInfo, current_db.columns)
+     reviewdf = pd.DataFrame(userInfo, current.columns)
      st.dataframe(reviewdf, width=300) 
 
      #temp code for development
@@ -351,12 +358,12 @@ def add_entry_page():
     
     if commit_changes and user_message=="":  
      st.error("Please add a source")
-    if commit_changes and genus.lower() in current_db["Genus"].str.lower().values and species.lower() in current_db["Species"].str.lower().values:
+    if commit_changes and genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
     elif commit_changes and user_message:
      populate_userinfo()
      data = {0: userInfo}
-     dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+     dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
      dftojson=dftojsondict.to_json(orient="columns")
      
      add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
@@ -488,7 +495,14 @@ def add_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    
+
+
+
+
+
+
+
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -805,7 +819,7 @@ def edit_species_information():
    #-----------------------------------------------------------------EDIT SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    #current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1049,7 +1063,7 @@ def remove_species():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove a Species</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest()
+    #current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
