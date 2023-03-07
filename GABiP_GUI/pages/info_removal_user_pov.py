@@ -328,7 +328,7 @@ def remove_species_information():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
-    #approved_images=[]
+    approved_images=[]
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -344,19 +344,19 @@ def remove_species_information():
       col1.write("No Images Available")
      # upload_image()
 
-    # def link_image(results):
-    #  merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    #  if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
-    #      check_user_image(species_dropdown, genus_dropdown)
-    #  elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-    #      return merged_image_df["Display Image"].iloc[0]
+    def link_image(results):
+     merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+     if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+         check_user_image(species_dropdown, genus_dropdown)
+     elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+         return merged_image_df["Display Image"].iloc[0]
         
-    # def link_embedded_image(results):
-    #     embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
-    #     if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
-    #         return embedded_image_df["Embedded Link"].iloc[0]
-    #     else:
-    #         return None
+    def link_embedded_image(results):
+        embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+        if not embedded_image_df.empty and embedded_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+            return embedded_image_df["Embedded Link"].iloc[0]
+        else:
+            return None
 
     def update_user_json(original_results_json, user_df_json):
         data = json.loads(original_results_json)
@@ -418,7 +418,7 @@ def remove_species_information():
 
     col2.dataframe(species_results.iloc[0], width=500)
 
-    #col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
+    col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
     get_existing_info_columns(species_results)
     show_existing_info=st.multiselect("Choose Information to Remove", existing_info_columns)

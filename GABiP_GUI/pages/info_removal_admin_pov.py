@@ -348,9 +348,9 @@ def information_removal_review():
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
-        # for database in databases:
-        #         if database["key"]==datesubmitted:
-        #             user_images=database["User_Images"]
+        for database in databases:
+                 if database["key"]==datesubmitted:
+                     user_images=database["User_Images"]
         
         image_count=len(user_images)
         approved_images=[]
@@ -467,6 +467,7 @@ def information_removal_review():
             if preview_new:
                 
                 st.dataframe(updated_db)
+                st.write(user_images)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
