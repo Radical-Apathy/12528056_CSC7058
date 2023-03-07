@@ -263,17 +263,37 @@ def remove_species_information():
 
     user_removal_info = []
     def get_remove_info():
-       for option in show_missing_info:
+       for option in show_existing_info:
         if st.session_state.get(option) is None:
             user_removal_info.append(option)
             st.session_state[option] = None
         return user_removal_info
+       
+    user_changes=[]
+    def update_names_to_none(show_existing_info):
+    
+        for i, field in enumerate(show_existing_info):
+            show_existing_info[i] = None
+            user_changes.append(field)
+        return user_changes
 
-    def update_missing_results(show_missing_info):
+
+    def convert_fields_to_none(show_existing_info):
+        user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
+        return json.dumps(user_changes_json)
+
+    def update_json_with_index(user_changes_json):
+        user_dict_list = json.loads(user_changes_json)
+        final_changes = {"0": {}}
+        for i in user_dict_list:
+            final_changes["0"].update(i)
+        return json.dumps(final_changes)
+    
+    def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
-        for column in show_missing_info:
-            results_updated.at[speciesIndex, column] = st.session_state[column]
+        for column in show_existing_info:
+            results_updated.at[speciesIndex, column] = None
         return results_updated
 
     now = datetime.now()
@@ -378,13 +398,12 @@ def remove_species_information():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
-    source_fields=[]
-    summary_dataframe=[]
-    def create_source_fields(show_missing_info):
-       for option in show_missing_info:
+    
+    def create_source_fields(show_existing_info):
+       for option in show_existing_info:
                user_source=st.text_input("Please enter a reason for removing "+option, key=option+" source")
     
-       for option in show_missing_info:
+       for option in show_existing_info:
            if user_source and user_source!="":
                st.session_state[option+" source"]==user_source
                additional_info_sources.append(st.session_state[option+" source"])
@@ -405,14 +424,12 @@ def remove_species_information():
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
     get_existing_info_columns(species_results)
-    show_missing_info=st.multiselect("Choose Information to Remove", existing_info_columns)
+    show_existing_info=st.multiselect("Choose Information to Remove", existing_info_columns)
 
-    if show_missing_info:
-        get_remove_info()
-
+  
     results_copy=species_results.copy()
 
-    results_updated=update_missing_results(show_missing_info)
+    results_updated=update_missing_results(show_existing_info)
 
     show_results=st.checkbox("Show updates")
  
@@ -421,7 +438,7 @@ def remove_species_information():
 
     if show_results and compared:
         st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-    elif show_results and len(show_missing_info) >0 and  len(user_removal_info) >0:
+    elif show_results and len(show_existing_info) >0 and  len(user_removal_info) >0:
         st.warning("**Please ensure values have been selected for removal*")
     elif show_results and not compared: 
         comparecol1,comparecol2, comparecol3=st.columns(3)
@@ -434,11 +451,11 @@ def remove_species_information():
     sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
     sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    create_source_fields(show_missing_info)
+    create_source_fields(show_existing_info)
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
     source_summary=sourcesum2.button("Review Sources Summary")
-    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
+    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     if source_summary:
     
@@ -463,34 +480,47 @@ def remove_species_information():
 
     preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
+    
 
     #temporarily removing validation for development purposes
     if preview_updated_dataset:
         results_index=species_results.index[0]
-        st.write(user_removal_info)
-        st.write(existing_info_columns)
-       # add_to_database(str(now), removal_json, original_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+        original_results_to_json=species_results.to_json(orient="columns")
+        #st.write(user_removal_info)
+        #st.write(show_existing_info)
+        #update_names_to_none(show_existing_info)
+        #{"0":{"NestingSite":"editting nesting site"}}
+        user_changes_json=(convert_fields_to_none(show_existing_info))
+        final_changes=update_json_with_index(user_changes_json)
+        st.write(final_changes)
+        
+        #user_changes_json=user_changes.to_json()   
+        #st.write(user_changes_json)
+        #st.write(user_changes_json) 
+       # updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+    
+        add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
         #if 'image_ids' in st.session_state:
          #    del st.session_state['image_ids']
         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
 
-    if preview_updated_dataset and len(show_missing_info) <0 and len(user_removal_info) <0:
+    if preview_updated_dataset and len(show_existing_info) <0 and len(user_removal_info) <0:
             st.warning("**Please ensure values are added for each field selected**")
     preview_success= False
         
         
-    if  preview_updated_dataset and  len(show_missing_info) <0 and len(additional_info_sources) <0:
+    if  preview_updated_dataset and  len(show_existing_info) <0 and len(additional_info_sources) <0:
             st.warning("**Please ensure sources are added for each field selected**")
     preview_success=False
 
-    if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_removal_info) :
+    if preview_updated_dataset and len(show_existing_info) == len(additional_info_sources) and len(show_existing_info) == len(user_removal_info) :
     
         results_index=species_results.index[0]
         updated_db=current.copy()
         search_results_to_json=species_results.to_json(orient="columns")
         try:
-            pd.DataFrame(user_removal_info, show_missing_info)
-            user_changes=pd.DataFrame(user_removal_info, show_missing_info)
+            pd.DataFrame(user_removal_info, show_existing_info)
+            user_changes=pd.DataFrame(user_removal_info, show_existing_info)
             user_changes_json=user_changes.to_json()    
             updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
             updated_row=pd.read_json(updated_json)
@@ -511,12 +541,12 @@ def remove_species_information():
         if user_comments=="":
             user_comments="n/a"
         
-        if commit_addition and len(show_missing_info) == len(user_removal_info) and len(show_missing_info) == len(additional_info_sources) :
+        if commit_addition and len(show_existing_info) == len(user_removal_info) and len(show_existing_info) == len(additional_info_sources) :
             add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
              del st.session_state['image_ids']
             st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        elif commit_addition and len(show_missing_info) != len(user_removal_info) or len(show_missing_info) != len(additional_info_sources):
+        elif commit_addition and len(show_existing_info) != len(user_removal_info) or len(show_existing_info) != len(additional_info_sources):
             st.markdown("Please check all fields selected and sources have been provided in order to submit")
 
 
