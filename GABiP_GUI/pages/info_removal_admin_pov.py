@@ -366,23 +366,22 @@ def information_removal_review():
             
             
         else:
-            results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-            items = results.get('files', [])
-             
+            # results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+            # items = results.get('files', [])
+            new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
+            # for item in items:
+            #     for value in user_images:
+            #         if item['id'] == value:
+            #             #with new_info_tab3.form(item['name']):
+            #                 new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+            #                 accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
+            #                 reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+            #                 if accept_image and reject_image:
+            #                         new_info_tab3.error("Warning! Both options have been selected. Please review decision")
+            #                 elif accept_image:
+            #                     approved_images.append(item['id'])
+            new_info_tab3.image(f"https://drive.google.com/uc?id={user_images[0]}")
             new_info_tab3.write("***")
-            for item in items:
-                for value in user_images:
-                    if item['id'] == value:
-                        #with new_info_tab3.form(item['name']):
-                            new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-                            accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-                            reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-                            if accept_image and reject_image:
-                                    new_info_tab3.error("Warning! Both options have been selected. Please review decision")
-                            elif accept_image:
-                                approved_images.append(item['id'])
-
-                            new_info_tab3.write("***")
             
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
         with new_info_tab5:
@@ -443,14 +442,14 @@ def information_removal_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds, "User_Images":user_images[0] }
                 metaData.update(updates, datesubmitted)
 
         def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
          return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
         
         def reject_new_addition():
-                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         if preview_updated_dataset:
@@ -476,7 +475,7 @@ def information_removal_review():
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
-                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], user_images[0] )#<------working
                         pre_col1.write("GABiP updated!")
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
