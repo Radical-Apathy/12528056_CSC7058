@@ -269,13 +269,8 @@ def remove_species_information():
             st.session_state[option] = None
         return user_removal_info
        
-    user_changes=[]
-    def update_names_to_none(show_existing_info):
     
-        for i, field in enumerate(show_existing_info):
-            show_existing_info[i] = None
-            user_changes.append(field)
-        return user_changes
+    
 
 
     def convert_fields_to_none(show_existing_info):
@@ -482,7 +477,7 @@ def remove_species_information():
 
     
 
-    #temporarily removing validation for development purposes
+    
 
     if preview_updated_dataset and len(show_existing_info)==0:
             st.warning("**Please ensure fields are selected for removal**")
@@ -507,12 +502,9 @@ def remove_species_information():
             preview_success=True
         except:
             st.warning("**We're sorry, but something has gone wrong. Please try again later**")
-    #             #st.warning()
+                 
 
-        #add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-        #if 'image_ids' in st.session_state:
-         #    del st.session_state['image_ids']
-
+       
         if preview_success:
          user_comments = st.text_area("**Additional comments (optional)**", height=30)
         
@@ -531,46 +523,6 @@ def remove_species_information():
     
         
         
-    # if  preview_updated_dataset and  len(additional_info_sources) <0:
-    #         st.warning("**Please ensure sources are added for each field selected**")
-    # preview_success=False
-
-    # if preview_updated_dataset and len(show_existing_info) == len(additional_info_sources) and len(show_existing_info) == len(user_removal_info) :
     
-    #     results_index=species_results.index[0]
-    #     updated_db=current.copy()
-    #     search_results_to_json=species_results.to_json(orient="columns")
-    #     try:
-    #         pd.DataFrame(user_removal_info, show_existing_info)
-    #         user_changes=pd.DataFrame(user_removal_info, show_existing_info)
-    #         user_changes_json=user_changes.to_json()    
-    #         updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
-    #         updated_row=pd.read_json(updated_json)
-    #         updated_db.loc[results_index] =(updated_row.loc[results_index])
-    #         st.write("updated dataframe")
-    #         st.dataframe(updated_db)
-    #         preview_success=True
-    #     except:
-    #         st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
-    #             #st.warning()
-    #     if preview_success:
-    #      user_comments = st.text_area("**Additional comments (optional)**", height=30)
-        
-        
-    #     commit_addition=st.button("Submit Addition")
-        
-
-    #     if user_comments=="":
-    #         user_comments="n/a"
-        
-    #     if commit_addition and len(show_existing_info) == len(user_removal_info) and len(show_existing_info) == len(additional_info_sources) :
-    #         add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-    #         if 'image_ids' in st.session_state:
-    #          del st.session_state['image_ids']
-    #         st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-    #     elif commit_addition and len(show_existing_info) != len(user_removal_info) or len(show_existing_info) != len(additional_info_sources):
-    #         st.markdown("Please check all fields selected and sources have been provided in order to submit")
-
-
 remove_species_information()
     
