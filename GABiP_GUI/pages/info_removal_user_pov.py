@@ -483,33 +483,38 @@ def remove_species_information():
     
 
     #temporarily removing validation for development purposes
-    if preview_updated_dataset:
+
+    if preview_updated_dataset and len(show_existing_info) <0:
+            st.warning("**Please ensure fields are selected for removal**")
+    preview_success= False
+
+    if preview_updated_dataset and len(show_existing_info) != len(additional_info_sources):
+        st.warning("**Please ensure reasons are provided for  each removal**")
+
+    if preview_updated_dataset and len(show_existing_info)>0 and len(show_existing_info)==len(additional_info):
         results_index=species_results.index[0]
+        st.write(results_index)
         original_results_to_json=species_results.to_json(orient="columns")
-        #st.write(user_removal_info)
-        #st.write(show_existing_info)
-        #update_names_to_none(show_existing_info)
-        #{"0":{"NestingSite":"editting nesting site"}}
+        updated_db=current.copy()
         user_changes_json=(convert_fields_to_none(show_existing_info))
         final_changes=update_json_with_index(user_changes_json)
-        st.write(final_changes)
+        updated_results_json=json.dumps(update_user_json(original_results_to_json, final_changes))
+        updated_row=pd.read_json(updated_results_json)
         
-        #user_changes_json=user_changes.to_json()   
-        #st.write(user_changes_json)
-        #st.write(user_changes_json) 
-       # updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+        updated_db.loc[results_index] =(updated_row.loc[results_index])
+        st.write("updated dataframe")
+        st.dataframe(updated_db)
+        preview_success=True
     
-        add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+        #add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
         #if 'image_ids' in st.session_state:
          #    del st.session_state['image_ids']
         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
 
-    if preview_updated_dataset and len(show_existing_info) <0 and len(user_removal_info) <0:
-            st.warning("**Please ensure values are added for each field selected**")
-    preview_success= False
+    
         
         
-    if  preview_updated_dataset and  len(show_existing_info) <0 and len(additional_info_sources) <0:
+    if  preview_updated_dataset and  len(additional_info_sources) <0:
             st.warning("**Please ensure sources are added for each field selected**")
     preview_success=False
 
