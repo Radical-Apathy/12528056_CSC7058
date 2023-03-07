@@ -328,6 +328,7 @@ def remove_species_information():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
+    approved_images=[]
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -336,6 +337,7 @@ def remove_species_information():
                 col1.write("Image")
                 col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
                 col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+                approved_images.append(user_image['Images'][0])
                 image_found=True  
             break
      if not image_found: 
@@ -516,8 +518,11 @@ def remove_species_information():
              user_comments="n/a"
 
         if commit_addition and len(show_existing_info)==len(additional_info_sources):
-            add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-
+            if len(approved_images)!=0:
+             add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, approved_images )
+            if len(approved_images)==0:
+             add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, "n/a" )
+            
             st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
 
     

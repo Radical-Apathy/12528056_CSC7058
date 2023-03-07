@@ -208,8 +208,12 @@ def information_removal_review():
                 if database["key"]==datesubmitted:
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
-    
-    
+                    species_before=database["Dataset_Pre_Change"]
+                    species_after=database["Changes"]
+                    user_images=database["User_Images"]
+                    user_sources=database["User_Sources"]
+                    author=database["Edited_By"]
+                    authorComment=database["User_Comment"]   
    
     
 
@@ -224,11 +228,11 @@ def information_removal_review():
 
 
     if datesubmitted:
-        for database in databases:
+        # for database in databases:
              
-            if database["key"]==datesubmitted:
-                    genus_added_to=database["Genus_Affected"]
-                    species_added_to=database["Species_Affected"]
+        #     if database["key"]==datesubmitted:
+        #             genus_added_to=database["Genus_Affected"]
+        #             species_added_to=database["Species_Affected"]
     
         #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -247,11 +251,11 @@ def information_removal_review():
         new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
         
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    species_before=database["Dataset_Pre_Change"]
-                    species_after=database["Changes"]
-                    user_images=database["User_Images"]
+        # for database in databases:
+        #         if database["key"]==datesubmitted:
+        #             species_before=database["Dataset_Pre_Change"]
+        #             species_after=database["Changes"]
+        #             user_images=database["User_Images"]
         
         before_jsonn=json.loads(species_before)
         species_index = list(before_jsonn['Order'].keys())[0]
@@ -268,9 +272,9 @@ def information_removal_review():
         
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
-        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
+        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information For Removal</em></p>', unsafe_allow_html=True)
         list_fields()
-        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
+        tab1_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Existing Images for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
         tab1_col2.write(f"{image_count} images have been added")
         #updated_species_json=json.dumps(update_user_json(species_before, species_after))
         #tab1_col1.markdown("**Species Before**")
@@ -282,9 +286,9 @@ def information_removal_review():
                
                 
         #-------------------------------------------------------------information breakdown display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    user_sources=database["User_Sources"]
+        # for database in databases:
+        #         if database["key"]==datesubmitted:
+        #             user_sources=database["User_Sources"]
         
         with new_info_tab2:
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
@@ -344,9 +348,9 @@ def information_removal_review():
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    user_images=database["User_Images"]
+        # for database in databases:
+        #         if database["key"]==datesubmitted:
+        #             user_images=database["User_Images"]
         
         image_count=len(user_images)
         approved_images=[]
@@ -356,7 +360,7 @@ def information_removal_review():
             tab3_col1,tab3_col2,tab3_col3=st.columns(3)
         
         if image_count <1:
-            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Submitted</em></p>', unsafe_allow_html=True)
+            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Associated</em></p>', unsafe_allow_html=True)
 
         
             
@@ -383,10 +387,10 @@ def information_removal_review():
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
         with new_info_tab5:
 
-            for database in databases:
-                    if database["key"]==datesubmitted:
-                        author=database["Edited_By"]
-                        authorComment=database["User_Comment"]
+            # for database in databases:
+            #         if database["key"]==datesubmitted:
+            #             author=database["Edited_By"]
+            #             authorComment=database["User_Comment"]
             for user in users:
                     if user["username"]==author:
                         #tab2.write(((user["firstname"],user["surname"], user["key"])))
