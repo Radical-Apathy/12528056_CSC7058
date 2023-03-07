@@ -366,6 +366,7 @@ def information_removal_review():
             
             
         else:
+            approved_images.append(user_images[0])
             # results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
             # items = results.get('files', [])
             new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
@@ -442,7 +443,7 @@ def information_removal_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds, "User_Images":user_images[0] }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds, "User_Images":approved_images }
                 metaData.update(updates, datesubmitted)
 
         def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
@@ -475,7 +476,7 @@ def information_removal_review():
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
-                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], user_images[0] )#<------working
+                        #add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], user_images[0] )#<------working
                         pre_col1.write("GABiP updated!")
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
