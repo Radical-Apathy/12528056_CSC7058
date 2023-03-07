@@ -255,7 +255,7 @@ def remove_species_information():
 
 
     existing_info_columns = []
-    def get_missing_info_columns(results):
+    def get_existing_info_columns(results):
         for column in dbColumns:
             if  not results[column].isna().any():
                 existing_info_columns.append(results[column].name)
@@ -404,7 +404,7 @@ def remove_species_information():
 
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
-    get_missing_info_columns(species_results)
+    get_existing_info_columns(species_results)
     show_missing_info=st.multiselect("Choose Information to Remove", existing_info_columns)
 
     if show_missing_info:
@@ -467,14 +467,11 @@ def remove_species_information():
     #temporarily removing validation for development purposes
     if preview_updated_dataset:
         results_index=species_results.index[0]
-        updated_removal=current.copy()
-        results_updated.iloc[0]
-        updated_removal.loc[results_index] =(results_updated.loc[results_index])
-        original_to_json=species_results.to_json(orient="columns")
-        removal_json=results_updated.to_json(orient="columns")
-        add_to_database(str(now), removal_json, original_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-        if 'image_ids' in st.session_state:
-             del st.session_state['image_ids']
+        st.write(user_removal_info)
+        st.write(existing_info_columns)
+       # add_to_database(str(now), removal_json, original_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", "user comments", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+        #if 'image_ids' in st.session_state:
+         #    del st.session_state['image_ids']
         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
 
     if preview_updated_dataset and len(show_missing_info) <0 and len(user_removal_info) <0:
