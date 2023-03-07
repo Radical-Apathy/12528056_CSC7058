@@ -426,8 +426,8 @@ def information_removal_review():
         #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
         now=datetime.now()
         version=now.strftime("%d.%m.%Y-%H.%M.%S")
-            
-        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+        #newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
+        newPath=version+"-admin-approved"+".csv"
 
         def create_new_updated_dataset_google():
                 newDataset=updated_db
