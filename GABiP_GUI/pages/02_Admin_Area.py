@@ -1155,7 +1155,7 @@ def admin_edit_options():
 
     if options == "New Species Entry":
         new_species_review()
-    if options== "New Species Information":
+    if options== "New Species Data":
         information_addition_review()
     if options== "Species Edit Requests":
          information_edit_review()
