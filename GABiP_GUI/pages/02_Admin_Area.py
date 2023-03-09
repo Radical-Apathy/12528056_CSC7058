@@ -1147,6 +1147,7 @@ def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Information', 'Species Edit Requests', 'Information Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
+        st.write(latest_id)
         st.write(latest_approved_ds)
         st.write(current)
         #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
