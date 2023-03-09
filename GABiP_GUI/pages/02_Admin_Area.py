@@ -122,7 +122,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
