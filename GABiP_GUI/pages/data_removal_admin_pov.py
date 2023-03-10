@@ -352,16 +352,23 @@ def information_removal_review():
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
-        #approved_user_images=get_all_user_images()
-        for user_image in sorted(approved_user_images, key=lambda x: x["key"], reverse=True):
-          if user_image["Species"] == species_added_to and user_image["Genus"]==genus_added_to:
-                
-                    new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
-                    new_info_tab3.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-                    new_info_tab3.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-            
-        #image_count=len(user_images)              
+        with new_info_tab3:
+            new_info_tab3.write("Image code still to be written")
+            # approved_images=[]
 
+            # for user_image in sorted(approved_user_images, key=lambda x: x["key"], reverse=True):
+            #  if user_image["Species"] == species_added_to and user_image["Genus"]==genus_added_to:
+                    
+            #             new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
+            #             new_info_tab3.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+            #             new_info_tab3.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+            #             approved_images.append(user_image['Images'])
+            #             new_info_tab3.write(approved_images)
+            #  return approved_images
+            
+            # new_info_tab3.write(f"approved after, {approved_images[0]}")
+        
+            
         
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
         with new_info_tab5:
@@ -422,7 +429,7 @@ def information_removal_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds, "User_Images":approved_images }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":"admin", "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
