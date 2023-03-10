@@ -194,16 +194,16 @@ dfImages = load_images()
 #--------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
 #-----------------------------------------------------------------------REMOVE SPECIES INFORMATION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
-def remove_species_information():
+def add_species_information():
     def add_bg_from_url():
         st.markdown(
             f"""
             <style>
             .stApp {{
-                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
                 background-attachment: fixed;
                 background-size: cover;
-                background-position: 60.00% 64.97% ;
+                background-position: center;
                 opacity: 0.1
                 color: #ffffff; 
             }}
@@ -211,84 +211,29 @@ def remove_species_information():
             """,
             unsafe_allow_html=True
         )
- #url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg"
+
     add_bg_from_url()
-    
-    image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
-    image_id=[]
-    #current image linking methods
-    def upload_image():
-            if 'image_ids' in st.session_state:
-                image_ids = st.session_state['image_ids']
-            else:
-                image_ids = []
 
-            #col1.markdown("**No images available**")
-            uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-            if uploaded_image is not None:
-                col1.write("**Image preview**")
-                col1.image(uploaded_image)
-
-            submit_image=col1.button("Submit image")
-            if submit_image and uploaded_image:
-                bytes_data = uploaded_image.getvalue()
-                try:
-                    file_metadata = {
-                        'name': uploaded_image.name,
-                        'parents': [image_folder_id],
-                        'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-                    }
-                    media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-                    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-                    image_id = file.get('id')
-
-                    st.success(f'Image uploaded! You can choose to upload more')
-                    image_ids.append(image_id)
-                    st.session_state['image_ids'] = image_ids
-
-                    uploaded_image = None
-                except:
-                    st.error("Please try again. Be sure to check your file type is in the correct format")
-
-
-
-
-
-    existing_info_columns = []
-    def get_existing_info_columns(results):
+    missingInfoColumns = []
+    def get_missing_info_columns(results):
         for column in dbColumns:
-            if  not results[column].isna().any():
-                existing_info_columns.append(results[column].name)
-        return existing_info_columns
+            if results[column].isna().any():
+                missingInfoColumns.append(results[column].name)
+        return missingInfoColumns
 
-    user_removal_info = []
-    def get_remove_info():
-       for option in show_existing_info:
-        if st.session_state.get(option) is None:
-            user_removal_info.append(option)
-            st.session_state[option] = None
-        return user_removal_info
-       
-    
-    
+    user_missing_info = []
+    def get_missing_userinfo():
+        for option in show_missing_info:
+            userText = st.text_input(option, key=option)
+            if userText:
+                user_missing_info.append(st.session_state[option])
+        return user_missing_info
 
-
-    def convert_fields_to_none(show_existing_info):
-        user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
-        return json.dumps(user_changes_json)
-
-    def update_json_with_index(user_changes_json):
-        user_dict_list = json.loads(user_changes_json)
-        final_changes = {"0": {}}
-        for i in user_dict_list:
-            final_changes["0"].update(i)
-        return json.dumps(final_changes)
-    
-    def update_missing_results(show_existing_info):
+    def update_missing_results(show_missing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
-        for column in show_existing_info:
-            results_updated.at[speciesIndex, column] = None
+        for column in show_missing_info:
+            results_updated.at[speciesIndex, column] = st.session_state[column]
         return results_updated
 
     now = datetime.now()
@@ -328,7 +273,6 @@ def remove_species_information():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
-    approved_images=[]
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -337,12 +281,11 @@ def remove_species_information():
                 col1.write("Image")
                 col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
                 col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                #approved_images.append(user_image['Images'][0])
                 image_found=True  
             break
      if not image_found: 
       col1.write("No Images Available")
-     # upload_image()
+      upload_image()
 
     def link_image(results):
      merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -367,10 +310,17 @@ def remove_species_information():
                 data[key][str(results_index)] = value
         return data
    
-   #-----------------------------------------------------------------EDIT SPECIES INFO MAIN PAGE-------------------------------------------------#
+   #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Remove Species Information</strong></em></p>', unsafe_allow_html=True)
-    #current=load_latest()
+    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+    
+
+
+
+
+
+
+
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -395,12 +345,13 @@ def remove_species_information():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
+    source_fields=[]
+    summary_dataframe=[]
+    def create_source_fields(show_missing_info):
+       for option in show_missing_info:
+               user_source=st.text_input("Please enter a source for "+option, key=option+" source")
     
-    def create_source_fields(show_existing_info):
-       for option in show_existing_info:
-               user_source=st.text_input("Please enter a reason for removing "+option, key=option+" source")
-    
-       for option in show_existing_info:
+       for option in show_missing_info:
            if user_source and user_source!="":
                st.session_state[option+" source"]==user_source
                additional_info_sources.append(st.session_state[option+" source"])
@@ -420,23 +371,24 @@ def remove_species_information():
 
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
-    get_existing_info_columns(species_results)
-    show_existing_info=st.multiselect("Choose Information to Remove", existing_info_columns)
+    get_missing_info_columns(species_results)
+    show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
-  
+    if show_missing_info:
+        get_missing_userinfo()
+
     results_copy=species_results.copy()
 
-    results_updated=update_missing_results(show_existing_info)
+    results_updated=update_missing_results(show_missing_info)
 
     show_results=st.checkbox("Show updates")
  
     compared=species_results.iloc[0].equals(results_updated.iloc[0])
-    
 
     if show_results and compared:
         st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-    elif show_results and len(show_existing_info) >0 and  len(user_removal_info) >0:
-        st.warning("**Please ensure values have been selected for removal*")
+    elif show_results and len(show_missing_info) != len(user_missing_info):
+        st.warning("**Please ensure values are added for each field selected**")
     elif show_results and not compared: 
         comparecol1,comparecol2, comparecol3=st.columns(3)
         comparecol1.write("**Original Species**")
@@ -448,11 +400,11 @@ def remove_species_information():
     sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
     sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    create_source_fields(show_existing_info)
+    create_source_fields(show_missing_info)
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
     source_summary=sourcesum2.button("Review Sources Summary")
-    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
+    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     if source_summary:
     
@@ -477,57 +429,50 @@ def remove_species_information():
 
     preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
-    
-
-    
-
-    if preview_updated_dataset and len(show_existing_info)==0:
-            st.warning("**Please ensure fields are selected for removal**")
+    if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
+            st.warning("**Please ensure values are added for each field selected**")
     preview_success= False
+        
+        
+    if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
+            st.warning("**Please ensure sources are added for each field selected**")
+    preview_success=False
 
-    if preview_updated_dataset and len(show_existing_info) != len(additional_info_sources):
-        st.warning("**Please ensure reasons are provided for  each removal**")
-
-    if preview_updated_dataset and len(show_existing_info)==len(additional_info_sources):
+    if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
+    
+        results_index=species_results.index[0]
+        updated_db=current.copy()
+        search_results_to_json=species_results.to_json(orient="columns")
         try:
-            results_index=species_results.index[0]
-            original_results_to_json=species_results.to_json(orient="columns")
-            updated_db=current.copy()
-            user_changes_json=(convert_fields_to_none(show_existing_info))
-            final_changes=update_json_with_index(user_changes_json)
-            updated_results_json=json.dumps(update_user_json(original_results_to_json, final_changes))
-            updated_row=pd.read_json(updated_results_json)
-            
+            pd.DataFrame(user_missing_info, show_missing_info)
+            user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+            user_changes_json=user_changes.to_json()    
+            updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+            updated_row=pd.read_json(updated_json)
             updated_db.loc[results_index] =(updated_row.loc[results_index])
-            st.write("updated dataframe")
             st.dataframe(updated_db)
             preview_success=True
         except:
-            st.warning("**We're sorry, but something has gone wrong. Please try again later**")
-                 
-
-       
+            st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
+                #st.warning()
         if preview_success:
          user_comments = st.text_area("**Additional comments (optional)**", height=30)
         
         
-         commit_addition=st.button("Submit Removal Request")
+        commit_addition=st.button("Submit Addition")
         
 
         if user_comments=="":
-             user_comments="n/a"
-
-        if commit_addition and len(show_existing_info)==len(additional_info_sources):
-            if len(approved_images)!=0:
-             add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, approved_images )
-            if len(approved_images)==0:
-             add_to_database(str(now), final_changes, original_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, "admin", user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, "n/a" )
-            
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-
-    
+            user_comments="n/a"
         
-        
-    
-remove_species_information()
+        if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
+            add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+            if 'image_ids' in st.session_state:
+             del st.session_state['image_ids']
+            st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+        elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources):
+            st.markdown("Please check all fields selected and sources have been provided in order to submit")
+
+
+add_species_information()
     
