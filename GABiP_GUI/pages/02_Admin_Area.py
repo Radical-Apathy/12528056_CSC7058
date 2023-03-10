@@ -1436,7 +1436,7 @@ def admin_edit_options():
     if options== "Species Edit Requests":
          information_edit_review()
     if options == "Data Removal Requests":
-         st.write("Not yet coded")
+         data_removal_review()
     if options == "Species Removal Requests":
          remove_species_admin()
 
