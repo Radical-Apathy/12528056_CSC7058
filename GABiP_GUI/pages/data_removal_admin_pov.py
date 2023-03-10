@@ -175,8 +175,12 @@ users_images=deta_connection.Base("user_images")
 def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
      return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
 
+def get_all_user_images():
+    res = users_images.fetch()
+    return res.items
 
-
+approved_user_images=get_all_user_images()
+#------------------------------------------------------------MAIN INFORMATION REMOVAL PAGE---------------------------------------------------------------------------------------#
 def information_removal_review():
     def add_new_info_bg():
        st.markdown(
@@ -210,7 +214,7 @@ def information_removal_review():
                     species_added_to=database["Species_Affected"]
                     species_before=database["Dataset_Pre_Change"]
                     species_after=database["Changes"]
-                    user_images=database["User_Images"]
+                    #user_images=database["User_Images"]
                     user_sources=database["User_Sources"]
                     author=database["Edited_By"]
                     authorComment=database["User_Comment"]   
@@ -248,7 +252,7 @@ def information_removal_review():
             return data
 
 
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images","User Info", "User Comment"])
         
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         # for database in databases:
@@ -268,14 +272,14 @@ def information_removal_review():
                     tab1_col1.markdown(inner_key)
 
                
-        image_count=len(user_images)
+        #image_count=len(user_images)
         
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information For Removal</em></p>', unsafe_allow_html=True)
         list_fields()
-        tab1_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Existing Images for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
-        tab1_col2.write(f"{image_count} images have been added")
+        tab1_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>User Images for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
+        #tab1_col2.write(f"{image_count} images have been added")
         #updated_species_json=json.dumps(update_user_json(species_before, species_after))
         #tab1_col1.markdown("**Species Before**")
         #tab1_col1.write(pd.read_json(species_before).iloc[0])
@@ -348,42 +352,17 @@ def information_removal_review():
 
                     
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
-        for database in databases:
-                 if database["key"]==datesubmitted:
-                     user_images=database["User_Images"]
-        
-        image_count=len(user_images)
-        approved_images=[]
-
-        image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
-        with new_info_tab3:
-            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
-        
-        if image_count <1:
-            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Associated</em></p>', unsafe_allow_html=True)
+        #approved_user_images=get_all_user_images()
+        for user_image in sorted(approved_user_images, key=lambda x: x["key"], reverse=True):
+            if user_image["Species"] == species_added_to and user_image["Genus"]==genus_added_to:
+                
+                    new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
+                    new_info_tab3.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                    new_info_tab3.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+           
+                     
 
         
-            
-            
-        else:
-            approved_images.append(user_images[0])
-            # results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-            # items = results.get('files', [])
-            new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
-            # for item in items:
-            #     for value in user_images:
-            #         if item['id'] == value:
-            #             #with new_info_tab3.form(item['name']):
-            #                 new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-            #                 accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-            #                 reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-            #                 if accept_image and reject_image:
-            #                         new_info_tab3.error("Warning! Both options have been selected. Please review decision")
-            #                 elif accept_image:
-            #                     approved_images.append(item['id'])
-            new_info_tab3.image(f"https://drive.google.com/uc?id={user_images[0]}")
-            new_info_tab3.write("***")
-            
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
         with new_info_tab5:
 
@@ -467,7 +446,7 @@ def information_removal_review():
             if preview_new:
                 
                 st.dataframe(updated_db)
-                st.write(user_images)
+                #st.write(user_images)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
