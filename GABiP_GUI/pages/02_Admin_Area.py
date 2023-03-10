@@ -1114,7 +1114,7 @@ def remove_species_admin():
 
 
 #----------------------------------------------------------------------------------------------DATA REMOVAL PAGE----------------------------------------------------------------------#
-def information_removal_review():
+def data_removal_review():
     def add_new_info_bg():
        st.markdown(
             f"""
