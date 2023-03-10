@@ -122,7 +122,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -370,20 +370,22 @@ def information_addition_review():
                     species_added_to=database["Species_Affected"]
     
     #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+    
     
 
-    def update_user_json(species_before, species_after):
-        data = json.loads(species_before)
-        new_keys_data = json.loads(species_after)
-
-        for key, value in new_keys_data["0"].items():
-            if key in data:
-                data[key][str(species_index)] = value
-        return data
+    
 
 
     if datesubmitted:
+        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+        def update_user_json(species_before, species_after):
+            data = json.loads(species_before)
+            new_keys_data = json.loads(species_after)
+
+            for key, value in new_keys_data["0"].items():
+                if key in data:
+                    data[key][str(species_index)] = value
+            return data
 
 
         new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
@@ -522,105 +524,105 @@ def information_addition_review():
 
                             new_info_tab3.write("***")
             
-    #-------------------------------------------------------------user info display--------------------------------------------------------------------#
-    with new_info_tab5:
+        #-------------------------------------------------------------user info display--------------------------------------------------------------------#
+        with new_info_tab5:
 
-        for database in databases:
-                if database["key"]==datesubmitted:
-                    author=database["Edited_By"]
-                    authorComment=database["User_Comment"]
-        for user in users:
-                if user["username"]==author:
-                    #tab2.write(((user["firstname"],user["surname"], user["key"])))
-                    first_name=user["firstname"]
-                    surname = user["surname"] 
-                    user_email= user["key"]
-                    user_name=user['username']
+            for database in databases:
+                    if database["key"]==datesubmitted:
+                        author=database["Edited_By"]
+                        authorComment=database["User_Comment"]
+            for user in users:
+                    if user["username"]==author:
+                        #tab2.write(((user["firstname"],user["surname"], user["key"])))
+                        first_name=user["firstname"]
+                        surname = user["surname"] 
+                        user_email= user["key"]
+                        user_name=user['username']
 
-    with new_info_tab5:
-        tab5_col1, tab5_col2 = st.columns(2)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
-        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
-        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
-        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
-        tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
+        with new_info_tab5:
+            tab5_col1, tab5_col2 = st.columns(2)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{first_name}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{surname}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_email}</em></p>', unsafe_allow_html=True)
+            tab5_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{user_name}</em></p>', unsafe_allow_html=True)
     
-    #-------------------------------------------------------------user comment display--------------------------------------------------------------------#
-    with new_info_tab6:
-        new_info_tab6.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Additional Comments: </strong></em></p>', unsafe_allow_html=True)
-        new_info_tab6.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
-  
-    st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+     #-------------------------------------------------------------user comment display--------------------------------------------------------------------#
+        with new_info_tab6:
+            new_info_tab6.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Additional Comments: </strong></em></p>', unsafe_allow_html=True)
+            new_info_tab6.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True)
+    
+        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
-    preview_updated_dataset=st.checkbox("**View updated dataset **")
+        preview_updated_dataset=st.checkbox("**View updated dataset **")
 
      #-------------------------------------------------------------preview dataset and decide --------------------------------------------------------------------#
     
-    #adding global methods temporarily from admin page for testing
-    #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
-    now=datetime.now()
-    version=now.strftime("%d.%m.%Y-%H.%M.%S")
-        
-    newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
-
-    def create_new_updated_dataset_google():
-            newDataset=updated_db
-            csv_bytes = io.StringIO()
-            newDataset.to_csv(csv_bytes, index=False)
-            csv_bytes = csv_bytes.getvalue().encode('utf-8')
-    
-            # upload bytes to Google Drive
-            file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-            file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
-    
-    def update_GABiP():
-            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
-            metaData.update(updates, datesubmitted)
-
-    def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
-       return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
-    
-    def reject_new_addition():
-            updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
-            metaData.update(updates, datesubmitted)
-
-    if preview_updated_dataset:
-        try:
-            updated_db=current.copy()
-            updated_json=json.dumps(update_user_json(species_before, species_after))
-            updated_row=pd.read_json(updated_json)
-            updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
-            preview_new=True
-        except:
-            st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
-            preview_new=False
-
-        if preview_new:
+        #adding global methods temporarily from admin page for testing
+        #add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+        now=datetime.now()
+        version=now.strftime("%d.%m.%Y-%H.%M.%S")
             
-             st.dataframe(updated_db)
-             pre_col1, pre_col2, pre_col3=st.columns(3)
-             accept_information=pre_col1.button("Approve Addition")
-             reject_information=pre_col3.button("Deny Addition")
-             reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+        newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-             if accept_information:
-                    create_new_updated_dataset_google() #<-------- working
-                    update_GABiP()
-                    
-                    add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
-                    pre_col1.write("GABiP updated!")
-             if reject_information and reject_new_info_reason:
-                        reject_new_addition()
-                        pre_col3.write("Reason sent to user")
-             elif reject_information:
-                    pre_col3.warning("Please add a reason for rejection for user to review")
+        def create_new_updated_dataset_google():
+                newDataset=updated_db
+                csv_bytes = io.StringIO()
+                newDataset.to_csv(csv_bytes, index=False)
+                csv_bytes = csv_bytes.getvalue().encode('utf-8')
+        
+                # upload bytes to Google Drive
+                file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+                media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    
+        def update_GABiP():
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                metaData.update(updates, datesubmitted)
+
+        def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
+         return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
+        
+        def reject_new_addition():
+                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+                metaData.update(updates, datesubmitted)
+
+        if preview_updated_dataset:
+            try:
+                updated_db=current.copy()
+                updated_json=json.dumps(update_user_json(species_before, species_after))
+                updated_row=pd.read_json(updated_json)
+                updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
+                preview_new=True
+            except:
+                st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
+                preview_new=False
+
+            if preview_new:
+                
+                st.dataframe(updated_db)
+                pre_col1, pre_col2, pre_col3=st.columns(3)
+                accept_information=pre_col1.button("Approve Addition")
+                reject_information=pre_col3.button("Deny Addition")
+                reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+
+                if accept_information:
+                        create_new_updated_dataset_google() #<-------- working
+                        update_GABiP()
+                        
+                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                        pre_col1.write("GABiP updated!")
+                if reject_information and reject_new_info_reason:
+                            reject_new_addition()
+                            pre_col3.write("Reason sent to user")
+                elif reject_information:
+                        pre_col3.warning("Please add a reason for rejection for user to review")
 
 #-----------------------------------------------------------------------NEW INFORMATION EDIT DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
 def information_edit_review():
@@ -1144,20 +1146,22 @@ def welcome_screen():
     
 #-----------------------------------------------------------------------------------EDIT REQUEST OPTIONS SCREEN-------------------------------------------------------------------------------------------------------#
 def admin_edit_options():
-    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Information', 'Species Edit Requests', 'Information Removal Requests', "Species Removal Requests" ), key='admin_current_option')
+    options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Data', 'Species Edit Requests', 'Data Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
+        st.write(latest_id)
+        st.write(latest_approved_ds)
         st.write(current)
         #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
         
 
     if options == "New Species Entry":
         new_species_review()
-    if options== "New Species Information":
+    if options== "New Species Data":
         information_addition_review()
     if options== "Species Edit Requests":
          information_edit_review()
-    if options == "Information Removal Requests":
+    if options == "Data Removal Requests":
          st.write("Not yet coded")
     if options == "Species Removal Requests":
          remove_species_admin()
