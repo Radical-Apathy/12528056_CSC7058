@@ -249,7 +249,7 @@ def add_species_information():
        
         uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
         if uploaded_image is not None:
-            col1.write("**Image preview**")
+            col1.write("**Image preview - click submit if satisfied**")
             col1.image(uploaded_image)
 
         submit_image=col1.button("Submit image")
@@ -372,6 +372,9 @@ def add_species_information():
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
     get_missing_info_columns(species_results)
+
+    image_ids=st.session_state['image_ids']
+    st.write(len(image_ids))
     show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
     if show_missing_info:
@@ -381,41 +384,86 @@ def add_species_information():
 
     results_updated=update_missing_results(show_missing_info)
 
-    show_results=st.checkbox("Show updates")
+    # show_results=st.checkbox("Show updates")
  
-    compared=species_results.iloc[0].equals(results_updated.iloc[0])
+    # compared=species_results.iloc[0].equals(results_updated.iloc[0])
 
-    if show_results and compared:
-        st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-    elif show_results and len(show_missing_info) != len(user_missing_info):
-        st.warning("**Please ensure values are added for each field selected**")
-    elif show_results and not compared: 
-        comparecol1,comparecol2, comparecol3=st.columns(3)
-        comparecol1.write("**Original Species**")
-        comparecol1.dataframe(species_results.iloc[0], width=300)
-        comparecol3.write("**Updated Species Info**")
-        comparecol3.dataframe(results_updated.iloc[0], width=300)
+    # if show_results and compared:
+    #     st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
+    # elif show_results and len(show_missing_info) != len(user_missing_info):
+    #     st.warning("**Please ensure values are added for each field selected**")
+    # elif show_results and not compared: 
+    #     comparecol1,comparecol2, comparecol3=st.columns(3)
+    #     comparecol1.write("**Original Species**")
+    #     comparecol1.dataframe(species_results.iloc[0], width=300)
+    #     comparecol3.write("**Updated Species Info**")
+    #     comparecol3.dataframe(results_updated.iloc[0], width=300)
     
     sourcecol1,sourcecol2,sourcecol3=st.columns(3)
     sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
     sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    if len(image_ids) >0:
+        image_source=st.text_input("Image(s) Source")
     create_source_fields(show_missing_info)
+    
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
-    source_summary=sourcesum2.button("Review Sources Summary")
+    source_summary=sourcesum2.checkbox("Review Addition and Submit for review")
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
-    if source_summary:
+    #source_tab1, source_tab2=st.tabs(2)
+    #st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+    preview_sucess=False
+
     
+
+    if source_summary and len(image_ids)!=0:
+        source_tab1, source_tab2, source_tab3=st.tabs(["Field Sources", "Image Sources", "Updated Info"])
+        
+        
+
+        if not additional_info_sources:
+
+         st.warning("Please ensure sources are provided for each information point")
+        else:
+            with source_tab1:
+                tab1_sumcol1,tab1_sumcol2,tab1_sumcol3=st.columns(3)
+                tab1_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+                tab1_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+                sources_parsed=json.loads(sources_review_json)
+                for key, value in sources_parsed.items():
+                    for inner_key, inner_value in value.items():
+                        tab1_sumcol1.markdown("***")
+                        tab1_sumcol1.markdown("**"+inner_key+"**")
+                        tab1_sumcol3.markdown("***")
+                        tab1_sumcol3.markdown("*"+inner_value+"*")
+            with source_tab2:
+                 tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
+                 tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
+                 source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
+                 for image_id in image_ids:
+                     tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_id}")
+                 tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Sources</strong></em></p>', unsafe_allow_html=True)
+                 tab2_sumcol3.write(image_source)
+            preview_sucess=True
+            with source_tab3:
+                tab3_sumcol1,tab3_sumcol2,tab3_sumcol3=st.columns(3)
+                tab3_sumcol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Updated Results</strong></em></p>', unsafe_allow_html=True)
+                tab3_sumcol2.dataframe(results_updated.iloc[0], width=500)
+
+                     
+
+    if source_summary and len(image_ids)==0:
+        
         sumcol1,sumcol2,sumcol3=st.columns(3)
         if not additional_info_sources:
 
          st.warning("Please ensure sources are provided for each information point")
         else:
             
-            sumcol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
-            sumcol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+            sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
+            sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
             sources_parsed=json.loads(sources_review_json)
             for key, value in sources_parsed.items():
                 for inner_key, inner_value in value.items():
@@ -423,55 +471,59 @@ def add_species_information():
                     sumcol1.markdown("**"+inner_key+"**")
                     sumcol3.markdown("***")
                     sumcol3.markdown("*"+inner_value+"*")
-                    
+        preview_sucess=True
 
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
-    preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
+    # preview_updated_dataset=st.checkbox("**View updated dataset and submit**")
 
-    if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
-            st.warning("**Please ensure values are added for each field selected**")
-    preview_success= False
+    # if preview_updated_dataset and len(show_missing_info) != len(user_missing_info):
+    #         st.warning("**Please ensure values are added for each field selected**")
+    # preview_success= False
         
         
-    if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
-            st.warning("**Please ensure sources are added for each field selected**")
-    preview_success=False
+    # if  preview_updated_dataset and  len(show_missing_info) != len(additional_info_sources):
+    #         st.warning("**Please ensure sources are added for each field selected**")
+    # preview_success=False
 
-    if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
+    # if preview_updated_dataset and len(show_missing_info) == len(additional_info_sources) and len(show_missing_info) == len(user_missing_info) :
     
-        results_index=species_results.index[0]
-        updated_db=current.copy()
-        search_results_to_json=species_results.to_json(orient="columns")
-        try:
-            pd.DataFrame(user_missing_info, show_missing_info)
-            user_changes=pd.DataFrame(user_missing_info, show_missing_info)
-            user_changes_json=user_changes.to_json()    
-            updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
-            updated_row=pd.read_json(updated_json)
-            updated_db.loc[results_index] =(updated_row.loc[results_index])
-            st.dataframe(updated_db)
-            preview_success=True
-        except:
-            st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
-                #st.warning()
-        if preview_success:
-         user_comments = st.text_area("**Additional comments (optional)**", height=30)
-        
-        
-        commit_addition=st.button("Submit Addition")
+    #     results_index=species_results.index[0]
+    #     updated_db=current.copy()
+    #     search_results_to_json=species_results.to_json(orient="columns")
+    #     try:
+    #         pd.DataFrame(user_missing_info, show_missing_info)
+    #         user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+    #         user_changes_json=user_changes.to_json()    
+    #         updated_json=json.dumps(update_user_json(search_results_to_json, user_changes_json))
+    #         updated_row=pd.read_json(updated_json)
+    #         updated_db.loc[results_index] =(updated_row.loc[results_index])
+    #         st.dataframe(updated_db)
+    #         preview_success=True
+    #     except:
+    #         st.warning("**Please ensure all fields selected from the 'Add Missing Information' dropdown are filled in AND fields have correct data e.g. numerical data for SVLMx**")
+    #             #st.warning()
+    #     if preview_success:
+    #      user_comments = st.text_area("**Additional comments (optional)**", height=30)
+       
+    if preview_sucess:
+        prev_col1, prev_col2, prev_col3=st.columns(3) 
+        commit_addition=prev_col2.button("Submit Addition")
         
 
-        if user_comments=="":
-            user_comments="n/a"
         
         if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
-            add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], user_comments, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-            if 'image_ids' in st.session_state:
-             del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources):
-            st.markdown("Please check all fields selected and sources have been provided in order to submit")
+                user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+                user_changes_json=user_changes.to_json() 
+                search_results_to_json=species_results.to_json(orient="columns") 
+                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                if 'image_ids' in st.session_state:
+                 del st.session_state['image_ids']
+                
+                
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+        elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources) or len(user_missing_info)==0:
+                st.warning("Please check all fields selected and sources have been provided in order to submit")
 
 
 add_species_information()
