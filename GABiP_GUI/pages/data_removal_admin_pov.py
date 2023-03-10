@@ -354,13 +354,13 @@ def information_removal_review():
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
         #approved_user_images=get_all_user_images()
         for user_image in sorted(approved_user_images, key=lambda x: x["key"], reverse=True):
-            if user_image["Species"] == species_added_to and user_image["Genus"]==genus_added_to:
+          if user_image["Species"] == species_added_to and user_image["Genus"]==genus_added_to:
                 
                     new_info_tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Latest Approved User Image for {genus_added_to} {species_added_to}</em></p>', unsafe_allow_html=True)
                     new_info_tab3.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
                     new_info_tab3.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-           
-                     
+            
+        #image_count=len(user_images)              
 
         
     #-------------------------------------------------------------user info display--------------------------------------------------------------------#
