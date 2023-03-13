@@ -374,7 +374,7 @@ def add_species_information():
     get_missing_info_columns(species_results)
 
     image_ids=st.session_state['image_ids']
-    st.write(len(image_ids))
+    
     show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
 
     if show_missing_info:
