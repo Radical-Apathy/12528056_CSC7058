@@ -143,7 +143,7 @@ except Exception as error:
 
 
 
-
+#current=load_latest()
 
 pending_new_info=[]
 def get_pending_new_info():
@@ -294,7 +294,7 @@ def information_addition_review():
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
           
             if species_after=="image only":
-                tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+                #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
                 if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 else:
@@ -470,18 +470,41 @@ def information_addition_review():
                 updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
-        if preview_updated_dataset:
-            try:
-                updated_db=current.copy()
-                updated_json=json.dumps(update_user_json(species_before, species_after))
-                updated_row=pd.read_json(updated_json)
-                updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
-                preview_new=True
-            except:
-                st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
-                preview_new=False
-
+        if preview_updated_dataset and species_before=="image only":
+            st.write(species_added_to)
+            preview_new=True
             if preview_new:
+                
+                # st.dataframe(updated_db)
+                pre_col1, pre_col2, pre_col3=st.columns(3)
+                accept_information=pre_col1.button("Approve Image")
+                reject_information=pre_col3.button("Deny Image")
+                reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+
+                if accept_information:
+                        #create_new_updated_dataset_google() #<-------- working
+                        update_GABiP()
+                        
+                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                        pre_col1.write("Image Added")
+                if reject_information and reject_new_info_reason:
+                            reject_new_addition()
+                            pre_col3.write("Reason sent to user")
+                elif reject_information:
+                        pre_col3.warning("Please add a reason for rejection for user to review")
+
+        elif preview_updated_dataset and species_before!="image only":
+                
+                updated_db=current.copy()
+                try:
+                    
+                    updated_json=json.dumps(update_user_json(species_before, species_after))
+                    updated_row=pd.read_json(updated_json)
+                    updated_db.loc[int(species_index)] =(updated_row.loc[int(species_index)])
+                    preview_new=True
+                except:
+                 st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
+                 preview_new=False
                 
                 st.dataframe(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
