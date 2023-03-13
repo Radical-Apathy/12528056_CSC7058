@@ -175,7 +175,7 @@ def get_all_user_images():
     return res.items
 
 approved_user_images=get_all_user_images()
-#------------------------------------------------------------MAIN INFORMATION REMOVAL PAGE---------------------------------------------------------------------------------------#
+#------------------------------------------------------------MAIN INFORMATION ADDITION PAGE---------------------------------------------------------------------------------------#
 def information_addition_review():
     def add_new_info_bg():
        st.markdown(
@@ -240,9 +240,12 @@ def information_addition_review():
                     species_after=database["Changes"]
                     user_images=database["User_Images"]
         
-        before_jsonn=json.loads(species_before)
-        species_index = list(before_jsonn['Order'].keys())[0]
-        changes_parsed=json.loads(species_after)
+        if species_before=="image only":
+             before_jsonn="image only"
+        else:
+             before_jsonn=json.loads(species_before)
+             species_index = list(before_jsonn['Order'].keys())[0]
+             changes_parsed=json.loads(species_after)
         
         def list_fields():
             
@@ -256,7 +259,11 @@ def information_addition_review():
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
-        list_fields()
+        if species_after=="image only":
+             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only submitted</em></p>', unsafe_allow_html=True)
+
+        else:
+             list_fields()
         tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
         tab1_col2.write(f"{image_count} images have been added")
         #updated_species_json=json.dumps(update_user_json(species_before, species_after))
@@ -272,61 +279,86 @@ def information_addition_review():
         for database in databases:
                 if database["key"]==datesubmitted:
                     user_sources=database["User_Sources"]
+
+        user_approved_images=[]          
+        for approved_image in  sorted (approved_user_images, key=lambda x: x["key"], reverse=True):
+                    if approved_image["Species"] == species_added_to and approved_image["Genus"]==genus_added_to:
+                        if approved_image['Images']:
+                            user_approved_images.append(approved_image['Images'])
+                            
+
         
         with new_info_tab2:
             tab2_col1, tab2_col2, tab2_col3, tab2_col4 = st.columns(4)
             
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
-            new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
-
-            sources_parsed=json.loads(user_sources)
-            changes_parsed=json.loads(species_after)
-            original_parsed=json.loads(species_before)
-            
-            species_index = list(before_jsonn['Order'].keys())[0]
-            
-               
-            def get_current_values(species_after, species_before):
-              changed_fields_current_data = json.loads(species_after)
-              current_data = json.loads(species_before)
-
-              for key in changed_fields_current_data["0"].keys():
-                    if key in current_data:
-                        changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
-              return json.dumps(changed_fields_current_data)
-                       
-            
-                
-
-            changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
-        
           
-            source_rows=[]
-            source_values=[]
-            new_values=[]
-            current_values=[]
+            if species_after=="image only":
+                tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+                if len(user_approved_images)==0:
+                     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+                else:
+                         
+                    for image in range(len(user_approved_images)):
+                            st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+                
+            else:
+                    new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
+                    sources_parsed=json.loads(user_sources)
+                    changes_parsed=json.loads(species_after)
+                    original_parsed=json.loads(species_before)
+                    
+                    species_index = list(before_jsonn['Order'].keys())[0]
+                
+                    
+                    def get_current_values(species_after, species_before):
+                     changed_fields_current_data = json.loads(species_after)
+                     current_data = json.loads(species_before)
 
-            for key, value in sources_parsed.items():
-                for inner_key, inner_value in value.items():
-                     source_row=inner_key
-                     source_rows.append(source_row)
-                     source_value=inner_value
-                     source_values.append(source_value)
-            
-            for key, value in changes_parsed.items():
-                 for inner_key, inner_value in value.items():
-                     new_value=inner_value
-                     new_values.append(new_value)
+                     for key in changed_fields_current_data["0"].keys():
+                            if key in current_data:
+                                changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
+                     return json.dumps(changed_fields_current_data)
+                        
+                
+                    
 
-            for key, value in changed_fields_current_data.items():
-                 for inner_key, inner_value in value.items():
-                     current_value=inner_value
-                     current_values.append(current_value)
-            
-            df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
-            
+                    changed_fields_current_data=json.loads(get_current_values(species_after, species_before))
+                
+                
+                    source_rows=[]
+                    source_values=[]
+                    new_values=[]
+                    current_values=[]
 
-            st.dataframe(df)
+                    for key, value in sources_parsed.items():
+                        for inner_key, inner_value in value.items():
+                            source_row=inner_key
+                            source_rows.append(source_row)
+                            source_value=inner_value
+                            source_values.append(source_value)
+                    
+                    for key, value in changes_parsed.items():
+                        for inner_key, inner_value in value.items():
+                            new_value=inner_value
+                            new_values.append(new_value)
+
+                    for key, value in changed_fields_current_data.items():
+                        for inner_key, inner_value in value.items():
+                            current_value=inner_value
+                            current_values.append(current_value)
+                    
+                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    
+                    # tab2_col1.image(f"https://drive.google.com/uc?id={approved_image['Images'][0]}")
+                    st.dataframe(df)
+                   
+                    if len(user_approved_images)==0:
+                     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+                    else:
+                        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+                        for image in range(len(user_approved_images)):
+                         st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
             
 
                     
@@ -349,6 +381,8 @@ def information_addition_review():
             
             
         else:
+            
+            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
             results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
              
@@ -466,3 +500,5 @@ def information_addition_review():
                             pre_col3.write("Reason sent to user")
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
+
+information_addition_review()
