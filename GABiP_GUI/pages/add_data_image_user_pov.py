@@ -384,21 +384,6 @@ def add_species_information():
 
     results_updated=update_missing_results(show_missing_info)
 
-    # show_results=st.checkbox("Show updates")
- 
-    # compared=species_results.iloc[0].equals(results_updated.iloc[0])
-
-    # if show_results and compared:
-    #     st.warning("**No information has been changed. Please select at lease one option from Add Missing Information dropdown**")
-    # elif show_results and len(show_missing_info) != len(user_missing_info):
-    #     st.warning("**Please ensure values are added for each field selected**")
-    # elif show_results and not compared: 
-    #     comparecol1,comparecol2, comparecol3=st.columns(3)
-    #     comparecol1.write("**Original Species**")
-    #     comparecol1.dataframe(species_results.iloc[0], width=300)
-    #     comparecol3.write("**Updated Species Info**")
-    #     comparecol3.dataframe(results_updated.iloc[0], width=300)
-    
     sourcecol1,sourcecol2,sourcecol3=st.columns(3)
     sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
@@ -418,10 +403,11 @@ def add_species_information():
     only_image=False
 
     if source_summary and len(image_ids)!=0 and not additional_info_sources:
-       
+        
         for image_id in image_ids:
                 st.image(f"https://drive.google.com/uc?id={image_id}")
         only_image=True
+        preview_sucess=True
 
     elif source_summary and len(image_ids)!=0:
         source_tab1, source_tab2, source_tab3=st.tabs(["Field Sources", "Image Sources", "Updated Info"])
