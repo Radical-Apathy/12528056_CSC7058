@@ -202,14 +202,23 @@ def information_edit_review():
     add_new_info_bg()
     #current=load_latest()
     
-    
+    def get_pending_edit_info():
+      for database in databases:
+        
+             if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
+                
+              pending_edit_info.append(database["key"])
 
+    get_pending_edit_info()
 
-
-    st.write("**Information Addition in order of date submitted**")
+    new_edit_submissions=sorted(pending_edit_info,reverse=True)
+    #current=load_latest()
+    st.write("New species edits in order of date submitted")
     datesubmitted = st.selectbox(
-        'Date submitted',
-        (new_info_submissions))
+    'Date submitted',
+    (new_edit_submissions))
+
+    
     
     for database in databases:
                 if database["key"]==datesubmitted:
@@ -244,8 +253,8 @@ def information_edit_review():
                     species_after=database["Changes"]
                     user_images=database["User_Images"]
         
-        if species_before=="image only":
-             before_jsonn="image only"
+        if species_before=="image only edit":
+             before_jsonn="image only edit"
         else:
              before_jsonn=json.loads(species_before)
              species_index = list(before_jsonn['Order'].keys())[0]
@@ -263,8 +272,8 @@ def information_edit_review():
         with new_info_tab1:
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
-        if species_after=="image only":
-             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only submitted</em></p>', unsafe_allow_html=True)
+        if species_after=="image only edit":
+             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only editted</em></p>', unsafe_allow_html=True)
 
         else:
              list_fields()
@@ -293,14 +302,15 @@ def information_edit_review():
             
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
           
-            if species_after=="image only":
-                #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+            if species_after=="image only edit":
+                tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Current Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 else:
                          
                     for image in range(len(user_approved_images)):
                             st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+                            break
                 
             else:
                     new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
@@ -359,6 +369,7 @@ def information_edit_review():
                         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
                         for image in range(len(user_approved_images)):
                          st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+                         break
             
 
                     
@@ -472,7 +483,7 @@ def information_edit_review():
                 updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
-        if preview_updated_dataset and species_before=="image only":
+        if preview_updated_dataset and species_before=="image only edit":
             st.write(species_added_to)
             preview_new=True
             if preview_new:

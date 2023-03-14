@@ -462,6 +462,7 @@ def information_addition_review():
                          
                     for image in range(len(user_approved_images)):
                             st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+                            break
                 
             else:
                     new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
@@ -520,6 +521,7 @@ def information_addition_review():
                         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
                         for image in range(len(user_approved_images)):
                          st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+                         break
             
 
                     
