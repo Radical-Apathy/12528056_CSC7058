@@ -300,26 +300,10 @@ def edit_species_information():
         else:
             return None
 
-    # def update_user_json(original_results_json, user_df_json):
-    #     data = json.loads(original_results_json)
-    #     new_keys_data = json.loads(user_df_json)
-
-    #     for key, value in new_keys_data["0"].items():
-    #         if key in data:
-    #             data[key][str(results_index)] = value
-    #     return data
-   
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
     
-
-
-
-
-
-
-
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -334,7 +318,7 @@ def edit_species_information():
 
     additional_info_sources=[]
 
-    species_dropdown=st.selectbox("Select a species to add to: ", (species_alphabetical))
+    species_dropdown=st.selectbox("Select a species to edit: ", (species_alphabetical))
 
     species_genus=current.loc[current["Species"]==species_dropdown]
 
@@ -510,3 +494,4 @@ def edit_species_information():
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
 
+edit_species_information()
