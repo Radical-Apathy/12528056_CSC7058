@@ -239,6 +239,42 @@ def edit_species_information():
     now = datetime.now()
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
     image_id=[]
+    now = datetime.now()
+    image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
+    image_id=[]
+
+    def change_image():
+        if 'image_ids' in st.session_state:
+            image_ids = st.session_state['image_ids']
+        else:
+            image_ids = []
+
+       
+        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
+        if uploaded_image is not None:
+            col1.write("**Image preview**")
+            col1.image(uploaded_image)
+
+        submit_image=col1.button("Change image")
+        if submit_image and uploaded_image:
+            bytes_data = uploaded_image.getvalue()
+            try:
+                file_metadata = {
+                    'name': uploaded_image.name,
+                    'parents': [image_folder_id],
+                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
+                }
+                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
+                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+                image_id = file.get('id')
+
+                st.success(f'Image uploaded! You can choose to upload more')
+                image_ids.append(image_id)
+                st.session_state['image_ids'] = image_ids
+
+                uploaded_image = None
+            except:
+                st.error("Please try again. Be sure to check your file type is in the correct format")
 
     
     def check_user_image(species_dropdown, genus_dropdown):
@@ -249,10 +285,12 @@ def edit_species_information():
                 col1.write("Image")
                 col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
                 col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                image_found=True  
+                image_found=True 
+                change_image() 
             break
      if not image_found: 
       col1.markdown("**No Images Available**")
+      
       
 
     def link_image(results):
@@ -338,9 +376,9 @@ def edit_species_information():
     results_updated=update_missing_results(show_existing_info)
 
     sourcecol1,sourcecol2,sourcecol3=st.columns(3)
-    sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
-    sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    sourcecol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    sourcecol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
+    sourcecol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     if len(image_ids) >0:
         image_source=st.text_input("Image(s) Source")
     create_source_fields(show_existing_info)
@@ -436,9 +474,9 @@ def edit_species_information():
     
     if preview_sucess and only_image:
         image_col1,image_col2,image_col3=st.columns(3)
-        image_only=image_col2.button("Submit image only")
+        image_only=image_col2.button("Change image only")
         if image_only:
-            add_to_database(str(now), "image only", "image only", "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+            add_to_database(str(now), "image only edit", "image only edit", " Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
                 del st.session_state['image_ids']
             st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)

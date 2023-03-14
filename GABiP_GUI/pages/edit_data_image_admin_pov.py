@@ -177,6 +177,8 @@ def get_all_user_images():
     return res.items
 
 approved_user_images=get_all_user_images()
+
+
 #------------------------------------------------------------MAIN INFORMATION ADDITION PAGE---------------------------------------------------------------------------------------#
 def information_addition_review():
     def add_new_info_bg():
@@ -204,15 +206,27 @@ def information_addition_review():
 
 
 
-    st.write("**Information Addition in order of date submitted**")
+    def get_pending_edit_info():
+      for database in databases:
+        
+             if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
+                
+              pending_edit_info.append(database["key"])
+
+    get_pending_edit_info()
+
+    new_edit_submissions=sorted(pending_edit_info,reverse=True)
+    #current=load_latest()
+    st.write("New species edits in order of date submitted")
     datesubmitted = st.selectbox(
-        'Date submitted',
-        (new_info_submissions))
+    'Date submitted',
+    (new_edit_submissions))
     
-    for database in databases:
-                if database["key"]==datesubmitted:
-                    genus_added_to=database["Genus_Affected"]
-                    species_added_to=database["Species_Affected"]
+
+
+    
+       
+    
     
     #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
     
@@ -222,6 +236,12 @@ def information_addition_review():
 
 
     if datesubmitted:
+        for database in databases:
+             
+            if database["key"]==datesubmitted:
+                    genus_added_to=database["Genus_Affected"]
+                    species_added_to=database["Species_Affected"]
+
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
         def update_user_json(species_before, species_after):
             data = json.loads(species_before)
@@ -262,7 +282,7 @@ def information_addition_review():
             tab1_col1, tab1_col2=st.columns(2)
         tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
         if species_after=="image only":
-             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only submitted</em></p>', unsafe_allow_html=True)
+             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only edited</em></p>', unsafe_allow_html=True)
 
         else:
              list_fields()
@@ -470,7 +490,7 @@ def information_addition_review():
                 updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
-        if preview_updated_dataset and species_before=="image only":
+        if preview_updated_dataset and species_before=="image only edit":
             st.write(species_added_to)
             preview_new=True
             if preview_new:
