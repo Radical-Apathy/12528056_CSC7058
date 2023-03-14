@@ -213,25 +213,26 @@ def edit_species_information():
         )
 
     add_bg_from_url()
-    missingInfoColumns = []
-    def get_missing_info_columns(results):
+
+    existing_info_columns = []
+    def get_existing_info_columns(results):
         for column in dbColumns:
-            if results[column].isna().any():
-                missingInfoColumns.append(results[column].name)
-        return missingInfoColumns
+            if  not results[column].isna().any():
+                existing_info_columns.append(results[column].name)
+        return existing_info_columns
 
     user_missing_info = []
     def get_missing_userinfo():
-        for option in show_missing_info:
+        for option in show_existing_info:
             userText = st.text_input(option, key=option)
             if userText:
                 user_missing_info.append(st.session_state[option])
         return user_missing_info
 
-    def update_missing_results(show_missing_info):
+    def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
-        for column in show_missing_info:
+        for column in show_existing_info:
             results_updated.at[speciesIndex, column] = st.session_state[column]
         return results_updated
 
@@ -298,11 +299,11 @@ def edit_species_information():
 
     source_fields=[]
     summary_dataframe=[]
-    def create_source_fields(show_missing_info):
-       for option in show_missing_info:
+    def create_source_fields(show_existing_info):
+       for option in show_existing_info:
                user_source=st.text_input("Please enter a source for "+option, key=option+" source")
     
-       for option in show_missing_info:
+       for option in show_existing_info:
            if user_source and user_source!="":
                st.session_state[option+" source"]==user_source
                additional_info_sources.append(st.session_state[option+" source"])
@@ -322,18 +323,19 @@ def edit_species_information():
 
     col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
-    get_missing_info_columns(species_results)
+    get_existing_info_columns(species_results)
 
     image_ids=st.session_state['image_ids']
     
-    show_missing_info=st.multiselect("Add Missing Information", missingInfoColumns)
+    show_existing_info=st.multiselect("Edit Current Information", existing_info_columns)
 
-    if show_missing_info:
+
+    if show_existing_info:
         get_missing_userinfo()
 
     results_copy=species_results.copy()
 
-    results_updated=update_missing_results(show_missing_info)
+    results_updated=update_missing_results(show_existing_info)
 
     sourcecol1,sourcecol2,sourcecol3=st.columns(3)
     sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
@@ -341,12 +343,12 @@ def edit_species_information():
     sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     if len(image_ids) >0:
         image_source=st.text_input("Image(s) Source")
-    create_source_fields(show_missing_info)
+    create_source_fields(show_existing_info)
     
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
     source_summary=sourcesum2.checkbox("Review Addition and Submit for review")
-    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
+    sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     #source_tab1, source_tab2=st.tabs(2)
     #st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
@@ -448,8 +450,8 @@ def edit_species_information():
         
 
         
-        if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
-                user_changes=pd.DataFrame(user_missing_info, show_missing_info)
+        if commit_addition and len(show_existing_info) == len(user_missing_info) and len(show_existing_info) == len(additional_info_sources) :
+                user_changes=pd.DataFrame(user_missing_info, show_existing_info)
                 user_changes_json=user_changes.to_json() 
                 search_results_to_json=species_results.to_json(orient="columns") 
                 add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
@@ -458,7 +460,7 @@ def edit_species_information():
                 
                 
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources) or len(user_missing_info)==0:
+        elif commit_addition and len(show_existing_info) != len(user_missing_info) or len(show_existing_info) != len(additional_info_sources) or len(user_missing_info)==0:
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
 
