@@ -217,42 +217,7 @@ def edit_species_information():
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
     image_id=[]
     #current image linking methods
-    def upload_image():
-            if 'image_ids' in st.session_state:
-                image_ids = st.session_state['image_ids']
-            else:
-                image_ids = []
-
-            #col1.markdown("**No images available**")
-            uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-            if uploaded_image is not None:
-                col1.write("**Image preview**")
-                col1.image(uploaded_image)
-
-            submit_image=col1.button("Submit image")
-            if submit_image and uploaded_image:
-                bytes_data = uploaded_image.getvalue()
-                try:
-                    file_metadata = {
-                        'name': uploaded_image.name,
-                        'parents': [image_folder_id],
-                        'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-                    }
-                    media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-                    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-                    image_id = file.get('id')
-
-                    st.success(f'Image uploaded! You can choose to upload more')
-                    image_ids.append(image_id)
-                    st.session_state['image_ids'] = image_ids
-
-                    uploaded_image = None
-                except:
-                    st.error("Please try again. Be sure to check your file type is in the correct format")
-
-
-
-
+    
 
     existing_info_columns = []
     def get_missing_info_columns(results):
@@ -280,39 +245,7 @@ def edit_species_information():
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
     image_id=[]
 
-    def upload_image():
-        if 'image_ids' in st.session_state:
-            image_ids = st.session_state['image_ids']
-        else:
-            image_ids = []
-
-       
-        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-        if uploaded_image is not None:
-            col1.write("**Image preview**")
-            col1.image(uploaded_image)
-
-        submit_image=col1.button("Submit image")
-        if submit_image and uploaded_image:
-            bytes_data = uploaded_image.getvalue()
-            try:
-                file_metadata = {
-                    'name': uploaded_image.name,
-                    'parents': [image_folder_id],
-                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-                }
-                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-                image_id = file.get('id')
-
-                st.success(f'Image uploaded! You can choose to upload more')
-                image_ids.append(image_id)
-                st.session_state['image_ids'] = image_ids
-
-                uploaded_image = None
-            except:
-                st.error("Please try again. Be sure to check your file type is in the correct format")
-
+    
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -325,7 +258,7 @@ def edit_species_information():
             break
      if not image_found: 
       col1.write("No Images Available")
-      upload_image()
+      
 
     def link_image(results):
      merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -352,7 +285,7 @@ def edit_species_information():
    
    #-----------------------------------------------------------------EDIT SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
+    headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
     #current=load_latest()
     dbColumns=current.columns
     create_session_states(dbColumns)
