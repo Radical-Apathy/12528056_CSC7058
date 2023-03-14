@@ -313,7 +313,7 @@ def information_edit_review():
                             break
                 
             else:
-                    new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
+                    #new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
                     sources_parsed=json.loads(user_sources)
                     changes_parsed=json.loads(species_after)
                     original_parsed=json.loads(species_before)

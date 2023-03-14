@@ -385,7 +385,7 @@ def edit_species_information():
     
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
-    source_summary=sourcesum2.checkbox("Review Addition and Submit for review")
+    source_summary=sourcesum2.checkbox("Review Edit and Submit for review")
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     #source_tab1, source_tab2=st.tabs(2)
