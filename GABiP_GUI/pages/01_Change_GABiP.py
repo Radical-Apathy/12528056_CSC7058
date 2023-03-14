@@ -743,7 +743,7 @@ def edit_species_information():
             col1.write("**Image preview**")
             col1.image(uploaded_image)
 
-        submit_image=col1.button("Change image")
+        submit_image=col1.button("Submit Image for Review")
         if submit_image and uploaded_image:
             bytes_data = uploaded_image.getvalue()
             try:
@@ -786,7 +786,9 @@ def edit_species_information():
      if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
          check_user_image(species_dropdown, genus_dropdown)
      elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+         col1.write("Image from amphibiaweb.org")
          return merged_image_df["Display Image"].iloc[0]
+         
         
     def link_embedded_image(results):
         embedded_image_df= pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
