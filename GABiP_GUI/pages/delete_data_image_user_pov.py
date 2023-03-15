@@ -194,13 +194,13 @@ dfImages = load_images()
 #--------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-def edit_species_information():
+def remove_species_data():
     def add_bg_from_url():
         st.markdown(
             f"""
             <style>
             .stApp {{
-                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg");
                 background-attachment: fixed;
                 background-size: cover;
                 background-position: 60.00% 64.97% ;
@@ -221,19 +221,27 @@ def edit_species_information():
                 existing_info_columns.append(results[column].name)
         return existing_info_columns
 
-    user_missing_info = []
-    def get_missing_userinfo():
-        for option in show_existing_info:
-            userText = st.text_input(option, key=option)
-            if userText:
-                user_missing_info.append(st.session_state[option])
-        return user_missing_info
+    user_removal_info = []
+    def get_remove_info():
+       for option in show_existing_info:
+        if st.session_state.get(option) is None:
+            user_removal_info.append(option)
+            st.session_state[option] = None
+        return user_removal_info
+       
+    
+    
+
+
+    def convert_fields_to_none(show_existing_info):
+        user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
+        return json.dumps(user_changes_json)
 
     def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
         for column in show_existing_info:
-            results_updated.at[speciesIndex, column] = st.session_state[column]
+            results_updated.at[speciesIndex, column] = None
         return results_updated
 
     now = datetime.now()
@@ -276,7 +284,15 @@ def edit_species_information():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
-    
+
+    def remove_image():
+        remove_image=col1.button("Remove Image")
+        if remove_image:
+            col1.markdown("Image removal request submitted")
+            col1.write(image_key[0])
+        
+
+    image_key=[]
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -285,8 +301,10 @@ def edit_species_information():
                 col1.write("Image")
                 col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
                 col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                image_found=True 
-                change_image() 
+                image_found=True
+                image_key.append(user_image['key'])
+                remove_image()
+                return image_key 
             break
      if not image_found: 
       col1.markdown("**No Images Available**")
@@ -339,7 +357,7 @@ def edit_species_information():
     summary_dataframe=[]
     def create_source_fields(show_existing_info):
        for option in show_existing_info:
-               user_source=st.text_input("Please enter a source for "+option, key=option+" source")
+               user_source=st.text_input("Please enter a reason for removing "+option, key=option+" source")
     
        for option in show_existing_info:
            if user_source and user_source!="":
@@ -365,11 +383,11 @@ def edit_species_information():
 
     image_ids=st.session_state['image_ids']
     
-    show_existing_info=st.multiselect("Edit Current Information", existing_info_columns)
+    show_existing_info=st.multiselect("Select Information to Remove", existing_info_columns)
 
 
-    if show_existing_info:
-        get_missing_userinfo()
+   # if show_existing_info:
+    #    get_missing_userinfo()
 
     results_copy=species_results.copy()
 
@@ -402,7 +420,7 @@ def edit_species_information():
 
     elif source_summary and len(image_ids)!=0:
         source_tab1, source_tab2, source_tab3=st.tabs(["Field Sources", "Image Sources", "Updated Info"])
-        
+        st.write(image_key)
         
 
         if not additional_info_sources:
@@ -488,8 +506,8 @@ def edit_species_information():
         
 
         
-        if commit_addition and len(show_existing_info) == len(user_missing_info) and len(show_existing_info) == len(additional_info_sources) :
-                user_changes=pd.DataFrame(user_missing_info, show_existing_info)
+        if commit_addition and len(show_existing_info) and len(show_existing_info) == len(additional_info_sources) :
+                user_changes=(convert_fields_to_none(show_existing_info))
                 user_changes_json=user_changes.to_json() 
                 search_results_to_json=species_results.to_json(orient="columns") 
                 add_to_database(str(now), user_changes_json, search_results_to_json, "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
@@ -498,8 +516,8 @@ def edit_species_information():
                 
                 
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        elif commit_addition and len(show_existing_info) != len(user_missing_info) or len(show_existing_info) != len(additional_info_sources) or len(user_missing_info)==0:
+        elif commit_addition and len(show_existing_info)  or len(show_existing_info) != len(additional_info_sources):
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
 
-edit_species_information()
+remove_species_data()

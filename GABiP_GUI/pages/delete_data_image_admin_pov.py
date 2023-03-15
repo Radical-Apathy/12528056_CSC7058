@@ -186,7 +186,7 @@ def information_edit_review():
             f"""
             <style>
             .stApp {{
-                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/1933861474.jpg");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg");
                 background-attachment: fixed;
                 background-size: cover;
                 background-position: center;
