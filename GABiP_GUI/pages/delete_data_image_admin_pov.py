@@ -390,11 +390,27 @@ def data_removal_review():
         def get_all_species_images():          
             for approved_image in  sorted (approved_user_images, key=lambda x: x["key"], reverse=True):
                     if approved_image["Species"] == species_added_to and approved_image["Genus"]==genus_added_to:
-                       # if approved_image['Images']:
-                            #tab3_col1.write(approved_image['Images'])
-                    #return user_approved_images
+                       
                      user_approved_images.append(approved_image['Images'])
-                    #return user_approved_images
+            return user_approved_images
+        
+
+        def check_all_species_images(image_key):              
+            found = False
+            for array in user_approved_images:
+                for value in array:
+                    if value == image_key:
+                        tab3_col1.write("Image still exists in database")
+                        found = True
+                        break
+                else:
+                    continue
+                break
+            if not found:
+                tab3_col1.write("Image not found in database")
+
+           
+
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
         with new_info_tab3:
@@ -413,8 +429,11 @@ def data_removal_review():
             tab3_col1.image(f"https://drive.google.com/uc?id={image_key[1]}")
             accept_image = tab3_col1.checkbox(f"Approve image removal")
             reject_image = tab3_col1.checkbox(f"Deny image removal")
+            tab3_col1.write(image_key[1])
             get_all_species_images()
             tab3_col1.write(user_approved_images)
+            tab3_col1.write("Checking db for image to remove")
+            check_all_species_images("1tjIhvWZjOTnmjDNo1qIJdoSiVjVROayS")
             
 
             # if accept_image and reject_image:
