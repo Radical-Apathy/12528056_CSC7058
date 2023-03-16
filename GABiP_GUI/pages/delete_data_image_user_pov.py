@@ -16,6 +16,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
+import sys
 
 
 
@@ -106,8 +107,12 @@ def load_latest():
 
 pending_edit_info=[]
 
-
-current=load_latest()
+try:
+    current=load_latest()
+except:
+     
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+    sys.exit()
 
 def get_pending_edit_info():
     for database in databases:
@@ -497,11 +502,13 @@ def remove_species_data():
         image_col1,image_col2,image_col3=st.columns(3)
         image_only=image_col2.button("Remove image only")
         if image_only:
-            add_to_database(str(now), "image only edit", "image only delete", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
-            if 'image_ids' in st.session_state:
-                del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-
+            try:
+                add_to_database(str(now), "image only delete", "image only delete", "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
+                if 'image_ids' in st.session_state:
+                    del st.session_state['image_ids']
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE REMOVAL REQUEST SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            except:
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Apologies, but due to high traffic, we can not submit your request at the moment. Please try again in ~ 20 minutes        ***</strong></p>', unsafe_allow_html=True)
 
     if preview_sucess and not only_image:
         prev_col1, prev_col2, prev_col3=st.columns(3) 
@@ -513,7 +520,7 @@ def remove_species_data():
                 user_changes=(convert_fields_to_none(show_existing_info))
                 user_changes_json=user_changes.to_json() 
                 search_results_to_json=species_results.to_json(orient="columns") 
-                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
                 if 'image_ids' in st.session_state:
                  del st.session_state['image_ids']
                 

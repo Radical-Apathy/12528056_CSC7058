@@ -180,7 +180,7 @@ approved_user_images=get_all_user_images()
 
 
 #------------------------------------------------------------MAIN INFORMATION ADDITION PAGE---------------------------------------------------------------------------------------#
-def information_edit_review():
+def data_removal_review():
     def add_new_info_bg():
        st.markdown(
             f"""
@@ -202,21 +202,24 @@ def information_edit_review():
     add_new_info_bg()
     #current=load_latest()
     
-    def get_pending_edit_info():
-      for database in databases:
-        
-             if database["Edit_Type"]=="Information Edit" and database["Status"] =="Pending":
-                
-              pending_edit_info.append(database["key"])
+    pending_info_removal=[]
 
-    get_pending_edit_info()
 
-    new_edit_submissions=sorted(pending_edit_info,reverse=True)
+    def get_pending_info_removal():
+        for database in databases:
+            
+                if database["Edit_Type"]=="Information Removal" and database["Status"] =="Pending":
+                    
+                 pending_info_removal.append(database["key"])
+
+    get_pending_info_removal()
+
+    new_info_removal_submissions=sorted(pending_info_removal,reverse=True)
     #current=load_latest()
-    st.write("New species edits in order of date submitted")
+    st.write("Data removal requests in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
-    (new_edit_submissions))
+    (new_info_removal_submissions))
 
     
     
@@ -244,17 +247,17 @@ def information_edit_review():
             return data
 
 
-        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Images Submitted","User Info", "User Comment"])
+        new_info_tab1, new_info_tab2, new_info_tab3, new_info_tab5, new_info_tab6= st.tabs([ "Overview", "Information Breakdown", "Image for Removal","User Info", "User Comment"])
         
         #-------------------------------------------------------------information added display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
                     species_before=database["Dataset_Pre_Change"]
                     species_after=database["Changes"]
-                    user_images=database["User_Images"]
+                    image_key=database["User_Images"]
         
-        if species_before=="image only edit":
-             before_jsonn="image only edit"
+        if species_before=="image only delete":
+             before_jsonn="image only delete"
         else:
              before_jsonn=json.loads(species_before)
              species_index = list(before_jsonn['Order'].keys())[0]
@@ -267,18 +270,19 @@ def information_edit_review():
                     tab1_col1.markdown(inner_key)
 
                
-        image_count=len(user_images)
+        image_count=len(image_key)
         
         with new_info_tab1:
-            tab1_col1, tab1_col2=st.columns(2)
-        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information Added</em></p>', unsafe_allow_html=True)
-        if species_after=="image only edit":
-             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Image only editted</em></p>', unsafe_allow_html=True)
+            tab1_col1, tab1_col2, tab1_col3=st.columns(3)
+        tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information to Remove</em></p>', unsafe_allow_html=True)
+        if species_after=="image only delete":
+             tab1_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>image removal request only</em></p>', unsafe_allow_html=True)
 
         else:
              list_fields()
-        tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
-        tab1_col2.write(f"{image_count} images have been added")
+        #tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
+        if image_count!=0 and not species_after=="image only delete":
+         tab1_col2.write("Request for image removal")
         
 
         
@@ -302,8 +306,8 @@ def information_edit_review():
             
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
           
-            if species_after=="image only edit":
-                tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
+            if species_after=="image only delete":
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Current Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 else:
@@ -376,41 +380,71 @@ def information_edit_review():
         #-------------------------------------------------------------image sources display--------------------------------------------------------------------#
         for database in databases:
                 if database["key"]==datesubmitted:
-                    user_images=database["User_Images"]
+                    image_key=database["User_Images"]
         
-        image_count=len(user_images)
+        image_count=len(image_key)
         approved_images=[]
+
+        user_approved_images=[]
+
+        def get_all_species_images():          
+            for approved_image in  sorted (approved_user_images, key=lambda x: x["key"], reverse=True):
+                    if approved_image["Species"] == species_added_to and approved_image["Genus"]==genus_added_to:
+                       # if approved_image['Images']:
+                            #tab3_col1.write(approved_image['Images'])
+                    #return user_approved_images
+                     user_approved_images.append(approved_image['Images'])
+                    #return user_approved_images
 
         image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
         with new_info_tab3:
             tab3_col1,tab3_col2,tab3_col3=st.columns(3)
         
         if image_count <1:
-            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Images Submitted</em></p>', unsafe_allow_html=True)
+            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Image Removal Request</em></p>', unsafe_allow_html=True)
 
-        
-            
-            
         else:
             
             tab3_col1,tab3_col2,tab3_col3=st.columns(3)
-            results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-            items = results.get('files', [])
+            #results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+            #items = results.get('files', [])
              
-            new_info_tab3.write("***")
-            for item in items:
-                for value in user_images:
-                    if item['id'] == value:
-                        #with new_info_tab3.form(item['name']):
-                            new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
-                            accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
-                            reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
-                            if accept_image and reject_image:
-                                    new_info_tab3.error("Warning! Both options have been selected. Please review decision")
-                            elif accept_image:
-                                approved_images.append(item['id'])
+            #st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
+            tab3_col1.image(f"https://drive.google.com/uc?id={image_key[1]}")
+            accept_image = tab3_col1.checkbox(f"Approve image removal")
+            reject_image = tab3_col1.checkbox(f"Deny image removal")
+            get_all_species_images()
+            tab3_col1.write(user_approved_images)
+            
 
-                            new_info_tab3.write("***")
+            # if accept_image and reject_image:
+            #     new_info_tab3.error("Warning! Both options have been selected. Please review decision")
+            # elif accept_image:
+            #     approved_images.append(item['id'])
+
+            #     new_info_tab3.write("***")
+            
+            
+        # else:
+            
+        #     tab3_col1,tab3_col2,tab3_col3=st.columns(3)
+        #     results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
+        #     items = results.get('files', [])
+             
+        #     new_info_tab3.write("***")
+        #     for item in items:
+        #         for value in user_images:
+        #             if item['id'] == value:
+        #                 #with new_info_tab3.form(item['name']):
+        #                     new_info_tab3.image(f"https://drive.google.com/uc?id={item['id']}", width=600)
+        #                     accept_image = new_info_tab3.checkbox(f"Accept image {item['id']}")
+        #                     reject_image = new_info_tab3.checkbox(f"Deny image {item['id']}")
+        #                     if accept_image and reject_image:
+        #                             new_info_tab3.error("Warning! Both options have been selected. Please review decision")
+        #                     elif accept_image:
+        #                         approved_images.append(item['id'])
+
+        #                     new_info_tab3.write("***")
             
         #-------------------------------------------------------------user info display--------------------------------------------------------------------#
         with new_info_tab5:
@@ -483,7 +517,7 @@ def information_edit_review():
                 updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
-        if preview_updated_dataset and species_before=="image only edit":
+        if preview_updated_dataset and species_before=="image only delete":
             st.write(species_added_to)
             preview_new=True
             if preview_new:
@@ -572,4 +606,4 @@ def information_edit_review():
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
-information_edit_review()
+data_removal_review()
