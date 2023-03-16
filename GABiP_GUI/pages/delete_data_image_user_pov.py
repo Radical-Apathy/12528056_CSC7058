@@ -286,13 +286,15 @@ def remove_species_data():
 
 
     def remove_image():
-        remove_image=col1.button("Remove Image")
+        remove_image=col1.checkbox("Remove Image")
         if remove_image:
             col1.markdown("Image removal request submitted")
-            col1.write(image_key[0])
+            
+           
         
 
     image_key=[]
+    
     def check_user_image(species_dropdown, genus_dropdown):
      image_found=False
      for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
@@ -303,8 +305,10 @@ def remove_species_data():
                 col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
                 image_found=True
                 image_key.append(user_image['key'])
+                image_key.append(user_image['Images'][0])
                 remove_image()
-                return image_key 
+                return (image_key) 
+                
             break
      if not image_found: 
       col1.markdown("**No Images Available**")
@@ -397,8 +401,8 @@ def remove_species_data():
     sourcecol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
     sourcecol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    if len(image_ids) >0:
-        image_source=st.text_input("Image(s) Source")
+    if len(image_key) >0:
+        image_source=st.text_input("Image Removal Reason")
     create_source_fields(show_existing_info)
     
 
@@ -411,16 +415,16 @@ def remove_species_data():
     preview_sucess=False
     only_image=False
 
-    if source_summary and len(image_ids)!=0 and not additional_info_sources:
+    if source_summary and len(image_key)!=0 and not additional_info_sources:
         
-        for image_id in image_ids:
-                st.image(f"https://drive.google.com/uc?id={image_id}")
+        
+        st.image(f"https://drive.google.com/uc?id={image_key[1]}")
         only_image=True
         preview_sucess=True
 
-    elif source_summary and len(image_ids)!=0:
-        source_tab1, source_tab2, source_tab3=st.tabs(["Field Sources", "Image Sources", "Updated Info"])
-        st.write(image_key)
+    elif source_summary and len(image_key)!=0:
+        source_tab1, source_tab2, source_tab3=st.tabs(["Fields", "Images", "Updated Info"])
+        
         
 
         if not additional_info_sources:
@@ -430,7 +434,7 @@ def remove_species_data():
             with source_tab1:
                 tab1_sumcol1,tab1_sumcol2,tab1_sumcol3=st.columns(3)
                 tab1_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
-                tab1_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+                tab1_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                 sources_parsed=json.loads(sources_review_json)
                 for key, value in sources_parsed.items():
                     for inner_key, inner_value in value.items():
@@ -441,10 +445,10 @@ def remove_species_data():
             with source_tab2:
                  tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
                  tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
-                 source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
-                 for image_id in image_ids:
-                     tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_id}")
-                 tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Sources</strong></em></p>', unsafe_allow_html=True)
+                 #source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
+                 
+                 tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_key[1]}")
+                 tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                  tab2_sumcol3.write(image_source)
            
             with source_tab3:
@@ -455,7 +459,7 @@ def remove_species_data():
 
                      
 
-    elif source_summary and len(image_ids)==0:
+    elif source_summary and len(image_key)==0:
         
         
         if not additional_info_sources:
@@ -492,9 +496,9 @@ def remove_species_data():
     
     if preview_sucess and only_image:
         image_col1,image_col2,image_col3=st.columns(3)
-        image_only=image_col2.button("Change image only")
+        image_only=image_col2.button("Remove image only")
         if image_only:
-            add_to_database(str(now), "image only edit", "image only edit", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+            add_to_database(str(now), "image only edit", "image only delete", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
             if 'image_ids' in st.session_state:
                 del st.session_state['image_ids']
             st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
