@@ -295,25 +295,24 @@ def remove_species_data():
 
     image_key=[]
     
+        
     def check_user_image(species_dropdown, genus_dropdown):
-     image_found=False
-     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
-          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
-            if user_image['Images']:
-                col1.write("Image")
-                col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-                col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                image_found=True
-                image_key.append(user_image['key'])
-                image_key.append(user_image['Images'][0])
-                remove_image()
-                return (image_key) 
-                
-            break
-     if not image_found: 
-      col1.markdown("**No Images Available**")
-      
-      
+        image_found=False
+        for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
+            if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+                if user_image['Images']:
+                    col1.write("Image")
+                    col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                    col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+                    image_found=True
+                    if col1.checkbox("Remove Image"):
+                        image_key.clear()
+                        image_key.append(user_image['key'])
+                        image_key.append(user_image['Images'][0])
+                    break
+        if not image_found:
+            col1.markdown("No image found for the selected species and genus.")
+        return image_key
 
     def link_image(results):
      merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -446,7 +445,7 @@ def remove_species_data():
                  tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
                  tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
                  #source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
-                 
+                 st.write(image_key)
                  tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_key[1]}")
                  tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                  tab2_sumcol3.write(image_source)
