@@ -596,12 +596,19 @@ def data_removal_review():
                 reject_information=pre_col3.button("Deny Addition")
                 reject_new_info_reason=pre_col3.text_area("Reason for rejection for user")
 
-                if accept_information:
+                if accept_information and check_all_species_images(image_key[1]):
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
                         update_image_array(image_key[0], image_key[1])
                         pre_col1.write("GABiP updated!")
+
+                
+                if accept_information and not check_all_species_images(image_key[1]):
+                     create_new_updated_dataset_google() #<-------- working
+                     update_GABiP()
+                     pre_col1.write("GABiP updated. Image Reqested for removal removed already removed")
+
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
