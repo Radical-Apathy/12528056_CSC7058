@@ -219,6 +219,7 @@ def species_audit_history():
 
     add_bg_from_url()
   
+    #creating dicitonaries from meta database
 
 
     
@@ -251,6 +252,157 @@ def species_audit_history():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
+    dates_added=[]
+    information_added=[]
+    date_accepted=[]
+    accepted_by=[]
+    submitted_by=[]
+    def approval_history():
+
+        for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+                    if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Addition":
+                        dates_added.append(database['key'])
+                        information_added.append(database["Changes"])
+                        date_accepted.append(database["Decision_Date"])
+                        accepted_by.append(database["Decided_By"])
+                        submitted_by.append(database["Edited_By"])
+
+     # changes_parsed=json.loads(species_after)
+        property_added=[]
+        values_added=[]
+        def parse_changes(information_added):
+            for info in information_added:
+                if info != "image only":
+                    
+                    info_parsed=json.loads(info)
+                    #information_added_col.write(info_parsed)
+                    for key, value in info_parsed.items():
+                        for inner_key, inner_value in value.items():
+                            property=inner_key
+                            property_added.append(property)
+                            new_value=inner_value
+                            values_added.append(new_value)
+                            
+                else:
+                    property_added.append("N/A")
+                    values_added.append("Image Added")
+            return property_added, values_added
+
+
+
+
+
+        add_tab, additions_tab, edit_tab, deletions_tab =st.tabs(["Species Added", "Data Addition", "Data Removals", "User Images"])
+
+        with add_tab:
+            st.write("addition tab")
+        
+        with additions_tab:
+            parse_changes(information_added)
+            property_added_col, information_added_col, date_added_col, date_accepted_col, submitted_by_col, acepted_by_col = st.columns(6)
+
+            property_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Property</strong></em></p>',unsafe_allow_html=True)
+            for property in property_added:
+             property_added_col.write(property)
+             #property_added_col.markdown("***")
+
+            information_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Info Added</strong></em></p>',unsafe_allow_html=True)
+          
+
+            for value in values_added:
+               information_added_col.write(value)
+               #property_added_col.markdown("***")
+
+            date_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Date Added</strong></em></p>',unsafe_allow_html=True)
+            for date in dates_added:
+                date_added_col.write(date)
+                date_added_col.markdown("***")
+            date_accepted_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Date Accepted</strong></em></p>',unsafe_allow_html=True)
+            for dates in date_accepted:
+             date_accepted_col.write(dates)
+            submitted_by_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Submitted by</strong></em></p>',unsafe_allow_html=True)
+            for submit in submitted_by:
+
+             submitted_by_col.write(submit)
+
+            acepted_by_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Accepted By</strong></em></p>',unsafe_allow_html=True)
+            for accept in accepted_by:
+             acepted_by_col.write(accept)
+
+            additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with Dataframe</strong></em></p>',unsafe_allow_html=True)
+
+            additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with expander</strong></em></p>',unsafe_allow_html=True)
+
+            parse_changes(information_added)
+            # def create_expanders():
+            #     for date in dates_added:
+            #         for property in property_added:
+            #          for value in values_added:
+            #           expander = st.expander(date)
+            #           expander.write(f"Field changed: {property}")
+            #           expander.write(f"value added: {value}")
+            # def create_expanders(date, property, value):
+            #     expander = st.expander(date)
+            #     expander.write(f"Field changed: {property}")
+            #     expander.write(f"value added: {value}")
+            # for date in dates_added:
+            #     for property in property_added:
+            #       for value in values_added:
+            #         create_expanders(date, property, value)
+
+
+            def create_expanders():
+                # create a dictionary to store unique combinations of date, property, and value
+                expander_dict = {}
+                for i in range(len(dates_added)):
+                    key = (dates_added[i], property_added[i], values_added[i], submitted_by[i], accepted_by[i], date_accepted[i])
+                    if key not in expander_dict:
+                        expander_dict[key] = []
+                    expander_dict[key].append(i)
+                
+                # create an expander for each unique combination of date, property, and value
+                for key, indices in expander_dict.items():
+                    date, prop, val, sub, acc, dateacc = key
+                    expander = st.expander(f"**DATE SUBMITTED** : {date}")
+                    expander.write(f"Field changed: {prop}")
+                    expander.write(f"Value added: {val}")
+                    expander.write(f"Submitted by: {sub}")
+                    expander.write(f"Approved by: {acc}" )
+                    expander.write(f"Approved on: {dateacc}")
+                    # for i in indices:
+                    #     info_parsed = json.loads(information_added[i])
+                    #     expander.write(info_parsed)
+            # def create_expanders_2():
+            #     # create a dictionary to store unique combinations of date and property
+            #     expander_dict = {}
+            #     for i in range(len(dates_added)):
+            #         key = (dates_added[i], property_added[i], submitted_by[i], accepted_by[i], date_accepted[i])
+            #         if key not in expander_dict:
+            #             expander_dict[key] = {'props': [], 'vals': []}
+            #         expander_dict[key]['props'].append(property_added[i])
+            #         expander_dict[key]['vals'].append(values_added[i])
+
+            #     # create an expander for each unique combination of date and property
+            #     for key, values in expander_dict.items():
+            #         date, prop, sub, acc, dateacc = key
+            #         expander = st.expander(f"**DATE SUBMITTED** : {date}")
+            #         expander.write(f"Submitted by: {sub}")
+            #         expander.write(f"Approved by: {acc}" )
+            #         expander.write(f"Approved on: {dateacc}")
+            #         for i in range(len(values['props'])):
+            #             expander.write(f"Field changed: {values['props'][i]}")
+            #             expander.write(f"Value added: {values['vals'][i]}")
+            # create_expanders_2()
+            create_expanders()
+
+
+
+    options=st.sidebar.radio("Options", ('Show Approval History','Show Rejection History'))
+    if options=="Show Approval History":
+        approval_history()
+
+
+                         
     
 
 species_audit_history()
