@@ -1199,6 +1199,13 @@ def remove_species_data():
     def convert_fields_to_none(show_existing_info):
         user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
         return json.dumps(user_changes_json)
+    
+    def update_json_with_index(user_changes_json):
+        user_dict_list = json.loads(user_changes_json)
+        final_changes = {"0": {}}
+        for i in user_dict_list:
+            final_changes["0"].update(i)
+        return json.dumps(final_changes)
 
     def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
@@ -1213,46 +1220,7 @@ def remove_species_data():
     now = datetime.now()
     image_folder_id = "1g_Noljhv9f9_YTKHEhPzs6xUndhufYxu"
     image_id=[]
-
-    def change_image():
-        if 'image_ids' in st.session_state:
-            image_ids = st.session_state['image_ids']
-        else:
-            image_ids = []
-
-       
-        uploaded_image = col1.file_uploader("Choose an image", type=["jpg", "png", "bmp", "gif", "tiff"])
-        if uploaded_image is not None:
-            col1.write("**Image preview**")
-            col1.image(uploaded_image)
-
-        submit_image=col1.button("Change image")
-        if submit_image and uploaded_image:
-            bytes_data = uploaded_image.getvalue()
-            try:
-                file_metadata = {
-                    'name': uploaded_image.name,
-                    'parents': [image_folder_id],
-                    'mimeType': 'image/jpeg'  # change the MIME type to match your image format
-                }
-                media = MediaIoBaseUpload(io.BytesIO(bytes_data), mimetype='text/csv', resumable=True)
-                file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-                image_id = file.get('id')
-
-                st.success(f'Image uploaded! You can choose to upload more')
-                image_ids.append(image_id)
-                st.session_state['image_ids'] = image_ids
-
-                uploaded_image = None
-            except:
-                st.error("Please try again. Be sure to check your file type is in the correct format")
-
-
-    def remove_image():
-        remove_image=col1.checkbox("Remove Image")
-        if remove_image:
-            col1.markdown("Image removal request submitted")
-            
+              
            
         
 
@@ -1274,7 +1242,7 @@ def remove_species_data():
                         image_key.append(user_image['Images'][0])
                     break
         if not image_found:
-            col1.markdown("No image found for the selected species and genus.")
+            col1.markdown("No images")
         return image_key
 
     def link_image(results):
@@ -1352,8 +1320,7 @@ def remove_species_data():
     show_existing_info=st.multiselect("Select Information to Remove", existing_info_columns)
 
 
-   # if show_existing_info:
-    #    get_missing_userinfo()
+  
 
     results_copy=species_results.copy()
 
@@ -1372,8 +1339,7 @@ def remove_species_data():
     source_summary=sourcesum2.checkbox("Review Edit and Submit for review")
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
-    #source_tab1, source_tab2=st.tabs(2)
-    #st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+    
     preview_sucess=False
     only_image=False
 
@@ -1407,8 +1373,7 @@ def remove_species_data():
             with source_tab2:
                  tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
                  tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
-                 #source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
-                 
+                                  
                  tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_key[1]}")
                  tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                  tab2_sumcol3.write(image_source)
@@ -1471,14 +1436,16 @@ def remove_species_data():
     if preview_sucess and not only_image:
         prev_col1, prev_col2, prev_col3=st.columns(3) 
         commit_addition=prev_col2.button("Submit Addition")
-        
+       
+
+                
 
         
         if commit_addition and len(show_existing_info) and len(show_existing_info) == len(additional_info_sources) :
-                user_changes=(convert_fields_to_none(show_existing_info))
-                user_changes_json=user_changes.to_json() 
+                user_changes_json=convert_fields_to_none(show_existing_info)
+                final_changes=update_json_with_index(user_changes_json)
                 search_results_to_json=species_results.to_json(orient="columns") 
-                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                add_to_database(str(now), final_changes, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
                 if 'image_ids' in st.session_state:
                  del st.session_state['image_ids']
                 
@@ -1486,8 +1453,6 @@ def remove_species_data():
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_existing_info)  or len(show_existing_info) != len(additional_info_sources):
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
-
-
 
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#

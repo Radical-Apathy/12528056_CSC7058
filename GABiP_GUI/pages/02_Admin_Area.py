@@ -1359,12 +1359,8 @@ def data_removal_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
+      
     
-    
-
-    
-
 
     if datesubmitted:
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -1411,7 +1407,7 @@ def data_removal_review():
 
         else:
              list_fields()
-        #tab1_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Number of Images Added</em></p>', unsafe_allow_html=True)
+        
         if image_count!=0 and not species_after=="image only delete":
          tab1_col2.write("Request for image removal")
         
@@ -1448,7 +1444,7 @@ def data_removal_review():
                             break
                 
             else:
-                    #new_info_tab2.markdown("**Reminder: If there exists a current value, then an addition has been made in the past and verified. Please check with Species Audit History before deciding**")
+                    
                     sources_parsed=json.loads(user_sources)
                     changes_parsed=json.loads(species_after)
                     original_parsed=json.loads(species_before)
@@ -1692,7 +1688,7 @@ def data_removal_review():
                 st.write(species_added_to)
                 preview_new=True
                 if preview_new:
-                    st.write("This image no longer exists")
+                    
                     # st.dataframe(updated_db)
                     pre_col1, pre_col2, pre_col3=st.columns(3)
                     mark_as_duplicate=pre_col2.button("Mark as duplicate")
@@ -1724,12 +1720,19 @@ def data_removal_review():
                 reject_information=pre_col3.button("Deny Addition")
                 reject_new_info_reason=pre_col3.text_area("Reason for rejection for user")
 
-                if accept_information:
+                if accept_information and check_all_species_images(image_key[1]):
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
                         update_image_array(image_key[0], image_key[1])
                         pre_col1.write("GABiP updated!")
+
+                
+                if accept_information and not check_all_species_images(image_key[1]):
+                     create_new_updated_dataset_google() #<-------- working
+                     update_GABiP()
+                     pre_col1.write("GABiP updated. Image Reqested for removal removed already removed")
+
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
@@ -1759,15 +1762,13 @@ def data_removal_review():
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
-                       # add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                      
                         pre_col1.write("GABiP updated!")
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
-
-
 
 #------------------------------------------------------------------------------------------------WELCOME SCREEN BACKGROUND------------------------------------------------------------#
 
