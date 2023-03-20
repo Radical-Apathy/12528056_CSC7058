@@ -16,6 +16,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
+import sys
 
 
 
@@ -106,8 +107,12 @@ def load_latest():
 
 pending_edit_info=[]
 
-
-current=load_latest()
+try:
+    current=load_latest()
+except:
+     
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+    sys.exit()
 
 def get_pending_edit_info():
     for database in databases:
@@ -194,13 +199,13 @@ dfImages = load_images()
 #--------------------------------------------------------------NEW EDIT REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-def edit_species_information():
+def remove_species_data():
     def add_bg_from_url():
         st.markdown(
             f"""
             <style>
             .stApp {{
-                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg");
+                background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/cr52l_orig.jpg");
                 background-attachment: fixed;
                 background-size: cover;
                 background-position: 60.00% 64.97% ;
@@ -221,19 +226,27 @@ def edit_species_information():
                 existing_info_columns.append(results[column].name)
         return existing_info_columns
 
-    user_missing_info = []
-    def get_missing_userinfo():
-        for option in show_existing_info:
-            userText = st.text_input(option, key=option)
-            if userText:
-                user_missing_info.append(st.session_state[option])
-        return user_missing_info
+    user_removal_info = []
+    def get_remove_info():
+       for option in show_existing_info:
+        if st.session_state.get(option) is None:
+            user_removal_info.append(option)
+            st.session_state[option] = None
+        return user_removal_info
+       
+    
+    
+
+
+    def convert_fields_to_none(show_existing_info):
+        user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
+        return json.dumps(user_changes_json)
 
     def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
         for column in show_existing_info:
-            results_updated.at[speciesIndex, column] = st.session_state[column]
+            results_updated.at[speciesIndex, column] = None
         return results_updated
 
     now = datetime.now()
@@ -276,22 +289,35 @@ def edit_species_information():
             except:
                 st.error("Please try again. Be sure to check your file type is in the correct format")
 
+
+    def remove_image():
+        remove_image=col1.checkbox("Remove Image")
+        if remove_image:
+            col1.markdown("Image removal request submitted")
+            
+           
+        
+
+    image_key=[]
     
+        
     def check_user_image(species_dropdown, genus_dropdown):
-     image_found=False
-     for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
-          if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
-            if user_image['Images']:
-                col1.write("Image")
-                col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
-                col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
-                image_found=True 
-                change_image() 
-            break
-     if not image_found: 
-      col1.markdown("**No Images Available**")
-      
-      
+        image_found=False
+        for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
+            if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+                if user_image['Images']:
+                    col1.write("Image")
+                    col1.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                    col1.markdown(f"Submitted by {user_image['Submitted_By']} on {user_image['key']}") 
+                    image_found=True
+                    if col1.checkbox("Remove Image"):
+                        image_key.clear()
+                        image_key.append(user_image['key'])
+                        image_key.append(user_image['Images'][0])
+                    break
+        if not image_found:
+            col1.markdown("No image found for the selected species and genus.")
+        return image_key
 
     def link_image(results):
      merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
@@ -339,7 +365,7 @@ def edit_species_information():
     summary_dataframe=[]
     def create_source_fields(show_existing_info):
        for option in show_existing_info:
-               user_source=st.text_input("Please enter a source for "+option, key=option+" source")
+               user_source=st.text_input("Please enter a reason for removing "+option, key=option+" source")
     
        for option in show_existing_info:
            if user_source and user_source!="":
@@ -365,11 +391,11 @@ def edit_species_information():
 
     image_ids=st.session_state['image_ids']
     
-    show_existing_info=st.multiselect("Edit Current Information", existing_info_columns)
+    show_existing_info=st.multiselect("Select Information to Remove", existing_info_columns)
 
 
-    if show_existing_info:
-        get_missing_userinfo()
+   # if show_existing_info:
+    #    get_missing_userinfo()
 
     results_copy=species_results.copy()
 
@@ -379,8 +405,8 @@ def edit_species_information():
     sourcecol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     sourcecol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
     sourcecol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    if len(image_ids) >0:
-        image_source=st.text_input("Image(s) Source")
+    if len(image_key) >0:
+        image_source=st.text_input("Image Removal Reason")
     create_source_fields(show_existing_info)
     
 
@@ -393,15 +419,15 @@ def edit_species_information():
     preview_sucess=False
     only_image=False
 
-    if source_summary and len(image_ids)!=0 and not additional_info_sources:
+    if source_summary and len(image_key)!=0 and not additional_info_sources:
         
-        for image_id in image_ids:
-                st.image(f"https://drive.google.com/uc?id={image_id}")
+        
+        st.image(f"https://drive.google.com/uc?id={image_key[1]}")
         only_image=True
         preview_sucess=True
 
-    elif source_summary and len(image_ids)!=0:
-        source_tab1, source_tab2, source_tab3=st.tabs(["Field Sources", "Image Sources", "Updated Info"])
+    elif source_summary and len(image_key)!=0:
+        source_tab1, source_tab2, source_tab3=st.tabs(["Fields", "Images", "Updated Info"])
         
         
 
@@ -412,7 +438,7 @@ def edit_species_information():
             with source_tab1:
                 tab1_sumcol1,tab1_sumcol2,tab1_sumcol3=st.columns(3)
                 tab1_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Field</strong></em></p>', unsafe_allow_html=True)
-                tab1_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Source</strong></em></p>', unsafe_allow_html=True)
+                tab1_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                 sources_parsed=json.loads(sources_review_json)
                 for key, value in sources_parsed.items():
                     for inner_key, inner_value in value.items():
@@ -423,10 +449,10 @@ def edit_species_information():
             with source_tab2:
                  tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
                  tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
-                 source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
-                 for image_id in image_ids:
-                     tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_id}")
-                 tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Sources</strong></em></p>', unsafe_allow_html=True)
+                 #source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
+                 st.write(image_key)
+                 tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_key[1]}")
+                 tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                  tab2_sumcol3.write(image_source)
            
             with source_tab3:
@@ -437,7 +463,7 @@ def edit_species_information():
 
                      
 
-    elif source_summary and len(image_ids)==0:
+    elif source_summary and len(image_key)==0:
         
         
         if not additional_info_sources:
@@ -474,13 +500,15 @@ def edit_species_information():
     
     if preview_sucess and only_image:
         image_col1,image_col2,image_col3=st.columns(3)
-        image_only=image_col2.button("Change image only")
+        image_only=image_col2.button("Remove image only")
         if image_only:
-            add_to_database(str(now), "image only edit", "image only edit", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
-            if 'image_ids' in st.session_state:
-                del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-
+            try:
+                add_to_database(str(now), "image only delete", "image only delete", "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
+                if 'image_ids' in st.session_state:
+                    del st.session_state['image_ids']
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE REMOVAL REQUEST SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            except:
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Apologies, but due to high traffic, we can not submit your request at the moment. Please try again in ~ 20 minutes        ***</strong></p>', unsafe_allow_html=True)
 
     if preview_sucess and not only_image:
         prev_col1, prev_col2, prev_col3=st.columns(3) 
@@ -488,18 +516,18 @@ def edit_species_information():
         
 
         
-        if commit_addition and len(show_existing_info) == len(user_missing_info) and len(show_existing_info) == len(additional_info_sources) :
-                user_changes=pd.DataFrame(user_missing_info, show_existing_info)
+        if commit_addition and len(show_existing_info) and len(show_existing_info) == len(additional_info_sources) :
+                user_changes=(convert_fields_to_none(show_existing_info))
                 user_changes_json=user_changes.to_json() 
                 search_results_to_json=species_results.to_json(orient="columns") 
-                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
                 if 'image_ids' in st.session_state:
                  del st.session_state['image_ids']
                 
                 
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        elif commit_addition and len(show_existing_info) != len(user_missing_info) or len(show_existing_info) != len(additional_info_sources) or len(user_missing_info)==0:
+        elif commit_addition and len(show_existing_info)  or len(show_existing_info) != len(additional_info_sources):
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
 
-edit_species_information()
+remove_species_data()
