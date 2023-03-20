@@ -22,7 +22,7 @@ from google.auth.exceptions import RefreshError
 
 import io
 import json
-
+import sys
 
 st.set_page_config(page_icon='amphibs.jpeg')
 
@@ -131,15 +131,18 @@ def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
 
+
+now = datetime.now()
+
+current_time = now.strftime("%H:%M:%S")
+
+
 try:
-     current=load_latest()
-except HttpError as error:
-     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
-except RefreshError:
-        st.write("The credentials could not be refreshed.")
-except Exception as error:
-        st.write(f"An error occurred: {error}")
-        exit()
+    current=load_latest()
+except:
+     
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes from {current_time}    ***</strong></p>', unsafe_allow_html=True)
+    sys.exit()
         
 
 
@@ -395,19 +398,31 @@ def data_removal_review():
             return user_approved_images
         
 
+        # def check_all_species_images(image_key):              
+        #     found = False
+        #     for array in user_approved_images:
+        #         for value in array:
+        #             if value == image_key:
+        #                 tab3_col1.write("Image still exists in database")
+        #                 found = True
+        #                 break
+        #         else:
+        #             continue
+        #         break
+        #     if not found:
+        #         tab3_col1.write("Image not found in database")
+        
         def check_all_species_images(image_key):              
             found = False
             for array in user_approved_images:
                 for value in array:
                     if value == image_key:
-                        tab3_col1.write("Image still exists in database")
+                        #tab3_col1.write("Image still exists in database")
                         found = True
-                        break
-                else:
-                    continue
-                break
-            if not found:
-                tab3_col1.write("Image not found in database")
+                        #break
+                        return True
+                
+            
 
         def delete_image_from_db(image_key, image_value):
              pass
@@ -418,35 +433,26 @@ def data_removal_review():
         with new_info_tab3:
             tab3_col1,tab3_col2,tab3_col3=st.columns(3)
         
-        if image_count <1:
-            new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Image Removal Request</em></p>', unsafe_allow_html=True)
+            if image_count <1:
+                new_info_tab3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>No Image Removal Request</em></p>', unsafe_allow_html=True)
 
-        else:
+            else:
+                
+                tab3_col1,tab3_col2,tab3_col3=st.columns(3)
+                tab3_col1.image(f"https://drive.google.com/uc?id={image_key[1]}")
+                
+                
+                get_all_species_images()
+                
+                
+                check_all_species_images(image_key[1])
+                
+                if not check_all_species_images(image_key[1]):
+                     tab3_col1.write("This image no longers exists")
+                
+
             
-            tab3_col1,tab3_col2,tab3_col3=st.columns(3)
-            #results = service.files().list(q="mimeType!='application/vnd.google-apps.folder' and trashed=false and parents in '{0}'".format(image_folder_id), fields="nextPageToken, files(id, name)").execute()
-            #items = results.get('files', [])
-             
-            #st.image(f"https://drive.google.com/uc?id={user_approved_images[image][0]}")
-            tab3_col1.image(f"https://drive.google.com/uc?id={image_key[1]}")
-            accept_image = tab3_col1.checkbox(f"Approve image removal")
-            reject_image = tab3_col1.checkbox(f"Deny image removal")
-            tab3_col1.write(image_key[1])
-            #get_all_species_images()
-            tab3_col1.write(user_approved_images)
-            tab3_col1.write("Checking db for image to remove")
-            #check_all_species_images("1tjIhvWZjOTnmjDNo1qIJdoSiVjVROayS")
-            tab3_col1.write(image_key[0])
-
-           
-            
-            #accept_image_removal(image_key[0], image_key[1])
-            # if accept_image and reject_image:
-            #     new_info_tab3.error("Warning! Both options have been selected. Please review decision")
-            # elif accept_image:
-            #     approved_images.append(item['id'])
-
-            #     new_info_tab3.write("***")
+                
             
             
       
@@ -522,47 +528,70 @@ def data_removal_review():
                 updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
-        def accept_image_removal(db_key, image_value):
+        
+
+        new_array=[]
+        def update_image_array(db_key, image_value):
                 
                 for approved_images in approved_user_images:
                     
                     if approved_images['key']==db_key and len(approved_images['Images'])!=1:
-                        
+                        new_image_array=approved_images['Images']
+                        st.write("approve images after removal")
                         approved_images['Images'].remove(image_value)
-                        break
-                    updated_array=approved_images['Images']
-                    updates={'Images':updated_array}
-                    users_images.update(updates, db_key)
+                        updates={'Images':new_image_array}
+                        users_images.update(updates, db_key)
                     if approved_images['key']==db_key and len(approved_images['Images'])==1:
-                        users_images.delete(db_key)
+                        users_images.delete(db_key)   
                     
-                
 
-        if preview_updated_dataset and species_before=="image only delete":
+
+
+        def update_repeat_request(key, updates):
+         return metaData.update(updates, key)           
+
+        if preview_updated_dataset and species_before=="image only delete" and check_all_species_images(image_key[1]):
             st.write(species_added_to)
             preview_new=True
             if preview_new:
                 
-                # st.dataframe(updated_db)
+                
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Image Removal")
                 reject_information=pre_col3.button("Deny Image Removal")
                 reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
-                st.write(approved_images)
+                
 
                 if accept_information:
                         #create_new_updated_dataset_google() #<-------- working
                         update_GABiP_image()
                         
-                        accept_image_removal(image_key[0], image_key[1])
+                        update_image_array(image_key[0], image_key[1])
+
                         pre_col1.write("Image Removed")
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
                 elif reject_information:
-                        pre_col3.warning("Please add a reason for rejection for user to review")
+                        pre_col3.warning("Please add a reason for rejection for user to review")       
 
-        elif preview_updated_dataset and approved_images:
+        if preview_updated_dataset and species_before=="image only delete" and not check_all_species_images(image_key[1]):
+            st.write(species_added_to)
+            preview_new=True
+            if preview_new:
+                st.write("This image no longer exists")
+                # st.dataframe(updated_db)
+                pre_col1, pre_col2, pre_col3=st.columns(3)
+                mark_as_duplicate=pre_col2.button("Mark as duplicate")
+                
+
+                if mark_as_duplicate:
+                        update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest", "Decided_By":st.session_state['username'], "Decision_Date":str(now)})
+                        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request marked as duplicate and will no longer appear on dropdown </strong></em></p>', unsafe_allow_html=True)
+                        
+                        
+
+        if preview_updated_dataset and species_before!="image only delete" and len(image_key)!=0:
                 
                 updated_db=current.copy()
                 try:
@@ -575,26 +604,26 @@ def data_removal_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.write("aproved images length second elif") 
-                st.write(len(approved_images))
+                
                 st.dataframe(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
-                reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
+                reject_new_info_reason=pre_col3.text_area("Reason for rejection for user")
 
                 if accept_information:
                         create_new_updated_dataset_google() #<-------- working
                         update_GABiP()
                         
-                        add_to_image_db(datesubmitted, genus_added_to, species_added_to, user_name, str(now), st.session_state['username'], approved_images )#<------working
+                        update_image_array(image_key[0], image_key[1])
                         pre_col1.write("GABiP updated!")
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
-        elif preview_updated_dataset and not approved_images:
+        
+        if preview_updated_dataset and species_before!="image only delete" and len(image_key)==0:
                 
                 
                 try:
@@ -607,8 +636,6 @@ def data_removal_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.write("aproved images length last elif") 
-                st.write(len(approved_images))
                 st.dataframe(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
