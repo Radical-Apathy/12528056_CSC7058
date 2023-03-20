@@ -241,6 +241,13 @@ def remove_species_data():
     def convert_fields_to_none(show_existing_info):
         user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
         return json.dumps(user_changes_json)
+    
+    def update_json_with_index(user_changes_json):
+        user_dict_list = json.loads(user_changes_json)
+        final_changes = {"0": {}}
+        for i in user_dict_list:
+            final_changes["0"].update(i)
+        return json.dumps(final_changes)
 
     def update_missing_results(show_existing_info):
         speciesIndex = species_results.index[0]
@@ -513,14 +520,16 @@ def remove_species_data():
     if preview_sucess and not only_image:
         prev_col1, prev_col2, prev_col3=st.columns(3) 
         commit_addition=prev_col2.button("Submit Addition")
-        
+       
+
+                
 
         
         if commit_addition and len(show_existing_info) and len(show_existing_info) == len(additional_info_sources) :
-                user_changes=(convert_fields_to_none(show_existing_info))
-                user_changes_json=user_changes.to_json() 
+                user_changes_json=convert_fields_to_none(show_existing_info)
+                final_changes=update_json_with_index(user_changes_json)
                 search_results_to_json=species_results.to_json(orient="columns") 
-                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                add_to_database(str(now), final_changes, search_results_to_json, "Information Removal", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, image_key )
                 if 'image_ids' in st.session_state:
                  del st.session_state['image_ids']
                 

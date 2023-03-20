@@ -1408,7 +1408,7 @@ def remove_species_data():
                  tab2_sumcol1,tab2_sumcol2,tab2_sumcol3=st.columns(3)
                  tab2_sumcol1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Images</strong></em></p>', unsafe_allow_html=True)
                  #source_tab2.markdown('<p style="font-family:sans-serif; color:White; font-size: 15px;"><em><strong>Note: If you are not seeing all images submitted, please ensure the submit button has been clicked after each image upload</strong></em></p>', unsafe_allow_html=True)
-                 st.write(image_key)
+                 
                  tab2_sumcol1.image(f"https://drive.google.com/uc?id={image_key[1]}")
                  tab2_sumcol3.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Reason</strong></em></p>', unsafe_allow_html=True)
                  tab2_sumcol3.write(image_source)
