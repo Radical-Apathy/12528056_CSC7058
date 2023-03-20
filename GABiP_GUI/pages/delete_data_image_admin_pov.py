@@ -398,34 +398,20 @@ def data_removal_review():
             return user_approved_images
         
 
-        # def check_all_species_images(image_key):              
-        #     found = False
-        #     for array in user_approved_images:
-        #         for value in array:
-        #             if value == image_key:
-        #                 tab3_col1.write("Image still exists in database")
-        #                 found = True
-        #                 break
-        #         else:
-        #             continue
-        #         break
-        #     if not found:
-        #         tab3_col1.write("Image not found in database")
+       
         
         def check_all_species_images(image_key):              
             found = False
             for array in user_approved_images:
                 for value in array:
                     if value == image_key:
-                        #tab3_col1.write("Image still exists in database")
+                        
                         found = True
-                        #break
+                        
                         return True
                 
             
 
-        def delete_image_from_db(image_key, image_value):
-             pass
              
 
 
@@ -537,7 +523,6 @@ def data_removal_review():
                     
                     if approved_images['key']==db_key and len(approved_images['Images'])!=1:
                         new_image_array=approved_images['Images']
-                        st.write("approve images after removal")
                         approved_images['Images'].remove(image_value)
                         updates={'Images':new_image_array}
                         users_images.update(updates, db_key)
@@ -574,20 +559,20 @@ def data_removal_review():
                             pre_col3.write("Reason sent to user")
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")       
+        else:
+            if preview_updated_dataset and species_before=="image only delete" and not check_all_species_images(image_key[1]):
+                st.write(species_added_to)
+                preview_new=True
+                if preview_new:
+                    st.write("This image no longer exists")
+                    # st.dataframe(updated_db)
+                    pre_col1, pre_col2, pre_col3=st.columns(3)
+                    mark_as_duplicate=pre_col2.button("Mark as duplicate")
+                    
 
-        if preview_updated_dataset and species_before=="image only delete" and not check_all_species_images(image_key[1]):
-            st.write(species_added_to)
-            preview_new=True
-            if preview_new:
-                st.write("This image no longer exists")
-                # st.dataframe(updated_db)
-                pre_col1, pre_col2, pre_col3=st.columns(3)
-                mark_as_duplicate=pre_col2.button("Mark as duplicate")
-                
-
-                if mark_as_duplicate:
-                        update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest", "Decided_By":st.session_state['username'], "Decision_Date":str(now)})
-                        st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request marked as duplicate and will no longer appear on dropdown </strong></em></p>', unsafe_allow_html=True)
+                    if mark_as_duplicate:
+                            update_repeat_request(datesubmitted, updates={"Status": "Duplicate Removal Reuqest", "Decided_By":st.session_state['username'], "Decision_Date":str(now)})
+                            st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request marked as duplicate and will no longer appear on dropdown </strong></em></p>', unsafe_allow_html=True)
                         
                         
 
