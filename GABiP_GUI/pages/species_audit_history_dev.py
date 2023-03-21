@@ -97,7 +97,7 @@ def get_latest_file_id(latest_approved_ds):
 latest_id=get_latest_file_id(latest_approved_ds)
 
 
-#@st.cache_data
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -107,12 +107,12 @@ def load_latest():
 
 pending_edit_info=[]
 
-# try:
-#     current=load_latest()
-# except:
+try:
+     current=load_latest()
+except:
      
-#     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
-#     sys.exit()
+     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+     sys.exit()
 
 def get_pending_edit_info():
     for database in databases:
@@ -298,13 +298,66 @@ def species_audit_history():
             st.write("addition tab")
         
         with additions_tab:
+            def display_expanders(info, dates):
+                for i, item in enumerate(info):
+                    if item != "image only":
+                        # Remove extra quotes around JSON string
+                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
+                        data = json.loads(json_str)
+                        with st.expander(f"**DATE SUBMITTED**{dates[i]}"):
+                            for key, value in data["0"].items():
+                                st.write(f"**Property**: {key}")
+                                st.write(f"**Value**: {value}")
+                    else:
+                        with st.expander(F"**DATE SUBMITTED: {dates[i]}"):
+                            st.write(f"**Property**: N/A")
+                            st.write(f"**Value**: Image Only")
+
+
+            additions_tab.write("trying plain expanders")
+            display_expanders(information_added, dates_added)
+
+            def display_expanders_with_df(info, dates):
+                for i, item in enumerate(info):
+                    if item != "image only":
+                        # Remove extra quotes around JSON string
+                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
+                        data = json.loads(json_str)
+                        with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
+                            rows = []
+                            for key, value in data["0"].items():
+                                rows.append([key, value])
+                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added'])
+                            st.write(df)
+                    else:
+                        with st.expander(f"**DATE SUBMITTED: {dates[i]}"):
+                            st.write(f"**Property**: N/A")
+                            st.write(f"**Value**: Image Only")
+
+
+            additions_tab.write("trying with dataframes nested in expander")
+
+            display_expanders_with_df(information_added, dates_added)
+
+
+
+
+
+
+
+
+
+
+
+
+
             parse_changes(information_added)
             property_added_col, information_added_col, date_added_col, date_accepted_col, submitted_by_col, acepted_by_col = st.columns(6)
 
             property_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Property</strong></em></p>',unsafe_allow_html=True)
             for property in property_added:
              property_added_col.write(property)
-             #property_added_col.markdown("***")
+             property_added_col.markdown("***")
 
             information_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Info Added</strong></em></p>',unsafe_allow_html=True)
           
@@ -337,6 +390,26 @@ def species_audit_history():
             
 
             parse_changes(information_added)
+         
+            # def display_expanders(information_added, dates_added):
+            #     if information_added !="image only":
+            #         for i, item in enumerate(information_added):
+                        
+            #             with st.expander(dates_added[i]):
+            #                 data = json.loads(item)
+            #                 for key, value in data["0"].items():
+            #                     st.write(f"Property: {key}")
+            #                     st.write(f"Value: {value}")
+            #     else:
+            #         with st.expander(dates_added[i]):
+            #                     st.write(f"Property: N/A")
+            #                     st.write(f"Value: Image Only")
+
+            
+
+
+            #display_expanders(information_added, dates_added)
+
             # def create_expanders():
             #     for date in dates_added:
             #         for property in property_added:
@@ -354,53 +427,23 @@ def species_audit_history():
             #         create_expanders(date, property, value)
 
 
-            def create_expanders():
-                # create a dictionary to store unique combinations of date, property, and value
-                expander_dict = {}
-                for i in range(len(dates_added)):
-                    key = (dates_added[i], property_added[i], values_added[i], submitted_by[i], accepted_by[i], date_accepted[i])
-                    if key not in expander_dict:
-                        expander_dict[key] = []
-                    expander_dict[key].append(i)
-                
-                # create an expander for each unique combination of date, property, and value
-                for key, indices in expander_dict.items():
-                    date, prop, val, sub, acc, dateacc = key
-                    expander = st.expander(f"**DATE SUBMITTED** : {date}")
-                    expander.write(f"Field changed: {prop}")
-                    expander.write(f"Information added: {val}")
-                    expander.write(f"Submitted by: {sub}")
-                    expander.write(f"Approved by: {acc}" )
-                    expander.write(f"Approved on: {dateacc}")
-                    
-            create_expanders()
+            # def create_expanders(dates_added, property_added, values_added):
+            #     for date in dates_added:
+            #         with st.expander(date):
+            #             st.write()
 
-            def create_expanders_no_dups():
-                # create a dictionary to store unique combinations of date and submitted by
-                expander_dict = {}
-                for i in range(len(dates_added)):
-                    key = (dates_added[i], submitted_by[i])
-                    if key not in expander_dict:
-                        expander_dict[key] = []
-                    expander_dict[key].append((property_added[i], values_added[i], accepted_by[i], date_accepted[i]))
+            
+            # create_expanders()
 
-                # create an expander for each unique combination of date and submitted by
-                for key, values in expander_dict.items():
-                    date, sub = key
-                    expander = st.expander(f"**DATE SUBMITTED** : {date}")
-                    expander.write(f"Submitted by: {sub}")
-                    for val in values:
-                        prop, value, acc, dateacc = val
-                        expander.write(f"Field changed: {prop}")
-                        expander.write(f"Information added: {value}")
-                        expander.write(f"Approved by: {acc}")
-                        expander.write(f"Approved on: {dateacc}")
+            
 
             additions_tab.write("No duplicates")
-            create_expanders_no_dups()
+            #create_expanders()
             additions_tab.write(information_added)
-            additions_tab.write(property_added)
-            additions_tab.write(values_added)
+            #additions_tab.write(property_added)
+            #additions_tab.write(values_added)
+            additions_tab.write(date_accepted)
+            additions_tab.write(dates_added)
 
             
 
@@ -410,13 +453,8 @@ def species_audit_history():
         approval_history()
                        
     
-def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
-     """adding user"""
-     #defining the email as the key
-     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
-     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
-#species_audit_history()
+species_audit_history()
 
 def reset_to_original_db():
 
@@ -431,5 +469,5 @@ def reset_to_original_db():
     st.write(latest_id)
     clean=pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
     st.dataframe(clean)
-reset_to_original_db()
+#reset_to_original_db()
 
