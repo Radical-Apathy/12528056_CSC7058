@@ -107,12 +107,12 @@ def load_latest():
 
 pending_edit_info=[]
 
-try:
-    current=load_latest()
-except:
+# try:
+#     current=load_latest()
+# except:
      
-    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
-    sys.exit()
+#     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+#     sys.exit()
 
 def get_pending_edit_info():
     for database in databases:
@@ -410,14 +410,26 @@ def species_audit_history():
         approval_history()
                        
     
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
 #species_audit_history()
+
 def reset_to_original_db():
 
     now=datetime.now()
     add_blank_slate=st.checkbox("Add original data set")
     if add_blank_slate:
-        add_to_database(str(now), "n/a", "https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV", "Original", "n/a", "n/a", "n/a", "n/a", "Approved", "n/a", "n/a", str(now), "https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV", "n/a", "n/a"  )
-        
-    
+        add_to_database(str(now), "n/a", "n/a", "Original", "n/a", "n/a", "n/a", "n/a", "Approved", "n/a", "n/a", str(now), "dataset_clean", "n/a", "n/a"  )
+        st.write("current db reset to original dataset")
+
+    # st.write(approvedordered[0])
+    latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
+    st.write(latest_id)
+    clean=pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
+    st.write(clean)
+reset_to_original_db()
 
