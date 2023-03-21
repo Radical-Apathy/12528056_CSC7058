@@ -257,6 +257,7 @@ def species_audit_history():
     date_accepted=[]
     accepted_by=[]
     submitted_by=[]
+    date_image_approved=[]
     def approval_history():
 
         for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
@@ -266,7 +267,14 @@ def species_audit_history():
                         date_accepted.append(database["Decision_Date"])
                         accepted_by.append(database["Decided_By"])
                         submitted_by.append(database["Edited_By"])
+                        
 
+        #user_images=get_all_user_images()
+        for user_image in  sorted (user_images, key=lambda x: x["key"], reverse=True):
+             date_image_approved.append(user_image["Decision_Date"])
+     
+     
+     
      # changes_parsed=json.loads(species_after)
         property_added=[]
         values_added=[]
@@ -292,7 +300,7 @@ def species_audit_history():
 
 
 
-        add_tab, additions_tab, edit_tab, deletions_tab =st.tabs(["Species Added", "Data Addition", "Data Removals", "User Images"])
+        add_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
 
         with add_tab:
             st.write("addition tab")
@@ -314,10 +322,8 @@ def species_audit_history():
                             st.write(f"**Value**: Image Only")
 
 
-            additions_tab.write("trying plain expanders")
-            display_expanders(information_added, dates_added)
-
-            def display_expanders_with_df(info, dates):
+           
+            def display_expanders_with_df_all_info(info, dates, submitted_by, accepted_by, date_accepted):
                 for i, item in enumerate(info):
                     if item != "image only":
                         # Remove extra quotes around JSON string
@@ -329,122 +335,26 @@ def species_audit_history():
                                 rows.append([key, value])
                             df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added'])
                             st.write(df)
-                    else:
-                        with st.expander(f"**DATE SUBMITTED: {dates[i]}"):
-                            st.write(f"**Property**: N/A")
-                            st.write(f"**Value**: Image Only")
-
+                            st.write(f"**Submitted by**: {submitted_by[i]} ")
+                            st.write(f"**Approved by**: {accepted_by[i]} ")
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")
+                    
 
             additions_tab.write("trying with dataframes nested in expander")
 
             display_expanders_with_df(information_added, dates_added)
 
-
-
-
-
-
-
-
-
-
-
-
-
-            parse_changes(information_added)
-            property_added_col, information_added_col, date_added_col, date_accepted_col, submitted_by_col, acepted_by_col = st.columns(6)
-
-            property_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Property</strong></em></p>',unsafe_allow_html=True)
-            for property in property_added:
-             property_added_col.write(property)
-             property_added_col.markdown("***")
-
-            information_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Info Added</strong></em></p>',unsafe_allow_html=True)
-          
-
-            for value in values_added:
-               information_added_col.write(value)
-               #property_added_col.markdown("***")
-
-            date_added_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Date Added</strong></em></p>',unsafe_allow_html=True)
-            for date in dates_added:
-                date_added_col.write(date)
-                date_added_col.markdown("***")
-            date_accepted_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Date Accepted</strong></em></p>',unsafe_allow_html=True)
-            for dates in date_accepted:
-             date_accepted_col.write(dates)
-            submitted_by_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Submitted by</strong></em></p>',unsafe_allow_html=True)
-            for submit in submitted_by:
-
-             submitted_by_col.write(submit)
-
-            acepted_by_col.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Accepted By</strong></em></p>',unsafe_allow_html=True)
-            for accept in accepted_by:
-             acepted_by_col.write(accept)
-
-            additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with Dataframe</strong></em></p>',unsafe_allow_html=True)
-
-           # df_view = pd.DataFrame({"Field": property_added,"Information Added": values_added, "Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
-            df_view2 = pd.DataFrame({"Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
-            additions_tab.dataframe(df_view2)
-            
-
-            parse_changes(information_added)
-         
-            # def display_expanders(information_added, dates_added):
-            #     if information_added !="image only":
-            #         for i, item in enumerate(information_added):
-                        
-            #             with st.expander(dates_added[i]):
-            #                 data = json.loads(item)
-            #                 for key, value in data["0"].items():
-            #                     st.write(f"Property: {key}")
-            #                     st.write(f"Value: {value}")
-            #     else:
-            #         with st.expander(dates_added[i]):
-            #                     st.write(f"Property: N/A")
-            #                     st.write(f"Value: Image Only")
+            display_expanders_with_df_all_info(information_added, dates_added, submitted_by, accepted_by, date_accepted)
 
             
 
 
-            #display_expanders(information_added, dates_added)
-
-            # def create_expanders():
-            #     for date in dates_added:
-            #         for property in property_added:
-            #          for value in values_added:
-            #           expander = st.expander(date)
-            #           expander.write(f"Field changed: {property}")
-            #           expander.write(f"value added: {value}")
-            # def create_expanders(date, property, value):
-            #     expander = st.expander(date)
-            #     expander.write(f"Field changed: {property}")
-            #     expander.write(f"value added: {value}")
-            # for date in dates_added:
-            #     for property in property_added:
-            #       for value in values_added:
-            #         create_expanders(date, property, value)
 
 
-            # def create_expanders(dates_added, property_added, values_added):
-            #     for date in dates_added:
-            #         with st.expander(date):
-            #             st.write()
+
+
 
             
-            # create_expanders()
-
-            
-
-            additions_tab.write("No duplicates")
-            #create_expanders()
-            additions_tab.write(information_added)
-            #additions_tab.write(property_added)
-            #additions_tab.write(values_added)
-            additions_tab.write(date_accepted)
-            additions_tab.write(dates_added)
-
             
 
 
