@@ -331,6 +331,10 @@ def species_audit_history():
 
             additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with Dataframe</strong></em></p>',unsafe_allow_html=True)
 
+            df_view = pd.DataFrame({"Field": property_added,"Information Added": values_added, "Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
+
+
+
             additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with expander</strong></em></p>',unsafe_allow_html=True)
 
             parse_changes(information_added)
