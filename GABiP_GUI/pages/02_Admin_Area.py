@@ -646,7 +646,7 @@ def information_addition_review():
                 accept_information=pre_col1.button("Approve Image")
                 reject_information=pre_col3.button("Deny Image")
                 reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
-                st.write(approved_images)
+                
 
                 if accept_information:
                         #create_new_updated_dataset_google() #<-------- working
