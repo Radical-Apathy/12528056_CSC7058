@@ -331,11 +331,10 @@ def species_audit_history():
 
             additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with Dataframe</strong></em></p>',unsafe_allow_html=True)
 
-            df_view = pd.DataFrame({"Field": property_added,"Information Added": values_added, "Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
-
-
-
-            additions_tab.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Alternative view with expander</strong></em></p>',unsafe_allow_html=True)
+           # df_view = pd.DataFrame({"Field": property_added,"Information Added": values_added, "Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
+            df_view2 = pd.DataFrame({"Submitted By": submitted_by, "Date Submitted":dates_added, "Date Approved":date_accepted, "Approved By":accepted_by})
+            additions_tab.dataframe(df_view2)
+            
 
             parse_changes(information_added)
             # def create_expanders():
@@ -373,40 +372,52 @@ def species_audit_history():
                     expander.write(f"Submitted by: {sub}")
                     expander.write(f"Approved by: {acc}" )
                     expander.write(f"Approved on: {dateacc}")
-                    # for i in indices:
-                    #     info_parsed = json.loads(information_added[i])
-                    #     expander.write(info_parsed)
-            # def create_expanders_2():
-            #     # create a dictionary to store unique combinations of date and property
-            #     expander_dict = {}
-            #     for i in range(len(dates_added)):
-            #         key = (dates_added[i], property_added[i], submitted_by[i], accepted_by[i], date_accepted[i])
-            #         if key not in expander_dict:
-            #             expander_dict[key] = {'props': [], 'vals': []}
-            #         expander_dict[key]['props'].append(property_added[i])
-            #         expander_dict[key]['vals'].append(values_added[i])
-
-            #     # create an expander for each unique combination of date and property
-            #     for key, values in expander_dict.items():
-            #         date, prop, sub, acc, dateacc = key
-            #         expander = st.expander(f"**DATE SUBMITTED** : {date}")
-            #         expander.write(f"Submitted by: {sub}")
-            #         expander.write(f"Approved by: {acc}" )
-            #         expander.write(f"Approved on: {dateacc}")
-            #         for i in range(len(values['props'])):
-            #             expander.write(f"Field changed: {values['props'][i]}")
-            #             expander.write(f"Value added: {values['vals'][i]}")
-            # create_expanders_2()
+                    
             create_expanders()
 
+            def create_expanders_no_dups():
+                # create a dictionary to store unique combinations of date and submitted by
+                expander_dict = {}
+                for i in range(len(dates_added)):
+                    key = (dates_added[i], submitted_by[i])
+                    if key not in expander_dict:
+                        expander_dict[key] = []
+                    expander_dict[key].append((property_added[i], values_added[i], accepted_by[i], date_accepted[i]))
+
+                # create an expander for each unique combination of date and submitted by
+                for key, values in expander_dict.items():
+                    date, sub = key
+                    expander = st.expander(f"**DATE SUBMITTED** : {date}")
+                    expander.write(f"Submitted by: {sub}")
+                    for val in values:
+                        prop, value, acc, dateacc = val
+                        expander.write(f"Field changed: {prop}")
+                        expander.write(f"Information added: {value}")
+                        expander.write(f"Approved by: {acc}")
+                        expander.write(f"Approved on: {dateacc}")
+
+            additions_tab.write("No duplicates")
+            create_expanders_no_dups()
+            additions_tab.write(information_added)
+            additions_tab.write(property_added)
+            additions_tab.write(values_added)
+
+            
 
 
     options=st.sidebar.radio("Options", ('Show Approval History','Show Rejection History'))
     if options=="Show Approval History":
         approval_history()
-
-
-                         
+                       
     
 
-species_audit_history()
+#species_audit_history()
+def reset_to_original_db():
+
+    now=datetime.now()
+    add_blank_slate=st.checkbox("Add original data set")
+    if add_blank_slate:
+        add_to_database(str(now), "n/a", "https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV", "Original", "n/a", "n/a", "n/a", "n/a", "Approved", "n/a", "n/a", str(now), "https://drive.google.com/uc?id=1TJs2ykby1yxJvLcnGXdTduoLrtl7csMV", "n/a", "n/a"  )
+        
+    
+
