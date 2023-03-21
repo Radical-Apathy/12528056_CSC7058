@@ -252,75 +252,31 @@ def species_audit_history():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
-    dates_added=[]
-    information_added=[]
-    date_accepted=[]
-    accepted_by=[]
-    submitted_by=[]
-    date_image_approved=[]
+    
     def approval_history():
-
-        for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
-                    if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Addition":
-                        dates_added.append(database['key'])
-                        information_added.append(database["Changes"])
-                        date_accepted.append(database["Decision_Date"])
-                        accepted_by.append(database["Decided_By"])
-                        submitted_by.append(database["Edited_By"])
-                        
-
-        #user_images=get_all_user_images()
-        for user_image in  sorted (user_images, key=lambda x: x["key"], reverse=True):
-             date_image_approved.append(user_image["Decision_Date"])
-     
-     
-     
-     # changes_parsed=json.loads(species_after)
-        property_added=[]
-        values_added=[]
-        def parse_changes(information_added):
-            for info in information_added:
-                if info != "image only":
-                    
-                    info_parsed=json.loads(info)
-                    #information_added_col.write(info_parsed)
-                    for key, value in info_parsed.items():
-                        for inner_key, inner_value in value.items():
-                            property=inner_key
-                            property_added.append(property)
-                            new_value=inner_value
-                            values_added.append(new_value)
-                            
-                else:
-                    property_added.append("N/A")
-                    values_added.append("Image Added")
-            return property_added, values_added
-
-
-
-
-
+        
         add_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
 
         with add_tab:
             st.write("addition tab")
         
         with additions_tab:
-            def display_expanders(info, dates):
-                for i, item in enumerate(info):
-                    if item != "image only":
-                        # Remove extra quotes around JSON string
-                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
-                        data = json.loads(json_str)
-                        with st.expander(f"**DATE SUBMITTED**{dates[i]}"):
-                            for key, value in data["0"].items():
-                                st.write(f"**Property**: {key}")
-                                st.write(f"**Value**: {value}")
-                    else:
-                        with st.expander(F"**DATE SUBMITTED: {dates[i]}"):
-                            st.write(f"**Property**: N/A")
-                            st.write(f"**Value**: Image Only")
-
+            dates_added=[]
+            information_added=[]
+            date_accepted=[]
+            accepted_by=[]
+            submitted_by=[]
+            
+            sources_added=[]
+            
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+                    if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Addition":
+                        dates_added.append(database['key'])
+                        information_added.append(database["Changes"])
+                        sources_added.append(database["User_Sources"])
+                        date_accepted.append(database["Decision_Date"])
+                        accepted_by.append(database["Decided_By"])
+                        submitted_by.append(database["Edited_By"])
 
            
             def display_expanders_with_df_all_info(info, dates, submitted_by, accepted_by, date_accepted):
@@ -338,11 +294,25 @@ def species_audit_history():
                             st.write(f"**Submitted by**: {submitted_by[i]} ")
                             st.write(f"**Approved by**: {accepted_by[i]} ")
                             st.write(f"**Date Approved**: {date_accepted[i]} ")
+
+            def display_expanders_with_df_all_info_and_sources(info, dates, submitted_by, accepted_by, date_accepted):
+                for i, item in enumerate(info):
+                    if item != "image only":
+                        # Remove extra quotes around JSON string
+                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
+                        data = json.loads(json_str)
+                        with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
+                            rows = []
+                            for key, value in data["0"].items():
+                                rows.append([key, value])
+                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added'])
+                            st.write(df)
+                            st.write(f"**Submitted by**: {submitted_by[i]} ")
+                            st.write(f"**Approved by**: {accepted_by[i]} ")
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")
                     
 
             additions_tab.write("trying with dataframes nested in expander")
-
-            display_expanders_with_df(information_added, dates_added)
 
             display_expanders_with_df_all_info(information_added, dates_added, submitted_by, accepted_by, date_accepted)
 
