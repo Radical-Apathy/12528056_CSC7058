@@ -99,7 +99,7 @@ latest_id=get_latest_file_id(latest_approved_ds)
 
 #@st.cache_data
 def load_latest():
-    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
 
@@ -430,6 +430,6 @@ def reset_to_original_db():
     latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
     st.write(latest_id)
     clean=pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape', low_memory=False)
-    st.write(clean)
+    st.dataframe(clean)
 reset_to_original_db()
 

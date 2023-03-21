@@ -119,8 +119,8 @@ def get_latest_file_id(latest_approved_ds):
 
 
 
-#latest_id=get_latest_file_id(latest_approved_ds)
-latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
+latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
 
 
 @st.cache_data
@@ -280,7 +280,7 @@ def new_species_review():
             
             
             proposed=df1.append(df2, ignore_index=True)
-            st.dataframe(proposed)
+            st.write(proposed)
             
 
         now=datetime.now()
@@ -514,7 +514,7 @@ def information_addition_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -641,7 +641,7 @@ def information_addition_review():
             preview_new=True
             if preview_new:
                 
-                # st.dataframe(updated_db)
+                # st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Image")
                 reject_information=pre_col3.button("Deny Image")
@@ -675,7 +675,7 @@ def information_addition_review():
 
                 st.write("aproved images length second elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -707,7 +707,7 @@ def information_addition_review():
 
                 st.write("aproved images length last elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -906,7 +906,7 @@ def information_edit_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -1033,7 +1033,7 @@ def information_edit_review():
             preview_new=True
             if preview_new:
                 
-                # st.dataframe(updated_db)
+                # st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Image")
                 reject_information=pre_col3.button("Deny Image")
@@ -1067,7 +1067,7 @@ def information_edit_review():
 
                 st.write("aproved images length second elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1099,7 +1099,7 @@ def information_edit_review():
 
                 st.write("aproved images length last elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1279,7 +1279,7 @@ def remove_species_admin():
             try:
                 proposed_removal=current.copy()
                 proposed_removal.drop(user_changes.index[0], inplace=True)
-                st.dataframe(proposed_removal)
+                st.write(proposed_removal)
                 
                 col1,col2=st.columns(2)
 
@@ -1493,7 +1493,7 @@ def data_removal_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -1690,7 +1690,7 @@ def data_removal_review():
                 preview_new=True
                 if preview_new:
                     
-                    # st.dataframe(updated_db)
+                    # st.write(updated_db)
                     pre_col1, pre_col2, pre_col3=st.columns(3)
                     mark_as_duplicate=pre_col2.button("Mark as duplicate")
                     
@@ -1715,7 +1715,7 @@ def data_removal_review():
                  preview_new=False
 
                 
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1753,7 +1753,7 @@ def data_removal_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")

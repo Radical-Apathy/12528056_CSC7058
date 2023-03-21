@@ -131,8 +131,8 @@ def get_latest_file_id(latest_approved_ds):
 
 
 
-#latest_id=get_latest_file_id(latest_approved_ds)
-latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
+latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
 
 #add user's entries to csv 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
@@ -228,16 +228,9 @@ def show_db():
                 )
 
     load_db_bg()
+    st.write(current)
 
-    db_col1,db_col2=st.columns(2)
-    try:
-        st.dataframe(current, width=600)
-    except HttpError as error:
-     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
-    except RefreshError:
-        st.write("The credentials could not be refreshed.")
-    except Exception as error:
-        st.write(f"An error occurred: {error}")
+    
 
 #--------------------------------------------------------------------------ADD ENTRY PAGE------------------------------------------------------------------------------------#
 
@@ -328,7 +321,7 @@ def add_entry_page():
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
      reviewdf = pd.DataFrame(userInfo, current.columns)
-     st.dataframe(reviewdf, width=300) 
+     st.write(reviewdf, width=300) 
 
      #temp code for development
      #populate_userinfo()
