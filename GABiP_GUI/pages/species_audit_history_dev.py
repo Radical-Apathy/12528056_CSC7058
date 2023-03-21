@@ -365,7 +365,7 @@ def species_audit_history():
                     date, prop, val, sub, acc, dateacc = key
                     expander = st.expander(f"**DATE SUBMITTED** : {date}")
                     expander.write(f"Field changed: {prop}")
-                    expander.write(f"Value added: {val}")
+                    expander.write(f"Information added: {val}")
                     expander.write(f"Submitted by: {sub}")
                     expander.write(f"Approved by: {acc}" )
                     expander.write(f"Approved on: {dateacc}")
