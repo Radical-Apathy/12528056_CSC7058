@@ -255,9 +255,9 @@ def species_audit_history():
     
     def approval_history():
         
-        add_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
+        species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
 
-        with add_tab:
+        with species_addition_tab:
             st.write("addition tab")
         
         with additions_tab:
@@ -303,7 +303,8 @@ def species_audit_history():
             
             display_addition_expanders(information_added, sources_added, dates_added, submitted_by, accepted_by, date_accepted)
 
-            
+        with edit_tab:
+            edit_tab.write("data changes tab")
 
 
 
