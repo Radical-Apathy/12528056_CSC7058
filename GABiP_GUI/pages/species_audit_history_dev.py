@@ -310,16 +310,42 @@ def species_audit_history():
             date_edit_accepted=[]
             edit_accepted_by=[]
             edit_submitted_by=[]
+            original_values=[]
 
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
                     if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Edit":
                         dates_edited.append(database['key'])
                         information_edited.append(database["Changes"])
+                        original_values.append(database['Dataset_Pre_Change'])
                         edit_sources_added.append(database["User_Sources"])
                         date_edit_accepted.append(database["Decision_Date"])
                         edit_accepted_by.append(database["Decided_By"])
                         edit_submitted_by.append(database["Edited_By"])
 
+            def display_edit_expanders(info, sources, original, dates, submitted_by, accepted_by, date_accepted):
+                for i, item in enumerate(info):
+                    if item != "image only":
+                        # Remove extra quotes around JSON string
+                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
+                        data = json.loads(json_str)
+                        sources_json_str = sources[i].replace('"{"', '{"').replace('"}"', '}"')
+                        sources_data = json.loads(sources_json_str)
+                        original_json_str=original[i].replace('"{"', '{"').replace('"}"', '}"')
+                        original_data = json.loads(original_json_str)
+
+                        with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
+                            rows = []
+                            for key, value in data["0"].items():
+                                sources_value = sources_data["0"].get(key, "")
+                                original_value= original_data["8249"].get(key, "")
+                                rows.append([key, value, sources_value, original_value])
+                            df = pd.DataFrame(rows, columns=['Values Editted', 'Original','Changed To', 'Sources'])
+                            st.write(df)
+                            st.write(f"**Submitted by**: {submitted_by[i]} ")
+                            st.write(f"**Approved by**: {accepted_by[i]} ")
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")           
+
+            display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted)
 
 
 
