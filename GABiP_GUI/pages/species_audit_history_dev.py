@@ -271,11 +271,11 @@ def species_audit_history():
             submitted_by=[]
             
             sources_added=[]
-            if len(dates_added)==0:
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data additions for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
-            else:
+            
+                
+            
 
-                for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
                         if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Addition":
                             dates_added.append(database['key'])
                             information_added.append(database["Changes"])
@@ -284,11 +284,14 @@ def species_audit_history():
                             accepted_by.append(database["Decided_By"])
                             submitted_by.append(database["Edited_By"])
 
-                                    
+            if len(dates_added)==0:
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded additions for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                
+            else:                    
                 def display_addition_expanders(info, sources, dates, submitted_by, accepted_by, date_accepted):
                     for i, item in enumerate(info):
                         if item != "image only":
-                            # Remove extra quotes around JSON string
+                                # Remove extra quotes around JSON string
                             json_str = item.replace('"{"', '{"').replace('"}"', '}"')
                             data = json.loads(json_str)
                             sources_json_str = sources[i].replace('"{"', '{"').replace('"}"', '}"')
@@ -296,8 +299,8 @@ def species_audit_history():
                             with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
                                 rows = []
                                 for key, value in data["0"].items():
-                                    sources_value = sources_data["0"].get(key, "")
-                                    rows.append([key, value, sources_value])
+                                     sources_value = sources_data["0"].get(key, "")
+                                     rows.append([key, value, sources_value])
                                 df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Sources'])
                                 st.write(df)
                                 st.write(f"**Submitted by**: {submitted_by[i]} ")
@@ -425,7 +428,7 @@ def species_audit_history():
             images=[]
 
             
-            
+
             
 
             for user_image in  sorted (user_images, key=lambda x: x["key"], reverse=True):
