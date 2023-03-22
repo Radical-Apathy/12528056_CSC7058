@@ -321,6 +321,19 @@ def species_audit_history():
                         date_edit_accepted.append(database["Decision_Date"])
                         edit_accepted_by.append(database["Decided_By"])
                         edit_submitted_by.append(database["Edited_By"])
+            
+
+            # before_jsonn=json.loads(species_before)
+            # species_index = list(before_jsonn['Order'].keys())[0]
+            # def get_current_values(species_after, species_before):
+            #          changed_fields_current_data = json.loads(species_after)
+            #          current_data = json.loads(species_before)
+
+            #          for key in changed_fields_current_data["0"].keys():
+            #                 if key in current_data:
+            #                     changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
+            #          return json.dumps(changed_fields_current_data)
+
 
             def display_edit_expanders(info, sources, original, dates, submitted_by, accepted_by, date_accepted):
                 for i, item in enumerate(info):
@@ -337,15 +350,19 @@ def species_audit_history():
                             rows = []
                             for key, value in data["0"].items():
                                 sources_value = sources_data["0"].get(key, "")
-                                original_value= original_data["8249"].get(key, "")
+                                original_value= original_data[8249].get(key, "")
                                 rows.append([key, value, sources_value, original_value])
                             df = pd.DataFrame(rows, columns=['Values Editted', 'Original','Changed To', 'Sources'])
                             st.write(df)
                             st.write(f"**Submitted by**: {submitted_by[i]} ")
                             st.write(f"**Approved by**: {accepted_by[i]} ")
-                            st.write(f"**Date Approved**: {date_accepted[i]} ")           
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")  
 
-            display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted)
+           
+
+            #display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted)
+
+
 
 
 
