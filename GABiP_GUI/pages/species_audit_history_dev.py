@@ -252,7 +252,9 @@ def species_audit_history():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
-    
+    species_index=species_results.index[0]
+
+    st.write(species_index)
     def approval_history():
         
         species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
@@ -324,7 +326,7 @@ def species_audit_history():
             
 
             # before_jsonn=json.loads(species_before)
-            # species_index = list(before_jsonn['Order'].keys())[0]
+            
             # def get_current_values(species_after, species_before):
             #          changed_fields_current_data = json.loads(species_after)
             #          current_data = json.loads(species_before)
