@@ -278,43 +278,30 @@ def species_audit_history():
                         accepted_by.append(database["Decided_By"])
                         submitted_by.append(database["Edited_By"])
 
-           
-            def display_expanders_with_df_all_info(info, dates, submitted_by, accepted_by, date_accepted):
+                                  
+            def display_addition_expanders(info, sources, dates, submitted_by, accepted_by, date_accepted):
                 for i, item in enumerate(info):
                     if item != "image only":
                         # Remove extra quotes around JSON string
                         json_str = item.replace('"{"', '{"').replace('"}"', '}"')
                         data = json.loads(json_str)
+                        sources_json_str = sources[i].replace('"{"', '{"').replace('"}"', '}"')
+                        sources_data = json.loads(sources_json_str)
                         with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
                             rows = []
                             for key, value in data["0"].items():
-                                rows.append([key, value])
-                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added'])
+                                sources_value = sources_data["0"].get(key, "")
+                                rows.append([key, value, sources_value])
+                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Sources'])
                             st.write(df)
                             st.write(f"**Submitted by**: {submitted_by[i]} ")
                             st.write(f"**Approved by**: {accepted_by[i]} ")
-                            st.write(f"**Date Approved**: {date_accepted[i]} ")
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")           
 
-            def display_expanders_with_df_all_info_and_sources(info, dates, submitted_by, accepted_by, date_accepted):
-                for i, item in enumerate(info):
-                    if item != "image only":
-                        # Remove extra quotes around JSON string
-                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
-                        data = json.loads(json_str)
-                        with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
-                            rows = []
-                            for key, value in data["0"].items():
-                                rows.append([key, value])
-                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added'])
-                            st.write(df)
-                            st.write(f"**Submitted by**: {submitted_by[i]} ")
-                            st.write(f"**Approved by**: {accepted_by[i]} ")
-                            st.write(f"**Date Approved**: {date_accepted[i]} ")
-                    
+            
 
-            additions_tab.write("trying with dataframes nested in expander")
-
-            display_expanders_with_df_all_info(information_added, dates_added, submitted_by, accepted_by, date_accepted)
+            
+            display_addition_expanders(information_added, sources_added, dates_added, submitted_by, accepted_by, date_accepted)
 
             
 
