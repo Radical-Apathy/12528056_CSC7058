@@ -304,7 +304,21 @@ def species_audit_history():
             display_addition_expanders(information_added, sources_added, dates_added, submitted_by, accepted_by, date_accepted)
 
         with edit_tab:
-            edit_tab.write("data changes tab")
+            information_edited=[]
+            dates_edited=[]
+            edit_sources_added=[]
+            date_edit_accepted=[]
+            edit_accepted_by=[]
+            edit_submitted_by=[]
+
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+                    if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Edit":
+                        dates_edited.append(database['key'])
+                        information_edited.append(database["Changes"])
+                        edit_sources_added.append(database["User_Sources"])
+                        date_edit_accepted.append(database["Decision_Date"])
+                        edit_accepted_by.append(database["Decided_By"])
+                        edit_submitted_by.append(database["Edited_By"])
 
 
 
