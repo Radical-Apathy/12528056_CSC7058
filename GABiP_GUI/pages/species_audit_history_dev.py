@@ -253,8 +253,9 @@ def species_audit_history():
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
     species_index=species_results.index[0]
-
-    st.write(species_index)
+    #now=datetime.now()
+    #st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Data for{genus_dropdown} {species_dropdown} as of {str(now)}</strong></em></p>', unsafe_allow_html=True)
+    
     def approval_history():
         
         species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
@@ -313,7 +314,7 @@ def species_audit_history():
             edit_accepted_by=[]
             edit_submitted_by=[]
             original_values=[]
-            previous_data = []
+            
 
 
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
@@ -325,32 +326,10 @@ def species_audit_history():
                         date_edit_accepted.append(database["Decision_Date"])
                         edit_accepted_by.append(database["Decided_By"])
                         edit_submitted_by.append(database["Edited_By"])
-            
+                        
+                       
 
-            # before_jsonn=json.loads(species_before)
-            
-            def get_pre_field_values(information_edited, original_values):
-                    
-                    
-                    for i in range(len(information_edited)):
-                        if information_edited!="image only edit":
-                            changed_fields_current_data = json.loads(information_edited[i])
-                            current_data = json.loads(original_values[i])
-                            for key in changed_fields_current_data["0"].keys():
-                                if key in current_data:
-                                    changed_fields_current_data["0"][key] = current_data[key][str(species_index)]
-                            previous_data.append(changed_fields_current_data)
-                    return json.dumps(previous_data)
-            
-
-            
-            edit_tab.write(information_edited)
-            
-            get_pre_field_values(information_edited, original_values)
-            edit_tab.write(previous_data)
-            
-
-            def display_edit_expanders_origvalues(info, sources, previous_data, dates, submitted_by, accepted_by, date_accepted):
+            def display_edit_expanders(info, sources, original_values, dates, submitted_by, accepted_by, date_accepted):
                 for i, item in enumerate(info):
                     if item != "image only":
                         # Remove extra quotes around JSON string
@@ -358,46 +337,31 @@ def species_audit_history():
                         data = json.loads(json_str)
                         sources_json_str = sources[i].replace('"{"', '{"').replace('"}"', '}"')
                         sources_data = json.loads(sources_json_str)
-                        #previous_data=json.loads(previous_data)
+                        original_values_json_str=original_values[i].replace('"{"', '{"').replace('"}"', '}"')
+                        original_data=json.loads(original_values_json_str)
 
-
-
+                        
                         with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
                             rows = []
                             for key, value in data["0"].items():
                                 sources_value = sources_data["0"].get(key, "")
-                                previous_values=previous_data[i].get(key, "")
-                                rows.append([key, value, sources_value, previous_values])
-                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Sources', 'Original Values'])
+                                original_value=original_data.get(key,"").get(str(species_index),"")
+                                #original_value = original_data.get(key, {}).get(species_index, "")
+                                rows.append([key, value,  original_value, sources_value,])
+                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Original Values','Sources', ])
                             st.write(df)
                             st.write(f"**Submitted by**: {submitted_by[i]} ")
                             st.write(f"**Approved by**: {accepted_by[i]} ")
-                            st.write(f"**Date Approved**: {date_accepted[i]} ") 
-
-
-            def display_edit_expanders(info, sources, dates, submitted_by, accepted_by, date_accepted):
-                for i, item in enumerate(info):
-                    if item != "image only":
-                        # Remove extra quotes around JSON string
-                        json_str = item.replace('"{"', '{"').replace('"}"', '}"')
-                        data = json.loads(json_str)
-                        sources_json_str = sources[i].replace('"{"', '{"').replace('"}"', '}"')
-                        sources_data = json.loads(sources_json_str)
-                        with st.expander(f"**DATE SUBMITTED**: {dates[i]}"):
-                            rows = []
-                            for key, value in data["0"].items():
-                                sources_value = sources_data["0"].get(key, "")
-                                rows.append([key, value, sources_value])
-                            df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Sources'])
-                            st.write(df)
-                            st.write(f"**Submitted by**: {submitted_by[i]} ")
-                            st.write(f"**Approved by**: {accepted_by[i]} ")
-                            st.write(f"**Date Approved**: {date_accepted[i]} ") 
+                            st.write(f"**Date Approved**: {date_accepted[i]} ")
 
             
 
-            display_edit_expanders_origvalues(information_edited, edit_sources_added, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted, previous_data)
+            
 
+            display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted)
+
+        with deletions_tab:  
+            st.write("Removals Tab")
 
 
 
