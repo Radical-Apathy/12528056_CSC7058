@@ -1626,7 +1626,7 @@ def data_removal_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
         def update_GABiP_image():
                 updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_Pre_Change":latest_approved_ds }
@@ -1636,7 +1636,7 @@ def data_removal_review():
          return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
         
         def reject_new_addition():
-                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         
