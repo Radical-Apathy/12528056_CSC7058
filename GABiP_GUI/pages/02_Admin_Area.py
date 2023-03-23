@@ -222,6 +222,8 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
+
+
 #-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
@@ -1308,8 +1310,7 @@ def remove_species_admin():
 
 
 
-def quick_screen_check():
-     st.write("DENIAL ACKNOWLEDGED")
+
 
 
 #----------------------------------------------------------------------------------------------DATA REMOVAL PAGE----------------------------------------------------------------------#
@@ -1683,6 +1684,7 @@ def data_removal_review():
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
+                            
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")       
         else:
@@ -1738,6 +1740,7 @@ def data_removal_review():
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
+                            
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
         
