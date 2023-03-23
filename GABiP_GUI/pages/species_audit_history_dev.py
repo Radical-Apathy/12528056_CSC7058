@@ -731,7 +731,7 @@ def species_audit_history():
 
         with images_added_tab:
             
-            date_added=[]
+            date_image_added=[]
             information_added=[]
             image_comment=[]
             date_rejected=[]
@@ -741,8 +741,8 @@ def species_audit_history():
             images=[]
             
 
-            if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Denied":# and (database["Edit_Type"]=="Information Edit" or database["Edit_Type"]=="Information Addition") :
-                date_added.append(database['key'])
+            if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown:# and database["Status"]=="Denied":# and (database["Edit_Type"]=="Information Edit" or database["Edit_Type"]=="Information Addition") :
+                date_image_added.append(database['key'])
                 information_added.append(database["Changes"])
                 image_comment.append(database["User_Comment"])
                 date_rejected.append(database["Decision_Date"])
@@ -751,7 +751,7 @@ def species_audit_history():
                 rejection_reason.append(database["Reason_Denied"])
                 images.append(database["User_Images"])
 
-            st.write(date_added)
+            st.write(date_image_added)
             if len(date_added)==0 or len(images)==0:
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
@@ -769,6 +769,7 @@ def species_audit_history():
                         st.write(f"**Declined by**: {rejected_by[i]} ")
                         st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
                         st.write(f"**Date Declined**: {date_rejected[i]} ")
+
                 display_addition_expanders(date_added, date_rejected, submitted_by, rejected_by, images, rejection_reason, image_comment)
                                         
 
