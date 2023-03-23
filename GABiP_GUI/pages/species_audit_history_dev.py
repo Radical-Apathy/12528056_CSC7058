@@ -320,12 +320,8 @@ def species_audit_history():
             edit_accepted_by=[]
             edit_submitted_by=[]
             original_values=[]
-            
-            if len(dates_edited) == 0:
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
-            else:
 
-                for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
                         if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Edit":
                             dates_edited.append(database['key'])
                             information_edited.append(database["Changes"])
@@ -334,8 +330,11 @@ def species_audit_history():
                             date_edit_accepted.append(database["Decision_Date"])
                             edit_accepted_by.append(database["Decided_By"])
                             edit_submitted_by.append(database["Edited_By"])
-                            
-                        
+            
+            if len(dates_edited) == 0:
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            else:
+                                                    
 
                 def display_edit_expanders(info, sources, original_values, dates, submitted_by, accepted_by, date_accepted):
                     for i, item in enumerate(info):
@@ -378,11 +377,7 @@ def species_audit_history():
             removal_accepted_by=[]
             removal_submitted_by=[]
 
-            if len(dates_removed)==0:
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data removals for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
-            else:
-
-                for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
                         if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Removal":
                             dates_removed.append(database['key'])
                             information_removed.append(database["Changes"])
@@ -391,6 +386,12 @@ def species_audit_history():
                             date_removal_accepted.append(database["Decision_Date"])
                             removal_accepted_by.append(database["Decided_By"])
                             removal_submitted_by.append(database["Edited_By"])
+
+            if len(dates_removed)==0:
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data removals for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            else:
+
+                
 
                 def display_removal_expanders(info, sources, original_values, dates, submitted_by, accepted_by, date_accepted):
                     for i, item in enumerate(info):
@@ -426,9 +427,6 @@ def species_audit_history():
             submitted_by=[]
             approved_by=[]
             images=[]
-
-            
-
             
 
             for user_image in  sorted (user_images, key=lambda x: x["key"], reverse=True):
@@ -438,9 +436,12 @@ def species_audit_history():
                                 submitted_by.append(user_image['Submitted_By'])
                                 approved_by.append(user_image['Decided_By'])
                                 images.append(user_image['Images'])
-            
-            def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images):
-                for i in range(len(date_added)):
+            if len(date_added)==0:
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            else:
+
+                def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images):
+                 for i in range(len(date_added)):
                     with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
                         if len(images)!=0:
                           for array in images:
