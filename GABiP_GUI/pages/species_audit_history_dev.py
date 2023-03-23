@@ -455,7 +455,45 @@ def species_audit_history():
 
             display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images)
 
+        with images_removed_tab:
 
+            dates_requested=[]
+            removal_reason=[]
+            image=[]
+            date_removal_accepted=[]
+            accepted_by=[]
+            submitted_by=[]
+            
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Changes"]=="image only delete":
+                            dates_requested.append(database['key'])
+                            image.append(database["User_Images"])
+                            removal_reason.append(database["User_Comment"])
+                            date_removal_accepted.append(database["Decision_Date"])
+                            accepted_by.append(database["Decided_By"])
+                            submitted_by.append(database["Edited_By"])
+
+            
+
+            if len(dates_requested)==0:
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            else:
+                def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, image, reason):
+                  for i in range(len(date_added)):
+                    with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
+                        if len(image)!=0:
+                          for array in image:
+                              #for val in array:
+                                  st.image(f"https://drive.google.com/uc?id={array[1]}")
+                                  st.write(f"**Original Addition Date**: {array[0]} ")
+
+                        st.write(f"**Removal Request by**: {submitted_by[i]} ")
+                        st.write(f"**Removal Reason**: {reason[i]} ")
+                        st.write(f"**Removed by**: {approved_by[i]} ")
+                        st.write(f"**Date of Removal**: {date_accepted[i]} ")
+
+                display_image_expanders(dates_requested, date_removal_accepted, submitted_by, accepted_by, image, removal_reason)
+                 
 
 
 
