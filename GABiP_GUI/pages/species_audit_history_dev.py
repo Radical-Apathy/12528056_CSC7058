@@ -253,9 +253,16 @@ def species_audit_history():
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
     species_index=species_results.index[0]
-    #now=datetime.now()
-    #st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Data for{genus_dropdown} {species_dropdown} as of {str(now)}</strong></em></p>', unsafe_allow_html=True)
     
+    #method to check that edits submitted are not just image edits
+    def check_data(array):
+                 for val in array:
+                      if val.startswith("{"):
+                        return True
+
+
+
+
     def approval_history():
         
         species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
@@ -349,8 +356,8 @@ def species_audit_history():
                             edit_accepted_by.append(database["Decided_By"])
                             edit_submitted_by.append(database["Edited_By"])
             
-            if len(dates_edited) == 0:
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            if len(dates_edited) == 0 or not check_data(information_edited):
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
                                                     
 
@@ -405,7 +412,7 @@ def species_audit_history():
                             removal_accepted_by.append(database["Decided_By"])
                             removal_submitted_by.append(database["Edited_By"])
 
-            if len(dates_removed)==0:
+            if len(dates_removed)==0 or not check_data(information_removed):
                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data removals for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
 
@@ -520,49 +527,68 @@ def species_audit_history():
 
         with species_removal_tab:
             
-            dates_added=""
+            date_added=[]
+            reason_stated=[]
+            date_rejected=[]
+            rejected_by=[]
+            submitted_by=[]
+            rejection_reason=[]
+
+
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
                 if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Denied" and database["Edit_Type"]=="Removal":
-                                dates_added=(database['key'])
-                                sources_added=(database["User_Comment"])
-                                date_accepted=(database["Decision_Date"])
-                                accepted_by=(database["Decided_By"])
-                                submitted_by=(database["Edited_By"])
-
-            if len(dates_added)==0:
+                                date_added.append(database['key'])
+                                reason_stated.append(database["User_Comment"])
+                                date_rejected.append(database["Decision_Date"])
+                                rejected_by.append(database["Decided_By"])
+                                submitted_by.append(database["Edited_By"])
+                                rejection_reason.append(database["Reason_Denied"])
+            
+            if not date_added:
               st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No removal requests for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             
-            def show_removal_request_expanders():
-                 pass
+            def display_removal_rejection_expanders(date_added, date_rejected, submitted_by, rejected_by, reason_stated,rejection_reason):
+                  for i in range(len(date_added)):
+                    with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
+                        
+                        st.write(f"**Removal Request by**: {submitted_by[i]} ")
+                        st.write(f"**User's Reason for Removal**: {reason_stated[i]} ")
+                        st.write(f"**Removal Declined by**: {rejected_by[i]} ")
+                        st.write(f"**Admin Reason for Removal Decline**: {rejection_reason[i]} ")
+                        st.write(f"**Reason Declined on**: {date_rejected[i]} ")
+            display_removal_rejection_expanders(date_added, date_rejected, submitted_by, rejected_by, reason_stated,rejection_reason)
             
 
         
         with additions_tab:
             dates_added=[]
             information_added=[]
-            date_accepted=[]
-            accepted_by=[]
+            date_rejected=[]
+            rejected_by=[]
             submitted_by=[]
-            
             sources_added=[]
+            rejection_reason=[]
             
                 
             
 
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
-                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Addition":
+                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Denied" and database["Edit_Type"]=="Information Addition":
                             dates_added.append(database['key'])
                             information_added.append(database["Changes"])
                             sources_added.append(database["User_Sources"])
-                            date_accepted.append(database["Decision_Date"])
-                            accepted_by.append(database["Decided_By"])
+                            date_rejected.append(database["Decision_Date"])
+                            rejected_by.append(database["Decided_By"])
                             submitted_by.append(database["Edited_By"])
+                            rejection_reason.append(database["Reason_Denied"])
 
-            if len(dates_added)==0:
+            
+                 
+            if len(dates_added)==0 or not check_data(information_added):
                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded additions for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
                 
             else:                    
-                def display_addition_expanders(info, sources, dates, submitted_by, accepted_by, date_accepted):
+                def display_addition_expanders(info, sources, dates, submitted_by, rejected_by, date_rejected, rejection_reason):
                     for i, item in enumerate(info):
                         if item != "image only":
                                 # Remove extra quotes around JSON string
@@ -578,41 +604,45 @@ def species_audit_history():
                                 df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Sources'])
                                 st.write(df)
                                 st.write(f"**Submitted by**: {submitted_by[i]} ")
-                                st.write(f"**Approved by**: {accepted_by[i]} ")
-                                st.write(f"**Date Approved**: {date_accepted[i]} ")           
+                                st.write(f"**Denied by**: {rejected_by[i]} ")
+                                st.write(f"**Admin Reason for Denial**: {rejection_reason[i]} ")
+                                st.write(f"**Rejected On**: {date_rejected[i]} ")           
 
                 
 
             
-                display_addition_expanders(information_added, sources_added, dates_added, submitted_by, accepted_by, date_accepted)
+                display_addition_expanders(information_added, sources_added, dates_added, submitted_by, rejected_by, date_rejected, rejection_reason)
 
         with edit_tab:
             information_edited=[]
             dates_edited=[]
             edit_sources_added=[]
-            date_edit_accepted=[]
-            edit_accepted_by=[]
+            date_edit_rejected=[]
+            edit_rejected_by=[]
             edit_submitted_by=[]
             original_values=[]
+            rejection_reason=[]
 
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
-                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="Information Edit":
+                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Denied" and database["Edit_Type"]=="Information Edit":
                             dates_edited.append(database['key'])
                             information_edited.append(database["Changes"])
                             original_values.append(database['Dataset_Pre_Change'])
                             edit_sources_added.append(database["User_Sources"])
-                            date_edit_accepted.append(database["Decision_Date"])
-                            edit_accepted_by.append(database["Decided_By"])
+                            date_edit_rejected.append(database["Decision_Date"])
+                            edit_rejected_by.append(database["Decided_By"])
                             edit_submitted_by.append(database["Edited_By"])
+                            rejection_reason.append(database["Reason_Denied"])
             
-            if len(dates_edited) == 0:
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+            
+            if len(dates_edited) == 0 or not check_data(information_edited):
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
                                                     
 
-                def display_edit_expanders(info, sources, original_values, dates, submitted_by, accepted_by, date_accepted):
+                def display_edit_expanders(info, sources, original_values, dates, submitted_by, edit_rejected_by, date_edit_rejected, rejection_reason):
                     for i, item in enumerate(info):
-                        if item != "image only":
+                        if item != "image only edit":
                             # Remove extra quotes around JSON string
                             json_str = item.replace('"{"', '{"').replace('"}"', '}"')
                             data = json.loads(json_str)
@@ -632,14 +662,15 @@ def species_audit_history():
                                 df = pd.DataFrame(rows, columns=['Data Changed', 'Updated Values', 'Original Values','Sources', ])
                                 st.write(df)
                                 st.write(f"**Submitted by**: {submitted_by[i]} ")
-                                st.write(f"**Approved by**: {accepted_by[i]} ")
-                                st.write(f"**Date Approved**: {date_accepted[i]} ")
+                                st.write(f"**Denied by**: {edit_rejected_by[i]} ")
+                                st.write(f"**Admin Reason for Denial**: {rejection_reason[i]} ")
+                                st.write(f"**Rejected On**: {date_edit_rejected[i]} ")
 
             
 
             
 
-                display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited, edit_submitted_by, edit_accepted_by, date_edit_accepted)
+                display_edit_expanders(information_edited, edit_sources_added, original_values, dates_edited,edit_submitted_by, edit_rejected_by, date_edit_rejected, rejection_reason)
 
         with deletions_tab:  
             
