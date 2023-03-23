@@ -779,25 +779,27 @@ def species_audit_history():
             dates_requested=[]
             removal_reason=[]
             image=[]
-            date_removal_accepted=[]
-            accepted_by=[]
+            date_removal_rejected=[]
+            rejected_by=[]
             submitted_by=[]
             
             for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
-                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Changes"]=="image only delete":
+                        if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Denied" and database["Changes"]=="image only delete":
                             dates_requested.append(database['key'])
                             image.append(database["User_Images"])
                             removal_reason.append(database["User_Comment"])
-                            date_removal_accepted.append(database["Decision_Date"])
-                            accepted_by.append(database["Decided_By"])
+                            date_removal_rejected.append(database["Decision_Date"])
+                            rejected_by.append(database["Decided_By"])
                             submitted_by.append(database["Edited_By"])
+                            rejection_reason.append(database["Reason_Denied"])
+                            
 
-            
+            st.write(images)
 
             if len(dates_requested)==0:
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
-                def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, image, reason):
+                def display_image_expanders(date_added, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason):
                   for i in range(len(date_added)):
                     with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
                         if len(image)!=0:
@@ -807,11 +809,12 @@ def species_audit_history():
                                   st.write(f"**Original Addition Date**: {array[0]} ")
 
                         st.write(f"**Removal Request by**: {submitted_by[i]} ")
-                        st.write(f"**Removal Reason**: {reason[i]} ")
-                        st.write(f"**Removed by**: {approved_by[i]} ")
-                        st.write(f"**Date of Removal**: {date_accepted[i]} ")
+                        st.write(f"**User Reason for Removal Request**: {removal_reason[i]} ")
+                        st.write(f"**Declined by**: {rejected_by[i]} ")
+                        st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
+                        st.write(f"**Date Removal Request Declined **: {date_removal_rejected[i]} ")
 
-                display_image_expanders(dates_requested, date_removal_accepted, submitted_by, accepted_by, image, removal_reason)
+                display_image_expanders(date_added, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason)
                  
 
 
