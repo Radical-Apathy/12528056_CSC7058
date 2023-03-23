@@ -261,7 +261,25 @@ def species_audit_history():
         species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
 
         with species_addition_tab:
-            st.write("addition tab")
+            
+
+            for database in  sorted (databases, key=lambda x: x["key"], reverse=True):
+                if database["Species_Affected"] == species_dropdown and database["Genus_Affected"]==genus_dropdown and database["Status"]=="Approved" and database["Edit_Type"]=="New Species Addition":
+                                dates_added=(database['key'])
+                                sources_added=(database["User_Comment"])
+                                date_accepted=(database["Decision_Date"])
+                                accepted_by=(database["Decided_By"])
+                                submitted_by=(database["Edited_By"])
+            if len(dates_added)==0:
+              st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>{genus_dropdown} {species_dropdown} already part of July 2022 GABiP</strong></em></p>', unsafe_allow_html=True)
+            else:
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>{genus_dropdown} {species_dropdown} Added on: {dates_added}</strong></em></p>', unsafe_allow_html=True)
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Addition request by: {submitted_by}</strong></em></p>', unsafe_allow_html=True)
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Sources: {sources_added}</strong></em></p>', unsafe_allow_html=True)
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request approved by {accepted_by} on {date_accepted}</strong></em></p>', unsafe_allow_html=True)
+                 
+            
+
         
         with additions_tab:
             dates_added=[]
