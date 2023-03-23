@@ -814,7 +814,7 @@ def species_audit_history():
                         st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
                         st.write(f"**Date Removal Request Declined **: {date_removal_rejected[i]} ")
 
-                display_image_expanders(date_added, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason)
+                display_image_expanders(dates_requested, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason)
                  
 
 
