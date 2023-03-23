@@ -373,7 +373,7 @@ def species_audit_history():
                                     original_value=original_data.get(key,"").get(str(species_index),"")
                                     #original_value = original_data.get(key, {}).get(species_index, "")
                                     rows.append([key, value,  original_value, sources_value,])
-                                df = pd.DataFrame(rows, columns=['Properties Added', 'Values Added', 'Original Values','Sources', ])
+                                df = pd.DataFrame(rows, columns=['Data Changed', 'Updated Values', 'Original Values','Sources', ])
                                 st.write(df)
                                 st.write(f"**Submitted by**: {submitted_by[i]} ")
                                 st.write(f"**Approved by**: {accepted_by[i]} ")

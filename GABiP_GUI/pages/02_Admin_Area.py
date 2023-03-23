@@ -637,7 +637,7 @@ def information_addition_review():
                 metaData.update(updates, datesubmitted)
 
         if preview_updated_dataset and species_before=="image only":
-            st.write(species_added_to)
+            
             preview_new=True
             if preview_new:
                 
@@ -1308,7 +1308,8 @@ def remove_species_admin():
 
 
 
-
+def quick_screen_check():
+     st.write("DENIAL ACKNOWLEDGED")
 
 
 #----------------------------------------------------------------------------------------------DATA REMOVAL PAGE----------------------------------------------------------------------#
