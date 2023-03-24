@@ -265,7 +265,7 @@ def species_audit_history():
 
     def approval_history():
         
-        species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed"])
+        species_addition_tab, additions_tab, edit_tab, deletions_tab,  images_added_tab, images_removed_tab, current_data_tab =st.tabs(["Species Added", "Data Addition", "Data Edits","Data Removals", "Images Added", "Images Removed", "Current Data"])
 
         with species_addition_tab:
             
@@ -277,6 +277,8 @@ def species_audit_history():
                                 date_accepted=(database["Decision_Date"])
                                 accepted_by=(database["Decided_By"])
                                 submitted_by=(database["Edited_By"])
+                                original_info=(database["Changes"])
+
             if not dates_added:
               st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>{genus_dropdown} {species_dropdown} was already present in  July 2022 GABiP version</strong></em></p>', unsafe_allow_html=True)
             else:
@@ -284,7 +286,12 @@ def species_audit_history():
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Addition request by: {submitted_by}</strong></em></p>', unsafe_allow_html=True)
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Sources: {sources_added}</strong></em></p>', unsafe_allow_html=True)
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Request approved by {accepted_by} on {date_accepted}</strong></em></p>', unsafe_allow_html=True)
-                 
+                 st.markdown("***")
+                 title_col1,title_col2, title_col3=st.columns(3)
+                 title_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Data at Time of Addition</em></p>', unsafe_allow_html=True)
+                 original_json=json.loads(original_info)
+                 spec_add_col1,spec_add_col2, spec_add_col3=st.columns(3)
+                 spec_add_col2.dataframe(pd.DataFrame(original_json).iloc[0], width=500)
             
 
         
@@ -517,6 +524,38 @@ def species_audit_history():
                         st.write(f"**Date of Removal**: {date_accepted[i]} ")
 
                 display_image_expanders(dates_requested, date_removal_accepted, submitted_by, accepted_by, image, removal_reason)
+        with current_data_tab:
+
+            def check_user_image(species_dropdown, genus_dropdown):
+                image_found=False
+                for user_image in sorted(user_images, key=lambda x: x["key"], reverse=True):
+                    if user_image["Species"] == species_dropdown and user_image["Genus"]==genus_dropdown:
+                        if user_image['Images']:
+                            current_col2.markdown("**Current Approved Image**")
+                            current_col2.image(f"https://drive.google.com/uc?id={user_image['Images'][0]}")
+                            current_col2.markdown(f"**Submitted by** {user_image['Submitted_By']} **on** {user_image['key']}")
+                            current_col2.markdown(f"**Approved by** {user_image['Decided_By']} **on** {user_image['Decision_Date']}") 
+                            image_found=True
+                            break
+                if not image_found:
+                    current_col2.markdown(f"No current images for {genus_dropdown} {species_dropdown}")
+                
+
+            def link_image(results):
+                merged_image_df = pd.merge(results, dfImages, left_on=['Genus', 'Species'], right_on=['Genus', 'Species'], how='inner')
+                if merged_image_df.empty or merged_image_df["Display Image"].iloc[0] == "https://calphotos.berkeley.edu image not available":
+                    check_user_image(species_dropdown, genus_dropdown)
+                elif not merged_image_df.empty and merged_image_df["Display Image"].iloc[0] != "https://calphotos.berkeley.edu image not available":
+                    return merged_image_df["Display Image"].iloc[0]
+            now=datetime.now()
+             #formatted_date = now.strftime("%d/%m/%Y %H:%M:%S")
+            formatted_date=now.strftime("%d/%m/%Y")
+            formatted_time=now.strftime("%H:%M:%S")
+            st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>Information for {genus_dropdown} {species_dropdown} at {formatted_date} at {formatted_time}</em></p>', unsafe_allow_html=True)
+            current_col1, current_col2=st.columns(2)
+            current_col1.markdown("**Current Data**")
+            current_col1.dataframe(current.iloc[species_index], width=300)
+            link_image(current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)])
                  
 
     #----------------------------------------------------------------------REJECTION HISTORY---------------------------------------------------------------------------------------------#

@@ -222,7 +222,10 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
+#-------------------------------------------------------------------------Clearing cache experiment---------------------------------------------------------------#
 
+def clear_cache():
+    st.runtime.legacy_caching.clear_cache()
 
 #-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
@@ -327,6 +330,7 @@ def new_species_review():
                     create_new_addition_dataset()
                     update_GABiP()
                     st.write("GABiP updated!")
+                    clear_cache()
 
 
             
