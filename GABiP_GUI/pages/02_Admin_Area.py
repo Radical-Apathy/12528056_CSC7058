@@ -631,7 +631,7 @@ def information_addition_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
         def update_GABiP_image():
                 updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_Pre_Change":latest_approved_ds }
@@ -669,7 +669,7 @@ def information_addition_review():
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
         elif preview_updated_dataset and approved_images:
-                
+                current=load_latest_not_cached()
                 updated_db=current.copy()
                 try:
                     
@@ -704,6 +704,7 @@ def information_addition_review():
                 
                 
                 try:
+                    current=load_latest_not_cached()
                     updated_db=current.copy()
                     updated_json=json.dumps(update_user_json(species_before, species_after))
                     updated_row=pd.read_json(updated_json)
@@ -713,8 +714,7 @@ def information_addition_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.write("aproved images length last elif") 
-                st.write(len(approved_images))
+                
                 st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
@@ -1809,6 +1809,7 @@ def admin_edit_options():
         st.write("Current Database")
         st.write(latest_id)
         st.write(latest_approved_ds)
+        current=load_latest_not_cached()
         st.write(current)
         #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
         
