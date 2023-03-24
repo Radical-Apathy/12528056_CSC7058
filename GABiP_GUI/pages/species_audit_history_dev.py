@@ -102,13 +102,15 @@ def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
-
+def load_latest_not_cached():
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+    return current_db
 #get submissions for species info addition
 
 pending_edit_info=[]
 
 try:
-     current=load_latest()
+     current=load_latest_not_cached()
 except:
      
      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
@@ -486,7 +488,7 @@ def species_audit_history():
                          st.write(f"**Date Approved**: {date_accepted[i]} ")
                                         
 
-            display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images)
+                display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images)
 
         with images_removed_tab:
 

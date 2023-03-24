@@ -149,6 +149,10 @@ def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
     return current_db
 
+def load_latest_not_cached():
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+    return current_db
+
 
 try:
      current=load_latest()
@@ -207,6 +211,8 @@ if 'image_ids' not in st.session_state:
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
+def page_experiment():
+    st.write("page exeriment")
 
 def show_db():
 
@@ -228,6 +234,7 @@ def show_db():
                 )
 
     load_db_bg()
+    
     st.write(current)
 
     
@@ -361,6 +368,7 @@ def add_entry_page():
      
      add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     
        
 
     
@@ -1452,7 +1460,7 @@ def remove_species_data():
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
     options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Data','Edit Species Data' , 'Remove Species Data','Remove a Species'), key='current_option')     
-    
+    #page_experiment():
     if options == "Show Full Database":
         show_db()
     if options == "New Species Entry":
