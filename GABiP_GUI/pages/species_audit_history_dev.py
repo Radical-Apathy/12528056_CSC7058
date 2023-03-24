@@ -499,7 +499,7 @@ def species_audit_history():
                             accepted_by.append(database["Decided_By"])
                             submitted_by.append(database["Edited_By"])
 
-            
+            st.write(image)
 
             if len(dates_requested)==0:
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
@@ -507,12 +507,10 @@ def species_audit_history():
                 def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, image, reason):
                   for i in range(len(date_added)):
                     with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
-                        if len(image)!=0:
-                          for array in image:
-                              #for val in array:
-                                  st.image(f"https://drive.google.com/uc?id={array[1]}")
-                                  st.write(f"**Original Addition Date**: {array[0]} ")
-
+                         
+                        st.image(f"https://drive.google.com/uc?id={image[i][1]}")
+                        st.write(f"**Original Addition Date**: {image[i][0]} ")
+                        
                         st.write(f"**Removal Request by**: {submitted_by[i]} ")
                         st.write(f"**Removal Reason**: {reason[i]} ")
                         st.write(f"**Removed by**: {approved_by[i]} ")
