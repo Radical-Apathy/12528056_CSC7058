@@ -396,7 +396,7 @@ def add_species_information():
         )
 
     add_bg_from_url()
-
+    current=load_latest_not_cached()
     missingInfoColumns = []
     def get_missing_info_columns(results):
         for column in dbColumns:
@@ -490,7 +490,7 @@ def add_species_information():
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
     
-    current=load_latest_not_cached()
+    
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1466,6 +1466,7 @@ def show_options():
     if options == "New Species Entry":
         add_entry_page()
     if options == 'Add Species Data':
+        
         add_species_information()
     if options == 'Edit Species Data':
         edit_species_information()

@@ -318,7 +318,7 @@ def species_audit_history():
                             accepted_by.append(database["Decided_By"])
                             submitted_by.append(database["Edited_By"])
 
-            if len(dates_added)==0 or not check_data(dates_added):
+            if len(dates_added)==0 or check_data(dates_added):
                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded  data additions for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
                 
             else:                    
