@@ -363,7 +363,7 @@ def species_audit_history():
 
                 def display_edit_expanders(info, sources, original_values, dates, submitted_by, accepted_by, date_accepted):
                     for i, item in enumerate(info):
-                        if item != "image only":
+                        if item != "image only edit":
                             # Remove extra quotes around JSON string
                             json_str = item.replace('"{"', '{"').replace('"}"', '}"')
                             data = json.loads(json_str)
@@ -461,21 +461,22 @@ def species_audit_history():
                                 submitted_by.append(user_image['Submitted_By'])
                                 approved_by.append(user_image['Decided_By'])
                                 images.append(user_image['Images'])
+
+            st.write(images)
             if len(date_added)==0:
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
 
                 def display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images):
                  for i in range(len(date_added)):
-                    with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
-                        if len(images)!=0:
-                          for array in images:
-                              for val in array:
-                                  st.image(f"https://drive.google.com/uc?id={val}")
-
-                        st.write(f"**Submitted by**: {submitted_by[i]} ")
-                        st.write(f"**Approved by**: {approved_by[i]} ")
-                        st.write(f"**Date Approved**: {date_accepted[i]} ")
+                     with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
+                         if len(images)!=0:
+                           for array in images[i]:
+                                   st.image(f"https://drive.google.com/uc?id={array}")
+                                   
+                         st.write(f"**Submitted by**: {submitted_by[i]} ")
+                         st.write(f"**Approved by**: {approved_by[i]} ")
+                         st.write(f"**Date Approved**: {date_accepted[i]} ")
                                         
 
             display_image_expanders(date_added, date_accepted, submitted_by, approved_by, images)
@@ -751,7 +752,7 @@ def species_audit_history():
                     images.append(database["User_Images"])
 
             
-            if len(date_added)==0:
+            if len(date_image_added)==0:
                  st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
 
@@ -759,17 +760,16 @@ def species_audit_history():
                  for i in range(len(date_added)):
                     with st.expander(f"**DATE SUBMITTED**: {date_added[i]}"):
                         if len(images)!=0:
-                          for array in images:
-                              for val in array:
-                                  st.image(f"https://drive.google.com/uc?id={val}")
-
+                          if len(images)!=0:
+                           for array in images[i]:
+                                   st.image(f"https://drive.google.com/uc?id={array}")
                         st.write(f"**Submitted by**: {submitted_by[i]} ")
                         st.write(f"**User Comment**: {image_comment[i]} ")
                         st.write(f"**Declined by**: {rejected_by[i]} ")
                         st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
                         st.write(f"**Date Declined**: {date_rejected[i]} ")
 
-                display_image_expanders(date_added, date_rejected, submitted_by, rejected_by, images, rejection_reason, image_comment)
+                display_image_expanders(date_image_added, date_rejected, submitted_by, rejected_by, images, rejection_reason, image_comment)
                                         
 
             
@@ -808,11 +808,11 @@ def species_audit_history():
                                   st.image(f"https://drive.google.com/uc?id={array[1]}")
                                   st.write(f"**Original Addition Date**: {array[0]} ")
 
-                        st.write(f"**Removal Request by**: {submitted_by[i]} ")
-                        st.write(f"**User Reason for Removal Request**: {removal_reason[i]} ")
-                        st.write(f"**Declined by**: {rejected_by[i]} ")
-                        st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
-                        st.write(f"**Date Removal Request Declined **: {date_removal_rejected[i]} ")
+                                  st.write(f"**Removal Request by**: {submitted_by[i]} ")
+                                  st.write(f"**User Reason for Removal Request**: {removal_reason[i]} ")
+                                  st.write(f"**Declined by**: {rejected_by[i]} ")
+                                  st.write(f"**Reason for Decline**: {rejection_reason[i]} ")
+                                  st.write(f"**Date Removal Request Declined **: {date_removal_rejected[i]} ")
 
                 display_image_expanders(dates_requested, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason)
                  
