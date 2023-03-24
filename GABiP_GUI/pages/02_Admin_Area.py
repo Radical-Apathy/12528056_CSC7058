@@ -132,6 +132,10 @@ def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
 
+def load_latest_not_cached():
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+    return current_db
+
 try:
      current=load_latest()
 except HttpError as error:
@@ -316,6 +320,7 @@ def new_species_review():
 
         if preview:
             try:
+                current=load_latest_not_cached()
                 newDataset=preview_addition(current, user_changes)
                 col1,col2=st.columns(2)
 
