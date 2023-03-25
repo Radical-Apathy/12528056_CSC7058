@@ -1061,7 +1061,7 @@ def information_edit_review():
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
         elif preview_updated_dataset and approved_images:
-                
+                current=load_latest_not_cached()
                 updated_db=current.copy()
                 try:
                     
@@ -1096,6 +1096,7 @@ def information_edit_review():
                 
                 
                 try:
+                    current=load_latest_not_cached()
                     updated_db=current.copy()
                     updated_json=json.dumps(update_user_json(species_before, species_after))
                     updated_row=pd.read_json(updated_json)

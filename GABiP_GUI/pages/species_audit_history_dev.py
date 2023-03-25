@@ -585,7 +585,7 @@ def species_audit_history():
                                 rejection_reason.append(database["Reason_Denied"])
             
             if not date_added:
-              st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No removal requests for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+              st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No  recorded removal requests denials for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             
             def display_removal_rejection_expanders(date_added, date_rejected, submitted_by, rejected_by, reason_stated,rejection_reason):
                   for i in range(len(date_added)):
@@ -625,7 +625,7 @@ def species_audit_history():
             
                  
             if len(dates_added)==0 or not check_data(information_added):
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded additions for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded additions denials for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
                 
             else:                    
                 def display_addition_expanders(info, sources, dates, submitted_by, rejected_by, date_rejected, rejection_reason):
@@ -676,7 +676,7 @@ def species_audit_history():
             
             
             if len(dates_edited) == 0 or not check_data(information_edited):
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data edits for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data edits denials for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
                                                     
 
@@ -736,7 +736,7 @@ def species_audit_history():
             
 
             if len(dates_removed)==0:# or not check_data(information_removed):
-                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data removals for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No recorded data removal denials for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
 
                 
@@ -792,7 +792,7 @@ def species_audit_history():
 
             
             if len(date_image_added)==0:
-                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No rejected user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
 
                 def display_image_expanders(date_added, date_rejected, submitted_by, rejected_by, images, rejection_reason, image_comment):
@@ -836,7 +836,7 @@ def species_audit_history():
             
 
             if len(dates_requested)==0:
-                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No user submitted images for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+                 st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No denied image removal requests for {genus_dropdown} {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
             else:
                 def display_image_expanders(date_added, date_removal_rejected, submitted_by, rejected_by, image, removal_reason, rejection_reason):
                   for i in range(len(date_added)):

@@ -16,7 +16,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseUpload
 import io
-import sys
+import base64
+
 
 
 
@@ -36,6 +37,13 @@ deta_key=os.getenv("deta_key")
 deta_connection= Deta(deta_key)
 
 database_metadata=deta_connection.Base("database_metadata")
+
+
+def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
+     """adding user"""
+     #defining the email as the key
+     return database_metadata.put({"key":date_time, "Changes": changes_file_Path, "Dataset_Pre_Change": dataset_pre_change, "Edit_Type": edit_type, "Species_Affected": species_affected, "Genus_Affected": genus_affected,"Edited_By":username,"User_Comment": user_comment, "Status":status, "Reason_Denied":reason_denied, "Decided_By":decided_by, "Decision_Date":date_decided, 
+     "Dataset_In_Use":current_database_path, "User_Sources": user_sources, "User_Images": user_images })
 
 #------------------------------------------------------------metadata METHODS-----------------------------------------------------------------------------------------#
 
@@ -112,3 +120,28 @@ except:
      
      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
+clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
+hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
+st.write(latest_id)
+st.write(current)
+
+
+
+now=datetime.now()
+
+add_as_blob=st.checkbox("Add as blob")
+
+bytesIO = io.BytesIO()
+current.to_csv(bytesIO, index=False)
+byte_array = bytesIO.getvalue()
+
+row = current.iloc[1652]
+st.write(row)
+st.write(row.dtypes)
+
+if add_as_blob:
+     st.write("before insert")
+     base64_bytes = base64.b64encode(byte_array)
+     base64_string = base64_bytes.decode('utf-8')
+     add_to_database(str(now), base64_string, "dataset pre change", "edit type", "species affected", "genus affected", "edited by", "user comment", "status", "reason denied", "decided by", "decision date", "current path", "user sources", "user images")
+     st.write("blob added")
