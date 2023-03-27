@@ -121,13 +121,30 @@ except:
      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
 clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
-hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
-st.write(latest_id)
-st.write(current)
+hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1pcvIjXAv6NA82C5mrHZjeYLKnYMS_Ii_", encoding= 'unicode_escape')
+#st.write(latest_id)
+st.write(hard_code_load)
 
+strings_to_check = ['<!DOCTYPE html><html><head><title>Google Drive - Virus scan warning</title><meta', 'string2', 'string3']
 
+if any(hard_code_load.astype(str).apply(lambda x: any(s in x for s in strings_to_check))):
+    st.warning(f'The DataFrame contains one or more of the following strings: {", ".join(strings_to_check)}')
+else:
+    st.write(hard_code_load)
+starting_ds="https://drive.google.com/file/d/1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU/view?usp=sharing"
+
+cell_lengths = hard_code_load.applymap(lambda x: len(str(x)))
+
+# # Filter the DataFrame to find cells with values longer than 100 characters
+long_cells = cell_lengths[cell_lengths > 100].dropna(how='all')
+
+# # Print the row and column indices of the long cells
+st.write('Long cells:')
+st.write(long_cells.reset_index().to_string(index=False))
 
 now=datetime.now()
+
+
 
 add_as_blob=st.checkbox("Add as blob")
 
@@ -135,9 +152,9 @@ bytesIO = io.BytesIO()
 current.to_csv(bytesIO, index=False)
 byte_array = bytesIO.getvalue()
 
-row = current.iloc[1652]
-st.write(row)
-st.write(row.dtypes)
+#row = current.iloc[1652]
+#st.write(row)
+#st.write(row.dtypes)
 
 if add_as_blob:
      st.write("before insert")

@@ -490,7 +490,7 @@ def add_species_information():
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
     
-    
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -802,7 +802,7 @@ def edit_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1264,7 +1264,7 @@ def remove_species_data():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]

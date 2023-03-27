@@ -1176,7 +1176,7 @@ def remove_species_admin():
             decision_date=database["Decision_Date"]
             approved_by=database["Decided_By"]
 
-
+    current=load_latest_not_cached()
     def check_species_existence_admin_end(species, genus):
           if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
             return True
@@ -1282,10 +1282,12 @@ def remove_species_admin():
             updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds}#, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
+        current=load_latest_not_cached()
         preview=st.checkbox("Preview new updated dataset")
         #st.write(approvedordered)
         if preview:
             try:
+                #current=load_latest_not_cached()
                 proposed_removal=current.copy()
                 proposed_removal.drop(user_changes.index[0], inplace=True)
                 st.write(proposed_removal)
