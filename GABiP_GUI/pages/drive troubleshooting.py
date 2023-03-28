@@ -124,7 +124,7 @@ except:
 clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
 hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU", encoding= 'unicode_escape')
 
-st.write(hard_code_load)
+#st.write(hard_code_load)
 
 #------------------------------------------------------------------------Trying to load to a github repository-------------------------------------------------------------------#
 
@@ -137,8 +137,11 @@ large_file=pd.read_csv(f"https://drive.google.com/uc?id=14Tld5pj6-UAQBl6zb-yT-Vr
 
 large_file = large_file.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
-st.write(large_file)
 
+
+#https://drive.google.com/file/d/196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3/view?usp=sharing
+original_file=pd.read_csv(f"https://drive.google.com/uc?id=196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3", encoding= 'unicode_escape')
+st.write(original_file)
 now=datetime.now()
 
 
