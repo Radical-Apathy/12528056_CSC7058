@@ -620,17 +620,31 @@ def information_addition_review():
             
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
+        # def create_new_updated_dataset_google():
+        #         newDataset=updated_db
+        #         newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+        #         csv_bytes = io.StringIO()
+        #         newDataset.to_csv(csv_bytes, index=False)
+        #         csv_bytes = csv_bytes.getvalue().encode('utf-8')
+        
+        #         # upload bytes to Google Drive
+        #         file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+        #         media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+        #         file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
         def create_new_updated_dataset_google():
                 newDataset=updated_db
                 newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-                csv_bytes = io.StringIO()
-                newDataset.to_csv(csv_bytes, index=False)
-                csv_bytes = csv_bytes.getvalue().encode('utf-8')
+                with io.BytesIO() as csv_buffer:
+                    for chunk in pd.read_csv(newDataset, chunksize=1000):
+                        chunk.to_csv(csv_buffer, index=False)
+                    csv_bytes = csv_buffer.getvalue()
         
                 # upload bytes to Google Drive
                 file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
                 media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
 
     
         def update_GABiP():
@@ -683,10 +697,11 @@ def information_addition_review():
                 except:
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
-
+                
                 st.write("aproved images length second elif") 
                 st.write(len(approved_images))
                 st.write(updated_db)
+                
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
