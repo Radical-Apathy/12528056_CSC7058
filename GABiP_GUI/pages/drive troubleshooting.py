@@ -115,27 +115,27 @@ def load_latest_not_cached():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
-try:
-     current=load_latest()
-except:
+# try:
+#      current=load_latest()
+# except:
      
-     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+#      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
-clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
-hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU", encoding= 'unicode_escape')
+# clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
+# hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU", encoding= 'unicode_escape')
 
-#st.write(hard_code_load)
+# #st.write(hard_code_load)
 
 #------------------------------------------------------------------------Trying to load to a github repository-------------------------------------------------------------------#
 
-hard_code_load.copy()
+#hard_code_load.copy()
 #https://github.com/Radical-Apathy/gabip_datasets
 
 #https://drive.google.com/file/d/14Tld5pj6-UAQBl6zb-yT-Vrm2JgfDMWM/view?usp=sharing
 
-large_file=pd.read_csv(f"https://drive.google.com/uc?id=14Tld5pj6-UAQBl6zb-yT-Vrm2JgfDMWM", encoding= 'unicode_escape')
+# large_file=pd.read_csv(f"https://drive.google.com/uc?id=14Tld5pj6-UAQBl6zb-yT-Vrm2JgfDMWM", encoding= 'unicode_escape')
 
-large_file = large_file.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+# large_file = large_file.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
 
 
