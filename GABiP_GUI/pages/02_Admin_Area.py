@@ -119,8 +119,8 @@ def get_latest_file_id(latest_approved_ds):
 
 
 
-#latest_id=get_latest_file_id(latest_approved_ds)
-latest_id="1s0sEqX_WANw_8Wo6UfxEzKxgO0Q194Ap"
+latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="1s0sEqX_WANw_8Wo6UfxEzKxgO0Q194Ap"
 
 
 
@@ -1298,15 +1298,30 @@ def remove_species_admin():
         def create_new_addition_dataset():
             proposed_removal=current.copy()
             proposed_removal.drop(user_changes.index[0], inplace=True)
+
             
-            csv_bytes = io.StringIO()
-            proposed_removal.to_csv(csv_bytes, index=False)
-            csv_bytes = csv_bytes.getvalue().encode('utf-8')
+            proposed_removal = proposed_removal.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+            with io.BytesIO() as csv_buffer:
+                    csv_string = proposed_removal.to_csv(index=False)
+                    csv_buffer.write(csv_string.encode('utf-8'))
+                    csv_buffer.seek(0)
+                    for chunk in pd.read_csv(csv_buffer, chunksize=1000):
+                        # process each chunk as needed
+                        pass
     
             # upload bytes to Google Drive
             file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-            media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            
+            # csv_bytes = io.StringIO()
+            # proposed_removal.to_csv(csv_bytes, index=False)
+            # csv_bytes = csv_bytes.getvalue().encode('utf-8')
+    
+            # # upload bytes to Google Drive
+            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
+            # media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
         
         #updates the status, 
@@ -1662,14 +1677,20 @@ def data_removal_review():
 
         def create_new_updated_dataset_google():
                 newDataset=updated_db
-                csv_bytes = io.StringIO()
-                newDataset.to_csv(csv_bytes, index=False)
-                csv_bytes = csv_bytes.getvalue().encode('utf-8')
-        
-                # upload bytes to Google Drive
+                newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+                with io.BytesIO() as csv_buffer:
+                    csv_string = newDataset.to_csv(index=False)
+                    csv_buffer.write(csv_string.encode('utf-8'))
+                    csv_buffer.seek(0)
+                    for chunk in pd.read_csv(csv_buffer, chunksize=1000):
+                        # process each chunk as needed
+                        pass
+    
+            # upload bytes to Google Drive
                 file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-                media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+                media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+               
 
     
         def update_GABiP():

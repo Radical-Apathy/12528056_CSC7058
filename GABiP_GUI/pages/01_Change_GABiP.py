@@ -131,8 +131,8 @@ def get_latest_file_id(latest_approved_ds):
 
 
 
-#latest_id=get_latest_file_id(latest_approved_ds)
-latest_id="1s0sEqX_WANw_8Wo6UfxEzKxgO0Q194Ap"
+latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="1s0sEqX_WANw_8Wo6UfxEzKxgO0Q194Ap"
 
 #add user's entries to csv 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):

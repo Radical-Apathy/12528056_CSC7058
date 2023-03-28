@@ -140,8 +140,8 @@ large_file = large_file.apply(lambda x: x.str.strip() if x.dtype == "object" els
 
 
 #https://drive.google.com/file/d/196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3/view?usp=sharing
-original_file=pd.read_csv(f"https://drive.google.com/uc?id=1at5lruJiADW8hUNiLmioUHV2ntWGbPXo", encoding= 'unicode_escape')
-st.write(original_file.iloc[6200])
+original_file=pd.read_csv(f"https://drive.google.com/uc?id=1s0sEqX_WANw_8Wo6UfxEzKxgO0Q194Ap", encoding= 'unicode_escape')
+st.write(original_file.iloc[6912])
 #http://localhost:8501/species_audit_history_dev
 
 
@@ -149,19 +149,19 @@ now=datetime.now()
 
 #https://drive.google.com/file/d/1at5lruJiADW8hUNiLmioUHV2ntWGbPXo/view?usp=sharing
 
-add_as_blob=st.checkbox("Add as blob")
+# add_as_blob=st.checkbox("Add as blob")
 
-bytesIO = io.BytesIO()
-current.to_csv(bytesIO, index=False)
-byte_array = bytesIO.getvalue()
+# bytesIO = io.BytesIO()
+# current.to_csv(bytesIO, index=False)
+# byte_array = bytesIO.getvalue()
 
 #row = current.iloc[1652]
 #st.write(row)
 #st.write(row.dtypes)
 
-if add_as_blob:
-     st.write("before insert")
-     base64_bytes = base64.b64encode(byte_array)
-     base64_string = base64_bytes.decode('utf-8')
-     add_to_database(str(now), base64_string, "dataset pre change", "edit type", "species affected", "genus affected", "edited by", "user comment", "status", "reason denied", "decided by", "decision date", "current path", "user sources", "user images")
-     st.write("blob added")
+# if add_as_blob:
+#      st.write("before insert")
+#      base64_bytes = base64.b64encode(byte_array)
+#      base64_string = base64_bytes.decode('utf-8')
+#      add_to_database(str(now), base64_string, "dataset pre change", "edit type", "species affected", "genus affected", "edited by", "user comment", "status", "reason denied", "decided by", "decision date", "current path", "user sources", "user images")
+#      st.write("blob added")
