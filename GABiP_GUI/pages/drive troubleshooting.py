@@ -140,11 +140,14 @@ large_file = large_file.apply(lambda x: x.str.strip() if x.dtype == "object" els
 
 
 #https://drive.google.com/file/d/196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3/view?usp=sharing
-original_file=pd.read_csv(f"https://drive.google.com/uc?id=196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3", encoding= 'unicode_escape')
-st.write(original_file)
+original_file=pd.read_csv(f"https://drive.google.com/uc?id=1at5lruJiADW8hUNiLmioUHV2ntWGbPXo", encoding= 'unicode_escape')
+st.write(original_file.iloc[6200])
+#http://localhost:8501/species_audit_history_dev
+
+
 now=datetime.now()
 
-
+#https://drive.google.com/file/d/1at5lruJiADW8hUNiLmioUHV2ntWGbPXo/view?usp=sharing
 
 add_as_blob=st.checkbox("Add as blob")
 
