@@ -119,8 +119,8 @@ def get_latest_file_id(latest_approved_ds):
 
 
 
-#latest_id=get_latest_file_id(latest_approved_ds)
-latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
+latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
 
 
 @st.cache_data
@@ -329,7 +329,7 @@ def new_species_review():
 
 
         if preview:
-            #try:
+            try:
                 current=load_latest_not_cached()
                 newDataset=preview_addition(current, user_changes)
                 
@@ -356,8 +356,8 @@ def new_species_review():
                     col2.write("Addition rejected")
                 elif reject:
                     col2.warning("Please add a reason for rejection")
-            #except:
-             #st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
+            except:
+             st.write("User entered non numerical data in number fields. Unable to append new addition to current dataset")
                 
 
 #-----------------------------------------------------------------------NEW INFORMATION ADDITION DISPLAY-----------------------------------------------------------------------------------------------------------------------------#
@@ -645,13 +645,16 @@ def information_addition_review():
                 newDataset=updated_db
                 newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
                 with io.BytesIO() as csv_buffer:
-                    for chunk in pd.read_csv(newDataset, chunksize=1000):
-                        chunk.to_csv(csv_buffer, index=False)
-                    csv_bytes = csv_buffer.getvalue()
-        
-                # upload bytes to Google Drive
+                    csv_string = newDataset.to_csv(index=False)
+                    csv_buffer.write(csv_string.encode('utf-8'))
+                    csv_buffer.seek(0)
+                    for chunk in pd.read_csv(csv_buffer, chunksize=1000):
+                        # process each chunk as needed
+                        pass
+    
+            # upload bytes to Google Drive
                 file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-                media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
+                media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
 
