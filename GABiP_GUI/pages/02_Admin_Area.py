@@ -297,6 +297,7 @@ def new_species_review():
         def create_new_addition_dataset():
 
             newDataset=current.append(user_changes, ignore_index=True)
+            newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
             csv_bytes = io.StringIO()
             newDataset.to_csv(csv_bytes, index=False)
             csv_bytes = csv_bytes.getvalue().encode('utf-8')
@@ -322,6 +323,7 @@ def new_species_review():
             try:
                 current=load_latest_not_cached()
                 newDataset=preview_addition(current, user_changes)
+                
                 col1,col2=st.columns(2)
 
                 accept=col1.button("Approve Addition")
@@ -620,6 +622,7 @@ def information_addition_review():
 
         def create_new_updated_dataset_google():
                 newDataset=updated_db
+                newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
                 csv_bytes = io.StringIO()
                 newDataset.to_csv(csv_bytes, index=False)
                 csv_bytes = csv_bytes.getvalue().encode('utf-8')
