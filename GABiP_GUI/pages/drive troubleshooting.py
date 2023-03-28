@@ -103,6 +103,7 @@ def get_latest_file_id(latest_approved_ds):
 
 latest_id=get_latest_file_id(latest_approved_ds)
 
+#https://drive.google.com/file/d/1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU/view?usp=sharing
 
 @st.cache_data
 def load_latest():
@@ -121,8 +122,9 @@ except:
      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
 clutch_added_id="https://drive.google.com/file/d/1oASckevqEcCpxBoUva8EUdjPI3TIsinL/view?usp=sharing"
-hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1pcvIjXAv6NA82C5mrHZjeYLKnYMS_Ii_", encoding= 'unicode_escape')
+hard_code_load=pd.read_csv(f"https://drive.google.com/uc?id=1q9u_1KSwdVq5R8ZGLjNG3dQKHZbBdzQU", encoding= 'unicode_escape')
 
+st.write(hard_code_load)
 
 now=datetime.now()
 
