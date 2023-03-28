@@ -132,6 +132,7 @@ def get_latest_file_id(latest_approved_ds):
 
 
 latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
 
 #add user's entries to csv 
 def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type, species_affected, genus_affected, username, user_comment, status, reason_denied, decided_by, date_decided, current_database_path, user_sources, user_images):
@@ -146,6 +147,10 @@ def add_to_database(date_time, changes_file_Path, dataset_pre_change, edit_type,
 @st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')
+    return current_db
+
+def load_latest_not_cached():
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
 
 
@@ -206,6 +211,8 @@ if 'image_ids' not in st.session_state:
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
+def page_experiment():
+    st.write("page exeriment")
 
 def show_db():
 
@@ -227,16 +234,10 @@ def show_db():
                 )
 
     load_db_bg()
+    
+    st.write(current)
 
-    db_col1,db_col2=st.columns(2)
-    try:
-        st.dataframe(current, width=600)
-    except HttpError as error:
-     st.write(f"An HTTP error {error.resp.status} occurred: {error.content}")
-    except RefreshError:
-        st.write("The credentials could not be refreshed.")
-    except Exception as error:
-        st.write(f"An error occurred: {error}")
+    
 
 #--------------------------------------------------------------------------ADD ENTRY PAGE------------------------------------------------------------------------------------#
 
@@ -327,7 +328,7 @@ def add_entry_page():
      blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
      check_current_db(st.session_state['Genus'], st.session_state['Species']) 
      reviewdf = pd.DataFrame(userInfo, current.columns)
-     st.dataframe(reviewdf, width=300) 
+     st.write(reviewdf, width=300) 
 
      #temp code for development
      #populate_userinfo()
@@ -367,6 +368,7 @@ def add_entry_page():
      
      add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
      st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     
        
 
     
@@ -394,7 +396,7 @@ def add_species_information():
         )
 
     add_bg_from_url()
-
+    current=load_latest_not_cached()
     missingInfoColumns = []
     def get_missing_info_columns(results):
         for column in dbColumns:
@@ -488,7 +490,7 @@ def add_species_information():
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
     
-
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -800,7 +802,7 @@ def edit_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1262,7 +1264,7 @@ def remove_species_data():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    
+    current=load_latest_not_cached()
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1458,12 +1460,13 @@ def remove_species_data():
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
     options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Data','Edit Species Data' , 'Remove Species Data','Remove a Species'), key='current_option')     
-    
+    #page_experiment():
     if options == "Show Full Database":
         show_db()
     if options == "New Species Entry":
         add_entry_page()
     if options == 'Add Species Data':
+        
         add_species_information()
     if options == 'Edit Species Data':
         edit_species_information()

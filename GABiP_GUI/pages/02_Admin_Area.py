@@ -120,6 +120,7 @@ def get_latest_file_id(latest_approved_ds):
 
 
 latest_id=get_latest_file_id(latest_approved_ds)
+#latest_id="196Gn-ABF1jjjMWgdKA4SK8aOM8xiZbL3"
 
 
 @st.cache_data
@@ -130,6 +131,10 @@ def load_latest():
 def add_changes(dataframe, dataframe2):
     updated=dataframe.append(dataframe2, ignore_index = True)
     return updated
+
+def load_latest_not_cached():
+    current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+    return current_db
 
 try:
      current=load_latest()
@@ -221,6 +226,8 @@ def display_pending_users():
         st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
 
+
+
 #-----------------------------------------------------------------------SCREEN DISPLAY METHODS-----------------------------------------------------------------------------------------------------------------------------#  
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
@@ -279,7 +286,7 @@ def new_species_review():
             
             
             proposed=df1.append(df2, ignore_index=True)
-            st.dataframe(proposed)
+            st.write(proposed)
             
 
         now=datetime.now()
@@ -313,6 +320,7 @@ def new_species_review():
 
         if preview:
             try:
+                current=load_latest_not_cached()
                 newDataset=preview_addition(current, user_changes)
                 col1,col2=st.columns(2)
 
@@ -324,6 +332,7 @@ def new_species_review():
                     create_new_addition_dataset()
                     update_GABiP()
                     st.write("GABiP updated!")
+                    
 
 
             
@@ -513,7 +522,7 @@ def information_addition_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -622,7 +631,7 @@ def information_addition_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
         def update_GABiP_image():
                 updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_Pre_Change":latest_approved_ds }
@@ -636,16 +645,16 @@ def information_addition_review():
                 metaData.update(updates, datesubmitted)
 
         if preview_updated_dataset and species_before=="image only":
-            st.write(species_added_to)
+            
             preview_new=True
             if preview_new:
                 
-                # st.dataframe(updated_db)
+                # st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Image")
                 reject_information=pre_col3.button("Deny Image")
                 reject_new_info_reason=pre_col3.text_area("Reasons for rejection for user")
-                st.write(approved_images)
+                
 
                 if accept_information:
                         #create_new_updated_dataset_google() #<-------- working
@@ -660,7 +669,7 @@ def information_addition_review():
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
         elif preview_updated_dataset and approved_images:
-                
+                current=load_latest_not_cached()
                 updated_db=current.copy()
                 try:
                     
@@ -674,7 +683,7 @@ def information_addition_review():
 
                 st.write("aproved images length second elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -695,6 +704,7 @@ def information_addition_review():
                 
                 
                 try:
+                    current=load_latest_not_cached()
                     updated_db=current.copy()
                     updated_json=json.dumps(update_user_json(species_before, species_after))
                     updated_row=pd.read_json(updated_json)
@@ -704,9 +714,8 @@ def information_addition_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.write("aproved images length last elif") 
-                st.write(len(approved_images))
-                st.dataframe(updated_db)
+                
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -905,7 +914,7 @@ def information_edit_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -1014,17 +1023,17 @@ def information_edit_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
         def update_GABiP_image():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now)}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         def add_to_image_db(date_submitted, genus, species, submitted_by,  decision_date, decided_by, image_ids):
          return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
         
         def reject_new_addition():
-                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         if preview_updated_dataset and species_before=="image only edit":
@@ -1032,7 +1041,7 @@ def information_edit_review():
             preview_new=True
             if preview_new:
                 
-                # st.dataframe(updated_db)
+                # st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Image")
                 reject_information=pre_col3.button("Deny Image")
@@ -1052,7 +1061,7 @@ def information_edit_review():
                         pre_col3.warning("Please add a reason for rejection for user to review")
 
         elif preview_updated_dataset and approved_images:
-                
+                current=load_latest_not_cached()
                 updated_db=current.copy()
                 try:
                     
@@ -1066,7 +1075,7 @@ def information_edit_review():
 
                 st.write("aproved images length second elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1087,6 +1096,7 @@ def information_edit_review():
                 
                 
                 try:
+                    current=load_latest_not_cached()
                     updated_db=current.copy()
                     updated_json=json.dumps(update_user_json(species_before, species_after))
                     updated_row=pd.read_json(updated_json)
@@ -1098,7 +1108,7 @@ def information_edit_review():
 
                 st.write("aproved images length last elif") 
                 st.write(len(approved_images))
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1166,7 +1176,7 @@ def remove_species_admin():
             decision_date=database["Decision_Date"]
             approved_by=database["Decided_By"]
 
-
+    current=load_latest_not_cached()
     def check_species_existence_admin_end(species, genus):
           if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
             return True
@@ -1265,20 +1275,22 @@ def remove_species_admin():
         
         #updates the status, 
         def update_GABiP():
-            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
         
         def reject_new_addition():
-            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds}#, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
+        current=load_latest_not_cached()
         preview=st.checkbox("Preview new updated dataset")
         #st.write(approvedordered)
         if preview:
             try:
+                #current=load_latest_not_cached()
                 proposed_removal=current.copy()
                 proposed_removal.drop(user_changes.index[0], inplace=True)
-                st.dataframe(proposed_removal)
+                st.write(proposed_removal)
                 
                 col1,col2=st.columns(2)
 
@@ -1492,7 +1504,7 @@ def data_removal_review():
                     df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
-                    st.dataframe(df)
+                    st.write(df)
                    
                     if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
@@ -1625,7 +1637,7 @@ def data_removal_review():
 
     
         def update_GABiP():
-                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
         def update_GABiP_image():
                 updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_Pre_Change":latest_approved_ds }
@@ -1635,7 +1647,7 @@ def data_removal_review():
          return users_images.put({"key":date_submitted, "Genus": genus, "Species": species, "Submitted_By": submitted_by,"Decision_Date": decision_date, "Decided_By": decided_by, "Images": image_ids  })
         
         def reject_new_addition():
-                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+                updates = {"Status":"Denied", "Reason_Denied":reject_new_info_reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds}#, "Dataset_Pre_Change":latest_approved_ds }
                 metaData.update(updates, datesubmitted)
 
         
@@ -1681,6 +1693,7 @@ def data_removal_review():
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
+                            
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")       
         else:
@@ -1689,7 +1702,7 @@ def data_removal_review():
                 preview_new=True
                 if preview_new:
                     
-                    # st.dataframe(updated_db)
+                    # st.write(updated_db)
                     pre_col1, pre_col2, pre_col3=st.columns(3)
                     mark_as_duplicate=pre_col2.button("Mark as duplicate")
                     
@@ -1714,7 +1727,7 @@ def data_removal_review():
                  preview_new=False
 
                 
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1736,6 +1749,7 @@ def data_removal_review():
                 if reject_information and reject_new_info_reason:
                             reject_new_addition()
                             pre_col3.write("Reason sent to user")
+                            
                 elif reject_information:
                         pre_col3.warning("Please add a reason for rejection for user to review")
         
@@ -1752,7 +1766,7 @@ def data_removal_review():
                  st.error("Something went wrong. Please check the user has submitted numerical data if fields are numerical")
                  preview_new=False
 
-                st.dataframe(updated_db)
+                st.write(updated_db)
                 pre_col1, pre_col2, pre_col3=st.columns(3)
                 accept_information=pre_col1.button("Approve Addition")
                 reject_information=pre_col3.button("Deny Addition")
@@ -1798,6 +1812,7 @@ def admin_edit_options():
         st.write("Current Database")
         st.write(latest_id)
         st.write(latest_approved_ds)
+        current=load_latest_not_cached()
         st.write(current)
         #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
         
