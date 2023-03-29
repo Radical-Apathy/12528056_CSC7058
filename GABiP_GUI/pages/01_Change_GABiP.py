@@ -339,35 +339,35 @@ def add_entry_page():
      
      
     
-    #st.session_state
+     #st.session_state
 
-    user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
+     user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
     
 
-    commit_changes=st.button("Submit for review")
+     commit_changes=st.button("Submit for review")
 
-    now=datetime.now()
-    timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
-    path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
-    path_end = timeStamp
-    newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
+     now=datetime.now()
+     timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+     path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
+     path_end = timeStamp
+     newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
 
 
 
     
     
-    if commit_changes and user_message=="":  
-     st.error("Please add a source")
-    if commit_changes and genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-     st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
-    elif commit_changes and user_message:
-     populate_userinfo()
-     data = {0: userInfo}
-     dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
-     dftojson=dftojsondict.to_json(orient="columns")
-     
-     add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
-     st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+     if commit_changes and user_message=="":  
+      st.error("Please add a source")
+     if commit_changes and genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+      st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
+     elif commit_changes and user_message:
+        populate_userinfo()
+        data = {0: userInfo}
+        dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
+        dftojson=dftojsondict.to_json(orient="columns")
+        
+        add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
+        st.markdown('<p style="font-family:sans-serif; color:Red; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
      
        
 
