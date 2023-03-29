@@ -243,7 +243,7 @@ def new_species_review():
 
     if datesubmitted:
 
-        tab1, tab2, tab3, tab4 = st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+        tab1, tab2, tab3= st.tabs(["Species Added", "User Info", "User Source"])
 
         #tab1 methods
         for database in databases:
@@ -267,15 +267,25 @@ def new_species_review():
                     authorName=user["firstname"]
                     authorSurname = user["surname"] 
                     authorEmail= user["key"]
-                    
-        tab2.write("Author firstname: "+" "+" "+authorName)
-        tab2.write("Author surname: "+" "+" "+authorSurname)
-        tab2.write("Author email: "+" "+" "+authorEmail)
+                    authorusername= user["username"]
 
-        tab3.write("User comments: "+ " "+" "+ authorComment)
+        with tab2:
+         tab2_col1, tab2_col2 = st.columns(2)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>First Name: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Surname: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Email: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>User Name: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Country: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col1.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Acandemic Institute: </strong></em></p>', unsafe_allow_html=True)
+         tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorName}</em></p>', unsafe_allow_html=True)
+         tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorSurname}</em></p>', unsafe_allow_html=True)
+         tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorEmail}</em></p>', unsafe_allow_html=True)
+         tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{username}</em></p>', unsafe_allow_html=True)          
+        
 
-        tab4.subheader("User edit history")
-        tab4.write("This is tab 4")
+        tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorusername}</em></p>', unsafe_allow_html=True) 
+
+        
 
 
         preview=st.checkbox("Preview new addition to current dataset")
