@@ -144,7 +144,7 @@ original_file=pd.read_csv(f"https://drive.google.com/uc?id=1s0sEqX_WANw_8Wo6UfxE
 st.write(original_file.iloc[6912])
 #http://localhost:8501/species_audit_history_dev
 
-
+st.write(original_file.dtypes)
 now=datetime.now()
 
 #https://drive.google.com/file/d/1at5lruJiADW8hUNiLmioUHV2ntWGbPXo/view?usp=sharing

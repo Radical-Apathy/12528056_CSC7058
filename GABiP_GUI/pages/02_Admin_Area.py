@@ -1771,7 +1771,7 @@ def data_removal_review():
                         
 
         if preview_updated_dataset and species_before!="image only delete" and len(image_key)!=0:
-                
+                current=load_latest_not_cached()
                 updated_db=current.copy()
                 try:
                     
@@ -1814,6 +1814,7 @@ def data_removal_review():
                 
                 
                 try:
+                    current=load_latest_not_cached()
                     updated_db=current.copy()
                     updated_json=json.dumps(update_user_json(species_before, species_after))
                     updated_row=pd.read_json(updated_json)
