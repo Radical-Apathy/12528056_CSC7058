@@ -317,8 +317,8 @@ def add_entry_page():
      get_extra_userinfo()
 
 
-   
-    review_information=st.button("Review Information")
+    rev_col1,rev_col2,rev_col3=st.columns(3)
+    review_information=rev_col2.button("Review Information")
     #altering populate userinfo method to create json array
       
     
