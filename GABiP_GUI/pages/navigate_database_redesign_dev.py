@@ -164,7 +164,50 @@ def link_embedded_image(results):
             return embedded_image_df["Embedded Link"].iloc[0]
         else:
             return None
+        
+
+
+def ref_generator_top(speciesInfo):
+    mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
+    #order references from most recent
+    sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    displaymergedRef = sortedYear[["Year","Reference", "Order"]]
+    displaymergedRef.drop_duplicates()
+    return displaymergedRef.head()
+
+def ref_generator_all(speciesInfo):
+    mergedRef = pd.merge(speciesInfo, dfReferences, on='Order')
+    #order references from most recent
+    sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    displaymergedRef = sortedYear[["Year","Reference", "Order"]]
+    return displaymergedRef.drop_duplicates()
+
+#/uploads/9/8/6/8/98687650/background-images/248177756.jpg
 #--------------------------------------------------------------------Navigate Dateset Main Page---------------------------------------------------------------------------------#
+
+
+def background():
+        st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg");
+                        background-attachment: fixed;
+                        background-size: cover;
+                        background-position: 80% center;
+                        opacity: 0.1
+                        color: #ffffff; 
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+background()
+    
+
+
+
 headercol1, headercol2,  headercol3=st.columns(3)
 
 headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Search Dataset</strong></em></p>', unsafe_allow_html=True)
@@ -209,3 +252,6 @@ col2.write(f"{genus_dropdown} {species_dropdown} Summary")
 col2.dataframe(species_results.iloc[0], width=500)
 
 col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
+
+
+tab1, tab2, tab3= st.tabs(["Literature References - Most Recent", "See All Literature References", "Public Contributed Data"])
