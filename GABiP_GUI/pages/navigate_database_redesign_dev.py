@@ -255,3 +255,24 @@ col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(specie
 
 
 tab1, tab2, tab3= st.tabs(["Literature References - Most Recent", "See All Literature References", "Public Contributed Data"])
+
+with tab1:
+    st.write(ref_generator_top(species_dropdown)) 
+with tab2:
+    st.write(ref_generator_all(species_dropdown))
+    # speciesdf.append(speciesInfo["Genus"])
+    # speciesdf.append(speciesInfo["GeographicRegion"])
+    # speciesdf.append(speciesInfo["SVLMMx"])
+    # speciesdf.append(speciesInfo["RangeSize"])
+    # speciesdf.append(speciesInfo["ElevationMin"])
+    # speciesdf.append(speciesInfo["ElevationMax"])
+    # speciesdf.append(speciesInfo["IUCN"])
+    # speciesdatadf=pd.DataFrame(speciesdf)
+    # hide_row_no="""<style>
+    #         thead tr th:first-child {display:none}
+    #         tbody th {display:none}
+    #         </style>"""
+    # st.markdown(hide_row_no, unsafe_allow_html=True)
+    # col2.write(speciesdatadf)
+    # showMore = col2.checkbox("Show All")
+    
