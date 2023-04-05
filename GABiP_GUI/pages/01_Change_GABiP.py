@@ -582,11 +582,26 @@ def add_species_information():
     
 
     sourcesum1, sourcesum2,sourcesum3=st.columns(3)
+
     source_summary=sourcesum2.checkbox("Review Addition and Submit for review")
+
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_missing_info)
+    
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
-    #source_tab1, source_tab2=st.tabs(2)
-    #st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+    
+    st.write(show_missing_info)
+    st.write(user_missing_info)
+
+    num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    for idx, column_name in enumerate(show_missing_info):
+    # Check if the column is a number column
+     if column_name in num_columns:
+        # Check if the user input is a number
+        try:
+            float(user_missing_info[idx])
+        except ValueError:
+            # If user input is not a number, print an error message
+            st.warning(f"Error: {column_name} should be a number")
     preview_sucess=False
     only_image=False
 
@@ -662,7 +677,7 @@ def add_species_information():
                 sumcol2.dataframe(results_updated.iloc[0], width=500)
                 
             preview_sucess=True
-    
+
     
         
 
@@ -685,7 +700,7 @@ def add_species_information():
         prev_col1, prev_col2, prev_col3=st.columns(3) 
         commit_addition=prev_col2.button("Submit Addition")
         
-
+        
         
         if commit_addition and len(show_missing_info) == len(user_missing_info) and len(show_missing_info) == len(additional_info_sources) :
                 user_changes=pd.DataFrame(user_missing_info, show_missing_info)
