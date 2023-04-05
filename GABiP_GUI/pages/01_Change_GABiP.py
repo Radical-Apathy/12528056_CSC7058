@@ -406,17 +406,29 @@ def add_species_information():
 
     user_missing_info = []
     def get_missing_userinfo():
-        for option in show_missing_info:
-            userText = st.text_input(option, key=option)
-            if userText:
-                user_missing_info.append(st.session_state[option])
-        return user_missing_info
+         for option in show_missing_info:
+             userText = st.text_input(option, key=option)
+             if userText:
+                 user_missing_info.append(st.session_state[option])
+         return user_missing_info
+
+    # def get_missing_userinfo():
+    #     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    #     for option in show_missing_info:
+    #         userText = st.text_input(option, key=option)
+    #         if num_columns in show_missing_info:
+    #             try:
+    #                  float(userText)
+    #             except:
+    #                 st.warning(f"Please ensure {num_columns} is a number ")
+    #         if userText:
+    #             user_missing_info.append(st.session_state[option])
+            
+    #     return user_missing_info
 
 
 
-
-
-
+    
 
 
     def update_missing_results(show_missing_info):
@@ -628,6 +640,8 @@ def add_species_information():
         if not additional_info_sources:
 
          st.warning("Please ensure sources are provided for each information point")
+
+         preview_sucess=False
         else:
             source_tab1, source_tab2=st.tabs(["Field Sources","Updated Info"])
 
@@ -647,7 +661,7 @@ def add_species_information():
                 sumcol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Updated Results</strong></em></p>', unsafe_allow_html=True)
                 sumcol2.dataframe(results_updated.iloc[0], width=500)
                 
-        preview_sucess=True
+            preview_sucess=True
     
     
         
