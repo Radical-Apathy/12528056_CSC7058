@@ -70,6 +70,9 @@ def manual_dataset_upload():
 
   def csv_converter(dataset_uploader):
        st.write("converts excel to csv")
+
+  def data_cleaner():
+      st.write("cleans the data")
  #-------------------------------------------------------------MANUAL UPLOAD UI---------------------------------------------------------#
   manual_upload_option=st.checkbox("Manually Upload a dataset")
   
@@ -80,10 +83,10 @@ def manual_dataset_upload():
    if dataset_uploader is not None:
     try:
         # Get the first file uploader object from the list
-        uploaded_file = dataset_uploader[1]
+        uploaded_file = dataset_uploader[0]
         
         # Read the CSV file into a DataFrame
-        df = pd.read_csv(uploaded_file)
+        df = pd.read_excel(uploaded_file)
         
         # Display the DataFrame in a Streamlit table
         st.write(df)
