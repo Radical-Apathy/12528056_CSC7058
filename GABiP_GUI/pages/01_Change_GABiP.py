@@ -412,6 +412,13 @@ def add_species_information():
                 user_missing_info.append(st.session_state[option])
         return user_missing_info
 
+
+
+
+
+
+
+
     def update_missing_results(show_missing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
@@ -515,8 +522,7 @@ def add_species_information():
 
     species_results=current.loc[(current["Species"] == species_dropdown) & (current['Genus'] == genus_dropdown)]
 
-    source_fields=[]
-    summary_dataframe=[]
+    
     def create_source_fields(show_missing_info):
        for option in show_missing_info:
                user_source=st.text_input("Please enter a source for "+option, key=option+" source")
