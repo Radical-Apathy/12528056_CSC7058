@@ -182,7 +182,32 @@ def ref_generator_all(speciesInfo):
     displaymergedRef = sortedYear[["Year","Reference", "Order"]]
     return displaymergedRef.drop_duplicates()
 
-#/uploads/9/8/6/8/98687650/background-images/248177756.jpg
+def rangeSVLMx(dataframe, svlmxRange):
+    maskRange=current["SVLMx"].between(*svlmxRange)
+    maskedRange=current[maskRange]
+    #maskedRange.sort_values(by='SVLMx', ascending=True)
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.SVLMx])
+   # maskedRangedf.sort_values(by='SVLMx', ascending=True)
+    #st.write(maskedRangedf.sort_values(by='SVLMx', ascending=True))
+    st.write(maskedRangedf)
+
+
+def clutchRange(dataframe,  clutchSize):
+    maskRange=current["Clutch"].between(*clutchSize)
+    maskedRange=current[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.Clutch])
+    #sortedYear =mergedRef.sort_values(by='Year', ascending=False)
+    st.write(maskedRangedf)
+
+def eggDiameterRange(dataframe,  eggSize):
+    maskRange=current["EggDiameter"].between(*eggSize)
+    maskedRange=current[maskRange]
+    maskedRangedf=pd.DataFrame([maskedRange.Species, maskedRange.Genus, maskedRange.EggDiameter])
+    st.write(maskedRangedf)
+
+
+
+
 #--------------------------------------------------------------------Navigate Dateset Main Page---------------------------------------------------------------------------------#
 
 
@@ -276,6 +301,19 @@ with tab2:
          st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No documented literary references for {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
     else:
          st.write(all_references_dataframe)
-    
+
+
+#for approved_image in  sorted (approved_user_images, key=lambda x: x["key"], reverse=True):
+                    #if approved_image["Species"] == species_added_to and approved_image["Genus"]==genus_added_to:
+#date_added=database["key"]
+        #  genus_added_to=database["Genus_Affected"]
+        #  species_added_to=database["Species_Affected"]
+        #  user_data=database["Changes"]
+        #  edit_type=database["Edit_Type"]
+        #  status=database["Status"]
+
 with tab3:
-     st.write("Public data")
+    
+    st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>See Species Audit History</strong></em></p>', unsafe_allow_html=True)
+        
+     
