@@ -251,28 +251,31 @@ col2.write(f"{genus_dropdown} {species_dropdown} Summary")
 
 col2.dataframe(species_results.iloc[0], width=500)
 
-col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
 
+#formaing a dataframe that can be grouped with the references
+species_dataframe=current.groupby("Species").get_group(species_dropdown)
+
+col1.markdown(f"[![]({link_image(species_results)})]({link_embedded_image(species_results)})")
+url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query)/"+species_dropdown
+col1.write("AMNH web link for "+ species_dropdown+  " [AMNH Link](%s)" % url)
+url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ species_dropdown +"&rel-scientific_name=contains&include_synonymies=Yes"
+col1.write("Amphibian web link for "+ species_dropdown+  " [Amphibia Web Link](%s)" % url2)
+col2.header("Species Summary")
 
 tab1, tab2, tab3= st.tabs(["Literature References - Most Recent", "See All Literature References", "Public Contributed Data"])
 
 with tab1:
-    st.write(ref_generator_top(species_dropdown)) 
+    references_dataframe=ref_generator_top(species_dataframe)
+    if references_dataframe.empty:
+         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No documented literary references for {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+    else:
+         st.write(references_dataframe)
 with tab2:
-    st.write(ref_generator_all(species_dropdown))
-    # speciesdf.append(speciesInfo["Genus"])
-    # speciesdf.append(speciesInfo["GeographicRegion"])
-    # speciesdf.append(speciesInfo["SVLMMx"])
-    # speciesdf.append(speciesInfo["RangeSize"])
-    # speciesdf.append(speciesInfo["ElevationMin"])
-    # speciesdf.append(speciesInfo["ElevationMax"])
-    # speciesdf.append(speciesInfo["IUCN"])
-    # speciesdatadf=pd.DataFrame(speciesdf)
-    # hide_row_no="""<style>
-    #         thead tr th:first-child {display:none}
-    #         tbody th {display:none}
-    #         </style>"""
-    # st.markdown(hide_row_no, unsafe_allow_html=True)
-    # col2.write(speciesdatadf)
-    # showMore = col2.checkbox("Show All")
+    all_references_dataframe=ref_generator_all(species_dataframe)
+    if all_references_dataframe.empty:
+         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No documented literary references for {species_dropdown}</strong></em></p>', unsafe_allow_html=True)
+    else:
+         st.write(all_references_dataframe)
     
+with tab3:
+     st.write("Public data")
