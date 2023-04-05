@@ -319,7 +319,18 @@ def add_entry_page():
 
     rev_col1,rev_col2,rev_col3=st.columns(3)
     review_information=rev_col2.checkbox("Review Information")
-    #altering populate userinfo method to create json array
+    num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    for idx, column_name in enumerate(more_options):
+        if column_name in num_columns:
+            try:
+                user_input = userInfo[idx]
+                if user_input:
+                    try:
+                        float(user_input)
+                    except ValueError:
+                        st.warning(f"Please ensure {column_name} is a numerical value")
+            except IndexError:
+                st.warning("Please fill in all required fields")
       
     
     if review_information:
@@ -589,19 +600,19 @@ def add_species_information():
     
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     
-    st.write(show_missing_info)
-    st.write(user_missing_info)
-
+    
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
     for idx, column_name in enumerate(show_missing_info):
-    # Check if the column is a number column
-     if column_name in num_columns:
-        # Check if the user input is a number
-        try:
-            float(user_missing_info[idx])
-        except ValueError:
-            # If user input is not a number, print an error message
-            st.warning(f"Error: {column_name} should be a number")
+        if column_name in num_columns:
+            try:
+                user_input = user_missing_info[idx]
+                if user_input:
+                    try:
+                        float(user_input)
+                    except ValueError:
+                        st.warning(f"Please ensure {column_name} is a numerical value")
+            except IndexError:
+                st.warning("Please fill in all required fields")
     preview_sucess=False
     only_image=False
 
@@ -915,8 +926,20 @@ def edit_species_information():
     source_summary=sourcesum2.checkbox("Review Edit and Submit for review")
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
-    #source_tab1, source_tab2=st.tabs(2)
-    #st.tabs(["Species Added", "User Info", "User Source", "User Edit History"])
+
+    #checking that the value types are correct for numerical columns
+    num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    for idx, column_name in enumerate(show_existing_info):
+        if column_name in num_columns:
+            try:
+                user_input = user_missing_info[idx]
+                if user_input:
+                    try:
+                        float(user_input)
+                    except ValueError:
+                        st.warning(f"Please ensure {column_name} is a numerical value")
+            except IndexError:
+                st.warning("Please fill in all required fields")
     preview_sucess=False
     only_image=False
 
