@@ -249,17 +249,34 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
+    user_mandatory=[]
+    def get_mandatory(states=['order','family','genus','species']):
+        for value in states:
+            user_mandatory.append(value)
+        return user_mandatory
+         
 
+
+
+    # def get_extra_userinfo():
+    #  for option in more_options:
+        
+    #     userText=st.text_input(option, key=option)
+    #     if userText:
+    #      st.session_state[option] == userText
+    #     elif not userText =="" :
+    #         st.session_state[option]==None
+    user_info=[]
     def get_extra_userinfo():
      for option in more_options:
-        
-        userText=st.text_input(option, key=option)
-        if userText:
-         st.session_state[option] == userText
-        elif not userText =="" :
-            st.session_state[option]==None
+         userText=st.text_input(option, key=option)
+         if userText:
+          user_info.append(st.session_state[option] )
+     return user_info
 
 
+
+    userInfo=[]
     #stores user info in an array      
     def populate_userinfo():
        for column in dbColumns:
@@ -267,6 +284,8 @@ def add_entry_page():
              st.session_state[column]=None
 
            userInfo.append(st.session_state[column])
+       return userInfo
+        
 
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
@@ -293,7 +312,7 @@ def add_entry_page():
     create_session_states(dbColumns)
 
 
-    userInfo=[]
+    
 
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
     order =st.text_input("Order","Order - e.g. Anura", key='Order') 
@@ -304,7 +323,7 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-    
+    get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
@@ -316,9 +335,12 @@ def add_entry_page():
     if more_options:
      get_extra_userinfo()
 
+    
 
     rev_col1,rev_col2,rev_col3=st.columns(3)
     review_information=rev_col2.checkbox("Review Information")
+    preview_success=True
+
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
     for idx, column_name in enumerate(more_options):
         if column_name in num_columns:
@@ -329,57 +351,65 @@ def add_entry_page():
                         float(user_input)
                     except ValueError:
                         st.warning(f"Please ensure {column_name} is a numerical value")
+                        preview_success=False
             except IndexError:
-                st.warning("Please fill in all required fields")
-      
+                st.warning(f" Index error Please ensure {column_name} is a numerical value")
+                preview_success=False
     
-    if review_information:
+    blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
     
-        populate_userinfo()
-        blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
-        check_current_db(st.session_state['Genus'], st.session_state['Species']) 
-        reviewdf = pd.DataFrame(userInfo, current.columns)
-        st.write(reviewdf, width=300) 
+    if review_information and preview_success and blank_validation:
+        try:
+            review_col1, review_col2, review_col3=st.columns(3)
+            populate_userinfo()
+            
+            blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+            check_current_db(st.session_state['Genus'], st.session_state['Species']) 
+            reviewdf = pd.DataFrame(userInfo, current.columns)
+            review_col2.write(reviewdf, width=300) 
 
-        #temp code for development
-        #populate_userinfo()
-        #data = {0: userInfo}
-        #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
-        #dftojson=dftojsondict.to_json(orient="columns")
-        #st.write(dftojson)
+            #temp code for development
+            #populate_userinfo()
+            #data = {0: userInfo}
+            #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
+            #dftojson=dftojsondict.to_json(orient="columns")
+            #st.write(dftojson)
+            
+            
+            
+            #st.session_state
+
+            user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
+            
+
+            commit_changes=st.button("Submit for review")
+
+            now=datetime.now()
+            timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+            path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
+            path_end = timeStamp
+            newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
+
+
+
         
         
-        
-        #st.session_state
+            if commit_changes and user_message=="":  
+             st.error("Please add a source")
+            if commit_changes and genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+             st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
+            elif commit_changes and user_message:
+                #populate_userinfo()
+                data = {0: userInfo}
+                dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
+                dftojson=dftojsondict.to_json(orient="columns")
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
+         
+        except:
+            st.warning("Please ensure all fields selected are populated")
 
-        user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
-        
-
-        commit_changes=st.button("Submit for review")
-
-        now=datetime.now()
-        timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
-        path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
-        path_end = timeStamp
-        newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
-
-
-
-    
-    
-        if commit_changes and user_message=="":  
-          st.error("Please add a source")
-        if commit_changes and genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-         st.error("Information already exists for "+ st.session_state['Genus'] + " "+st.session_state['Species'] +" check Full Database and make an addition via an edit") 
-        elif commit_changes and user_message:
-         #populate_userinfo()
-         data = {0: userInfo}
-         dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
-         dftojson=dftojsondict.to_json(orient="columns")
-        
-        #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
-         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-        
+            
        
 
     
