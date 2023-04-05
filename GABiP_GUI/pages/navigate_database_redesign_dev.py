@@ -285,9 +285,11 @@ url= url="https://amphibiansoftheworld.amnh.org/amphib/basic_search/(basic_query
 col1.write("AMNH web link for "+ species_dropdown+  " [AMNH Link](%s)" % url)
 url2="https://amphibiaweb.org/cgi/amphib_query?where-scientific_name="+ species_dropdown +"&rel-scientific_name=contains&include_synonymies=Yes"
 col1.write("Amphibian web link for "+ species_dropdown+  " [Amphibia Web Link](%s)" % url2)
-col2.header("Species Summary")
 
-tab1, tab2, tab3= st.tabs(["Literature References - Most Recent", "See All Literature References", "Public Contributed Data"])
+
+
+
+tab1, tab2, tab3, tab4= st.tabs(["Literature References - Most Recent", "See All Literature References", "Public Contributed Data", "Search Species by Range"])
 
 with tab1:
     references_dataframe=ref_generator_top(species_dataframe)
@@ -303,17 +305,26 @@ with tab2:
          st.write(all_references_dataframe)
 
 
-#for approved_image in  sorted (approved_user_images, key=lambda x: x["key"], reverse=True):
-                    #if approved_image["Species"] == species_added_to and approved_image["Genus"]==genus_added_to:
-#date_added=database["key"]
-        #  genus_added_to=database["Genus_Affected"]
-        #  species_added_to=database["Species_Affected"]
-        #  user_data=database["Changes"]
-        #  edit_type=database["Edit_Type"]
-        #  status=database["Status"]
-
 with tab3:
     
     st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>See Species Audit History</strong></em></p>', unsafe_allow_html=True)
+
+
+with tab4:
+    range_col1, range_col2, range_col3=st.columns(3)
+
+    range_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Filter Species by Ranges</strong></em></p>', unsafe_allow_html=True)
+    ranges=st.radio('Range Search: ', ['BodySize', 'Clutch Size', 'Egg Diameter'], key='range_options')
+        # ranges=st.radio('Range Search: ', st.session_state.radio_options, key='radio_options')
+    if ranges == 'BodySize':
+        svlmxRange= st.slider('SVLMx Range searching', 0.0, 1700.0, (850.0, 1700.0), key='BodySize_slider')
+        rangeSVLMx(current, svlmxRange)
+    if ranges=="Clutch Size":
+        clutchSize= st.slider('Clutch Size', 0.0, 1700.0, (850.0, 1700.0), key='ClutchSize_slider')
+        clutchRange(current, clutchSize)
+    if ranges=="Egg Diameter":
+        eggSize= st.slider('Egg Diameter', 0.0, 20.0, (10.0, 20.0), key='EggDiameter_slider') 
+        eggDiameterRange(current, eggSize)  
+
         
      
