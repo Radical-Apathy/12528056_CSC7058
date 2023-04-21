@@ -62,10 +62,6 @@ def get_all_paths():
 #calling method and creating a list comprehension
 databases=get_all_paths()
 
-date_time= sorted([database["key"] for database in databases], reverse=True)
-status=[database["Status"] for database in databases]
-path = [database["Dataset_In_Use"] for database in databases]
-
 
 
 approved=[]
@@ -238,15 +234,7 @@ headercol1, headercol2,  headercol3=st.columns(3)
 headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Search Dataset</strong></em></p>', unsafe_allow_html=True)
     
 current=load_latest()
-dbColumns=current.columns
 
-all_genus=[]
-#  def get_genus(species_dropdown):
-#         all_genus=current.loc[current["Species"]==species_dropdown]
-#         return all_genus
-
-
-additional_info=[]
 
 species_alphabetical=(sorted(current["Species"].drop_duplicates(), reverse=False))
 
@@ -255,8 +243,6 @@ additional_info_sources=[]
 species_dropdown=st.selectbox("Select a species", (species_alphabetical))
 
 species_genus=current.loc[current["Species"]==species_dropdown]
-
-genus_alphabetical=(sorted(current["Genus"].drop_duplicates(), reverse=False))
 
 genus_dropdown=st.selectbox("Select "+species_dropdown+ " Genus", species_genus["Genus"])
 
