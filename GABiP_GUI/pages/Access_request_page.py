@@ -1,6 +1,5 @@
 import streamlit_authenticator as stauth
 import streamlit as st
-#import db_connection as db
 import smtplib
 import ssl
 from email.mime.text import MIMEText # to enable html stuff with https://realpython.com/python-send-email/#sending-your-plain-text-email
@@ -61,25 +60,65 @@ def final_warning(userInput):
          return True
         if user["username"] == userInput:
          return True
+
+#method for checking if fields have been left blank
+
+def validate_input(email, firstname, surname, username, password, confirmPassword):
+    errors = []
+    if not email:
+        errors.append("Email address is required")
+    if not firstname:
+        errors.append("First name is required")
+    if not surname:
+        errors.append("Surname is required")
+    if not username:
+        errors.append("Username is required")
+    if not password:
+        errors.append("Password is required")
+    if password != confirmPassword:
+        errors.append("Passwords do not match")
+    return errors
          
-#---------------------------------------Sign up form.............................................#
+#---------------------------------------------------------------------------------------------SIGN UP PAGE UI----------------------------------------------------------------#
 
-signup_title_style = '<p style="font-family:sans-serif; color:Green; font-size: 42px;"><strong>Sign Up</strong></p>'
+def background():
+        st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/background-images/248177756.jpg");
+                        background-attachment: fixed;
+                        background-size: cover;
+                        background-position: 50% center;
+                        opacity: 0.1
+                        color: #ffffff; 
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-st.markdown(signup_title_style, unsafe_allow_html=True) 
-st.title(":lock: :lizard: :unlock:")
-#st.write(users)
-st.write("Trying with a standard form")
+background()
+    
+
+
+
+headercol1, headercol2, headercol3=st.columns(3)
+
+headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Request Edit Permission</strong></em></p>', unsafe_allow_html=True)
+
+
 with st.form("my_form"):
       email =st.text_input("Email", "Enter your email address")
       duplication_alert(email)
-      firstname =st.text_input("Firstname", "Enter your forename")#, key='Order')
-      surname =st.text_input("Surname", "Enter your surname")#, key='Order')
+      firstname =st.text_input("Firstname", "Enter your forename")
+      surname =st.text_input("Surname", "Enter your surname")
       username= st.text_input("Username", "Enter a username")
       duplication_alert(username)
       usernameCaption=st.caption("Please enter a unique username...this will be used to login")
-      password =st.text_input("password", type='password')#key='Family')
-      confirmPassword =st.text_input("Re-type Password",  type='password')# key='Genus')
+      password =st.text_input("password", type='password')
+      confirmPassword =st.text_input("Re-type Password",  type='password')
+
       #need to check if user exists  
       submitted = st.form_submit_button("Submit Request")
 
@@ -100,11 +139,12 @@ with st.form("my_form"):
           st.write("passwords do not match")
       if submitted and password =="":# or confirmPassword=="":
         st.warning("Fields can not be left blank") 
-          #send an email alert to new users informing them that an dmin will be in touch
-          #send an email alert to admin with the new users details i.e. first name, last name, email, message 
-      if submitted and len(password)>0 and len(confirmPassword)>0: 
+      errors = validate_input(email, firstname, surname, username, password, confirmPassword)
+      if errors:
+          st.error("\n".join(errors))
+      elif submitted and len(password)>0 and len(confirmPassword)>0: 
         insert_user(email,username, firstname, surname, admin, approved, finalPass)
-        st.write("we've submitted your request...an admin will be in touch soon via email")
+        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Request submitted!</strong></em></p>', unsafe_allow_html=True)
 
 
          
