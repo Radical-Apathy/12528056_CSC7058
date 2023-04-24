@@ -312,7 +312,7 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-    get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+    #get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
     st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
@@ -328,22 +328,17 @@ def add_entry_page():
 
     rev_col1,rev_col2,rev_col3=st.columns(3)
     review_information=rev_col2.checkbox("Review Information")
-    preview_success=True
+    
 
+    preview_success = True
+    
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for idx, column_name in enumerate(more_options):
-        if column_name in num_columns:
-            try:
-                user_input = userInfo[idx]
-                if user_input:
-                    try:
-                        float(user_input)
-                    except ValueError:
-                        st.warning(f"Please ensure {column_name} is a numerical value")
-                        preview_success=False
-            except IndexError:
-                st.warning(f" Index error Please ensure {column_name} is a numerical value")
-                preview_success=False
+    preview_success = True
+    for column_name, user_input in zip(more_options, user_info):
+            if column_name in num_columns:
+               if user_input and not user_input.isnumeric():
+                st.warning(f"Please ensure {column_name} is a numerical value")
+                preview_success = False
     
     blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
     
@@ -385,8 +380,9 @@ def add_entry_page():
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
             #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
          
-        except:
-            st.warning("Please ensure all fields selected are populated")
+        except IndexError:
+            st.warning(" index Please ensure all fields selected are populated")
+        
 
             
        
