@@ -199,7 +199,7 @@ approved_user_images=get_all_user_images()
 def get_current_user(email):
     print (users_db.get(email))
 
-def approve_user(username, updates):
+def update_user(username, updates):
     return users_db.update(updates, username)
 
 #gets and displays users pending approval
@@ -208,24 +208,51 @@ def display_pending_users():
     for user in users:
      if user["approved"]=="False":
        with st.form(user["username"]):
-        st.markdown(f"""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>***********{user["username"]}'s Request**********</strong></p>""" , unsafe_allow_html=True)
+        st.markdown(f"""<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>***********{user["username"]}'s Request**********</strong></p>""" , unsafe_allow_html=True)
         st.text(f"Username : " +user["username"])
         st.text(f"Firstname : " +user["firstname"])
         st.text(f"Surname : " +user["surname"])
         st.text(f"Email : " +user["key"])
         checkbox1 = st.checkbox(f"Allow " + user["firstname"] + " access")
-        checkbox2 = st.checkbox(f"Place " +user["firstname"] +" in review list")
+        checkbox2 = st.checkbox(f"Deny " +user["firstname"] +" access")
         confirmForm = st.form_submit_button(f"Submit Decision for  : " + user["username"])
         if checkbox1 and checkbox2 and confirmForm:
             st.error("Warning! Both options have been selected. Please review decision")
         elif checkbox1 and confirmForm:
-            approve_user(user["key"], updates={"approved": "True"})
+            update_user(user["key"], updates={"approved": "True"})
             st.success(f"Accepted! "+user["username"]+ " can now access the GABiP. You can revoke access at any time using the View Approved user's option")
         elif checkbox2 and confirmForm:
-            st.warning(f"User now place in to review section. " +user["username"]+ " 's access can be decided upon another date" )
+            update_user(user["key"], updates={"approved": "Denied"})
+            st.warning(f"Access request denied for " +user["username"] )
       
-        st.markdown("""<p style="font-family:sans-serif; color:ForestGreen; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
+        st.markdown("""<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
         st.write("***")
+
+def display_approved_users():
+    st.markdown("***")
+    for user in users:
+     if user["approved"]=="True" and user["admin"]=="False":
+       with st.form(user["username"]):
+        st.markdown(f"""<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>***********{user["username"]}**********</strong></p>""" , unsafe_allow_html=True)
+        st.text(f"Username : " +user["username"])
+        st.text(f"Firstname : " +user["firstname"])
+        st.text(f"Surname : " +user["surname"])
+        st.text(f"Email : " +user["key"])
+        checkbox1 = st.checkbox(f"Promote  " + user["firstname"] + " to Admin level")
+        checkbox2 = st.checkbox(f"Revoke " +user["firstname"] +" access")
+        confirmForm = st.form_submit_button(f"Submit Decision for  : " + user["username"])
+        if checkbox1 and checkbox2 and confirmForm:
+            st.error("Warning! Both options have been selected. Please review decision")
+        elif checkbox1 and confirmForm:
+            update_user(user["key"], updates={"admin": "True"})
+            st.success(f"Accepted! "+user["username"]+ " is now an Admin")
+        elif checkbox2 and confirmForm:
+            update_user(user["key"], updates={"approved": "Revoked"})
+            st.warning(f"Access privileges for " +user["username"]+" revoked" )
+      
+        st.markdown("""<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>**************************************************************************************</strong></p>""", unsafe_allow_html=True )
+        st.write("***")
+     
 
 
 
@@ -1904,12 +1931,14 @@ def admin_welcome_screen():
     
     st.subheader("Welcome to the Admin Area.")
 
-    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','View Access Requests', 'View existing users','See edit requests'  ])
+    adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','View Access Requests', 'View Existing Users','See Edit Requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
     if adminOptions=="View Access Requests":
          display_pending_users()
-    if adminOptions == "See edit requests":
+    if adminOptions=="View Existing Users":
+         display_approved_users()
+    if adminOptions == "See Edit Requests":
         admin_edit_options()
 
 
