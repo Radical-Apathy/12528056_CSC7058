@@ -411,7 +411,7 @@ def add_species_information():
      return current_db
     
     current=load_latest_not_cached()
-    
+
     missingInfoColumns = []
     def get_missing_info_columns(results):
         for column in dbColumns:
@@ -426,10 +426,8 @@ def add_species_information():
              if userText:
                  user_missing_info.append(st.session_state[option])
          return user_missing_info
-
-      
-
-
+         
+ 
     def update_missing_results(show_missing_info):
         speciesIndex = species_results.index[0]
         results_updated = species_results.copy()
