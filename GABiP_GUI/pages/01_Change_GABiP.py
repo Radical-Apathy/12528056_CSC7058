@@ -411,6 +411,7 @@ def add_species_information():
      return current_db
     
     current=load_latest_not_cached()
+    
     missingInfoColumns = []
     def get_missing_info_columns(results):
         for column in dbColumns:
@@ -588,14 +589,14 @@ def add_species_information():
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     
 
-    preview_success=True
+    preview_sucess=True
 
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
     for column_name, user_input in zip(show_missing_info, user_missing_info):
             if column_name in num_columns:
                if user_input and not user_input.isnumeric():
                  st.warning(f"Please ensure {column_name} is a numerical value")
-            preview_success = False
+            preview_sucess = False
     
     only_image=False
 
@@ -678,7 +679,7 @@ def add_species_information():
     st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
     
-
+    
     
     if preview_sucess and only_image:
         image_col1,image_col2,image_col3=st.columns(3)
