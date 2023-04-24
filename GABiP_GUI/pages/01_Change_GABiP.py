@@ -699,7 +699,9 @@ def add_species_information():
                 user_changes=pd.DataFrame(user_missing_info, show_missing_info)
                 user_changes_json=user_changes.to_json() 
                 search_results_to_json=species_results.to_json(orient="columns") 
-                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
+                add_to_database(str(now), user_changes_json, search_results_to_json, "Information Addition", 
+                                species_dropdown,  genus_dropdown, st.session_state["username"], "n/a", "Pending", "n/a", "n/a", "n/a", 
+                                latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
                 if 'image_ids' in st.session_state:
                  del st.session_state['image_ids']
                 
