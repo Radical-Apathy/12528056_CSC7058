@@ -602,20 +602,7 @@ def add_species_information():
     
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     
-    
-    # num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    # for idx, column_name in enumerate(show_missing_info):
-    #     if column_name in num_columns:
-    #         try:
-    #             user_input = user_missing_info[idx]
-    #             if user_input:
-    #                 try:
-    #                     float(user_input)
-    #                 except ValueError:
-    #                     st.warning(f"Please ensure {column_name} is a numerical value")
-    #         except IndexError:
-    #             st.warning("Please fill in all required fields")
-    # preview_sucess=False
+        
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
     for column_name, user_input in zip(show_missing_info, user_missing_info):
             if column_name in num_columns:
