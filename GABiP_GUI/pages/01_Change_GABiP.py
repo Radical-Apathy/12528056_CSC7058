@@ -204,9 +204,6 @@ if 'image_ids' not in st.session_state:
         st.session_state['image_ids']=[]
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
-#def welcome_screen():
- #   welcol1,welcol2,welcol3=st.columns(3)
-  #  welcol2.image("amphibs.jpeg", width=200)
     
 
 
@@ -258,14 +255,6 @@ def add_entry_page():
 
 
 
-    # def get_extra_userinfo():
-    #  for option in more_options:
-        
-    #     userText=st.text_input(option, key=option)
-    #     if userText:
-    #      st.session_state[option] == userText
-    #     elif not userText =="" :
-    #         st.session_state[option]==None
     user_info=[]
     def get_extra_userinfo():
      for option in more_options:
@@ -313,8 +302,8 @@ def add_entry_page():
 
 
     
-
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
+    
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
     order =st.text_input("Order","Order - e.g. Anura", key='Order') 
 
     family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
@@ -326,7 +315,7 @@ def add_entry_page():
     get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
     more_options=st.multiselect("Add more Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
                              'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
                              'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
@@ -368,17 +357,7 @@ def add_entry_page():
             reviewdf = pd.DataFrame(userInfo, current.columns)
             review_col2.write(reviewdf, width=300) 
 
-            #temp code for development
-            #populate_userinfo()
-            #data = {0: userInfo}
-            #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
-            #dftojson=dftojsondict.to_json(orient="columns")
-            #st.write(dftojson)
             
-            
-            
-            #st.session_state
-
             user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
             
 
