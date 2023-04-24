@@ -734,6 +734,14 @@ def edit_species_information():
 
     add_bg_from_url()
 
+    @st.cache_data
+    def load_latest_not_cached():
+     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+     return current_db
+
+    current=load_latest_not_cached()
+
+    
     existing_info_columns = []
     def get_existing_info_columns(results):
         for column in dbColumns:
@@ -832,7 +840,7 @@ def edit_species_information():
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest_not_cached()
+   
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
