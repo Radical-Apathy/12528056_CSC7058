@@ -1013,7 +1013,7 @@ def edit_species_information():
             add_to_database(str(now), "image only edit", "image only edit", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
                 del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED FOR REVIEW        ***</strong></p>', unsafe_allow_html=True)
 
 
     if preview_sucess and not only_image:
@@ -1031,7 +1031,7 @@ def edit_species_information():
                  del st.session_state['image_ids']
                 
                 
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_existing_info) != len(user_missing_info) or len(show_existing_info) != len(additional_info_sources) or len(user_missing_info)==0:
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
