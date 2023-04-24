@@ -741,7 +741,7 @@ def edit_species_information():
 
     current=load_latest_not_cached()
 
-    
+
     existing_info_columns = []
     def get_existing_info_columns(results):
         for column in dbColumns:
@@ -919,21 +919,8 @@ def edit_species_information():
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
 
-    #checking that the value types are correct for numerical columns
-    # num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    # for idx, column_name in enumerate(show_existing_info):
-    #     if column_name in num_columns:
-    #         try:
-    #             user_input = user_missing_info[idx]
-    #             if user_input:
-    #                 try:
-    #                     float(user_input)
-    #                 except ValueError:
-    #                     st.warning(f"Please ensure {column_name} is a numerical value")
-    #         except IndexError:
-    #             st.warning("Please fill in all required fields")
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for column_name, user_input in zip(existing_info_columns, user_missing_info):
+    for column_name, user_input in zip(show_existing_info, user_missing_info):
             if column_name in num_columns:
                if user_input and not user_input.isnumeric():
                  st.warning(f"Please ensure {column_name} is a numerical value")
