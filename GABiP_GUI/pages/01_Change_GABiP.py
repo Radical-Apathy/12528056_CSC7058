@@ -204,15 +204,11 @@ if 'image_ids' not in st.session_state:
         st.session_state['image_ids']=[]
 
 #-------------------------------------------------------------------------LOGIN DISPLAY PAGE METHODS-----------------------------------------------------------------------------#
-#def welcome_screen():
- #   welcol1,welcol2,welcol3=st.columns(3)
-  #  welcol2.image("amphibs.jpeg", width=200)
     
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
-def page_experiment():
-    st.write("page exeriment")
+
 
 def show_db():
 
@@ -234,8 +230,16 @@ def show_db():
                 )
 
     load_db_bg()
-    
+    now=datetime.now()
+    timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+    current=load_latest()
     st.write(current)
+    st.markdown(f'<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*** Click on Check on Latest GABiP for the most current version***</strong></p>', unsafe_allow_html=True)
+    current_gabip=st.button("Check Latest GABiP")
+    if current_gabip:
+        current=load_latest_not_cached()
+        st.markdown(f'<p style="font-family:sans-serif; color:white; font-size: 30px;"><strong>*** Version of GABiP as of{now} ***</strong></p>', unsafe_allow_html=True)
+        st.write(current)
 
     
 
@@ -249,23 +253,7 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
-    user_mandatory=[]
-    def get_mandatory(states=['order','family','genus','species']):
-        for value in states:
-            user_mandatory.append(value)
-        return user_mandatory
-         
-
-
-
-    # def get_extra_userinfo():
-    #  for option in more_options:
-        
-    #     userText=st.text_input(option, key=option)
-    #     if userText:
-    #      st.session_state[option] == userText
-    #     elif not userText =="" :
-    #         st.session_state[option]==None
+    
     user_info=[]
     def get_extra_userinfo():
      for option in more_options:
@@ -290,7 +278,7 @@ def add_entry_page():
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
         if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-            st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
+            st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making an edit to current dataset instead of an addition") 
 
     
 
@@ -313,8 +301,8 @@ def add_entry_page():
 
 
     
-
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
+    
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><strong>***      * Mandatory Fields *        ***</strong></p>', unsafe_allow_html=True)
     order =st.text_input("Order","Order - e.g. Anura", key='Order') 
 
     family =st.text_input("Family","Family - e.g. Allophrynidae", key='Family')
@@ -323,10 +311,10 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-    get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+    
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
     more_options=st.multiselect("Add more Information", ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'NestingSite', 'ClutchMin',	'ClutchMax',
                              'Clutch', 'ParityMode',	'EggDiameter', 'Activity',	'Microhabitat', 'GeographicRegion',	'IUCN',	
                              'PopTrend',	'RangeSize', 'ElevationMin','ElevationMax','Elevation'])
@@ -339,48 +327,31 @@ def add_entry_page():
 
     rev_col1,rev_col2,rev_col3=st.columns(3)
     review_information=rev_col2.checkbox("Review Information")
-    preview_success=True
+    
 
+    preview_success = True
+    
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for idx, column_name in enumerate(more_options):
-        if column_name in num_columns:
-            try:
-                user_input = userInfo[idx]
-                if user_input:
-                    try:
-                        float(user_input)
-                    except ValueError:
-                        st.warning(f"Please ensure {column_name} is a numerical value")
-                        preview_success=False
-            except IndexError:
-                st.warning(f" Index error Please ensure {column_name} is a numerical value")
-                preview_success=False
+    preview_success = True
+    for column_name, user_input in zip(more_options, user_info):
+            if column_name in num_columns:
+               if user_input and not user_input.isnumeric():
+                st.warning(f"Please ensure {column_name} is a numerical value")
+                preview_success = False
     
     blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
     
-    if review_information and preview_success and blank_validation:
+    
+    
+    if review_information and preview_success and blank_validation:# and not check_current_db:
         try:
             review_col1, review_col2, review_col3=st.columns(3)
             populate_userinfo()
-            
-            blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
-            check_current_db(st.session_state['Genus'], st.session_state['Species']) 
+            check_current_db(st.session_state['Genus'], st.session_state['Species'])
             reviewdf = pd.DataFrame(userInfo, current.columns)
             review_col2.write(reviewdf, width=300) 
-
-            #temp code for development
-            #populate_userinfo()
-            #data = {0: userInfo}
-            #dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current_db.columns)
-            #dftojson=dftojsondict.to_json(orient="columns")
-            #st.write(dftojson)
             
-            
-            
-            #st.session_state
-
             user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
-            
 
             commit_changes=st.button("Submit for review")
 
@@ -389,10 +360,7 @@ def add_entry_page():
             path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
             path_end = timeStamp
             newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
-
-
-
-        
+       
         
             if commit_changes and user_message=="":  
              st.error("Please add a source")
@@ -403,16 +371,15 @@ def add_entry_page():
                 data = {0: userInfo}
                 dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
                 dftojson=dftojsondict.to_json(orient="columns")
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-            #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
+            add_to_database(str(now), dftojson, get_approved(), "New Species Addition", 
+                            st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], 
+                            "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
          
         except:
             st.warning("Please ensure all fields selected are populated")
-
-            
-       
-
-    
+               
+  
     
     
 
@@ -1547,14 +1514,14 @@ def remove_species_data():
 
 #--------------------------------------------------------------------------GABiP EDIT OPTIONS------------------------------------------------------------------------------------#
 def show_options():
-    options=st.sidebar.radio("Options", ('Show Full Database','New Species Entry', 'Add Species Data','Edit Species Data' , 'Remove Species Data','Remove a Species'), key='current_option')     
-    #page_experiment():
+    options=st.sidebar.radio("Options", 
+                ('Show Full Database','New Species Entry', 'Add Species Data','Edit Species Data' , 'Remove Species Data','Remove a Species'))     
+    
     if options == "Show Full Database":
         show_db()
     if options == "New Species Entry":
         add_entry_page()
     if options == 'Add Species Data':
-        
         add_species_information()
     if options == 'Edit Species Data':
         edit_species_information()
