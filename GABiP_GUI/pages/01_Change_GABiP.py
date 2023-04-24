@@ -1001,7 +1001,7 @@ def edit_species_information():
     
         
 
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
     
 
