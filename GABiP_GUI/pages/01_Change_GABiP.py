@@ -208,8 +208,7 @@ if 'image_ids' not in st.session_state:
 
 
 #--------------------------------------------------------------------------SHOW DATABASE PAGE------------------------------------------------------------------------------------#
-def page_experiment():
-    st.write("page exeriment")
+
 
 def show_db():
 
@@ -231,8 +230,16 @@ def show_db():
                 )
 
     load_db_bg()
-    
+    now=datetime.now()
+    timeStamp=now.strftime("%d.%m.%Y-%H.%M.%S")
+    current=load_latest()
     st.write(current)
+    st.markdown(f'<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*** Click on Check on Latest GABiP for the most current version***</strong></p>', unsafe_allow_html=True)
+    current_gabip=st.button("Check Latest GABiP")
+    if current_gabip:
+        current=load_latest_not_cached()
+        st.markdown(f'<p style="font-family:sans-serif; color:white; font-size: 30px;"><strong>*** Version of GABiP as of{now} ***</strong></p>', unsafe_allow_html=True)
+        st.write(current)
 
     
 
@@ -279,7 +286,7 @@ def add_entry_page():
     #checking that both the genus and species submitted don't exist on current csv    
     def check_current_db(genus, species):
         if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-            st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making and edit to current dataset instead of an addition") 
+            st.warning(f"Data already exists for " +genus+ " " +species+ " Check full dataset option and consider making an edit to current dataset instead of an addition") 
 
     
 
@@ -342,19 +349,17 @@ def add_entry_page():
     
     blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
     
-    if review_information and preview_success and blank_validation:
+    
+    
+    if review_information and preview_success and blank_validation:# and not check_current_db:
         try:
             review_col1, review_col2, review_col3=st.columns(3)
             populate_userinfo()
-            
-            blank_validation([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
-            check_current_db(st.session_state['Genus'], st.session_state['Species']) 
+            check_current_db(st.session_state['Genus'], st.session_state['Species'])
             reviewdf = pd.DataFrame(userInfo, current.columns)
             review_col2.write(reviewdf, width=300) 
-
             
             user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
-            
 
             commit_changes=st.button("Submit for review")
 
@@ -377,11 +382,11 @@ def add_entry_page():
                 data = {0: userInfo}
                 dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
                 dftojson=dftojsondict.to_json(orient="columns")
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
-            #add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
+            add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
          
-        except IndexError:
-            st.warning(" index Please ensure all fields selected are populated")
+        except:
+            st.warning("Please ensure all fields selected are populated")
         
 
             
