@@ -912,18 +912,24 @@ def edit_species_information():
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
 
     #checking that the value types are correct for numerical columns
+    # num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    # for idx, column_name in enumerate(show_existing_info):
+    #     if column_name in num_columns:
+    #         try:
+    #             user_input = user_missing_info[idx]
+    #             if user_input:
+    #                 try:
+    #                     float(user_input)
+    #                 except ValueError:
+    #                     st.warning(f"Please ensure {column_name} is a numerical value")
+    #         except IndexError:
+    #             st.warning("Please fill in all required fields")
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for idx, column_name in enumerate(show_existing_info):
-        if column_name in num_columns:
-            try:
-                user_input = user_missing_info[idx]
-                if user_input:
-                    try:
-                        float(user_input)
-                    except ValueError:
-                        st.warning(f"Please ensure {column_name} is a numerical value")
-            except IndexError:
-                st.warning("Please fill in all required fields")
+    for column_name, user_input in zip(existing_info_columns, user_missing_info):
+            if column_name in num_columns:
+               if user_input and not user_input.isnumeric():
+                 st.warning(f"Please ensure {column_name} is a numerical value")
+            preview_sucess = False
     preview_sucess=False
     only_image=False
 
