@@ -404,6 +404,7 @@ def add_species_information():
         )
 
     add_bg_from_url()
+
     @st.cache_data
     def load_latest_not_cached():
      current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
@@ -425,23 +426,7 @@ def add_species_information():
                  user_missing_info.append(st.session_state[option])
          return user_missing_info
 
-    # def get_missing_userinfo():
-    #     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    #     for option in show_missing_info:
-    #         userText = st.text_input(option, key=option)
-    #         if num_columns in show_missing_info:
-    #             try:
-    #                  float(userText)
-    #             except:
-    #                 st.warning(f"Please ensure {num_columns} is a number ")
-    #         if userText:
-    #             user_missing_info.append(st.session_state[option])
-            
-    #     return user_missing_info
-
-
-
-    
+      
 
 
     def update_missing_results(show_missing_info):
@@ -602,13 +587,16 @@ def add_species_information():
     
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     
-        
+
+    preview_success=True
+
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
     for column_name, user_input in zip(show_missing_info, user_missing_info):
             if column_name in num_columns:
                if user_input and not user_input.isnumeric():
-                st.warning(f"Please ensure {column_name} is a numerical value")
-                preview_success = False
+                 st.warning(f"Please ensure {column_name} is a numerical value")
+            preview_success = False
+    
     only_image=False
 
     if source_summary and len(image_ids)!=0 and not additional_info_sources:
@@ -699,7 +687,7 @@ def add_species_information():
             add_to_database(str(now), "image only", "image only", "Information Addition", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
                 del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
 
 
     if preview_sucess and not only_image:
@@ -717,7 +705,7 @@ def add_species_information():
                  del st.session_state['image_ids']
                 
                 
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW        ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_missing_info) != len(user_missing_info) or len(show_missing_info) != len(additional_info_sources) or len(user_missing_info)==0:
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
