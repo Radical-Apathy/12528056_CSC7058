@@ -253,15 +253,7 @@ def add_entry_page():
          if i=="":
             st.warning("Order, Family, Genus, Species fields can not be left blank. Please recheck mandatory field section")
 
-    user_mandatory=[]
-    def get_mandatory(states=['order','family','genus','species']):
-        for value in states:
-            user_mandatory.append(value)
-        return user_mandatory
-         
-
-
-
+    
     user_info=[]
     def get_extra_userinfo():
      for option in more_options:
@@ -319,7 +311,7 @@ def add_entry_page():
 
     species =st.text_input("Species","Species - e.g. Relicta", key='Species')
 
-    #get_mandatory([st.session_state['Order'], st.session_state['Family'], st.session_state['Genus'], st.session_state['Species']])
+    
  #----------------------------------------------------------------MANAGING ADDITIONAL FIELDS -------------------------------------------------------#
     st.markdown('***')
     st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>More Options</strong></p>', unsafe_allow_html=True)
@@ -368,10 +360,7 @@ def add_entry_page():
             path_prefix="C:/Users/Littl/OneDrive/Documents/GitHub/12528056_CSC7058/GABiP_GUI/pages/pending changes/Additions/"
             path_end = timeStamp
             newPath=path_prefix+path_end+"-"+st.session_state['username']+".csv"
-
-
-
-        
+       
         
             if commit_changes and user_message=="":  
              st.error("Please add a source")
@@ -383,16 +372,14 @@ def add_entry_page():
                 dftojsondict = pd.DataFrame.from_dict(data,orient='index',columns=current.columns)
                 dftojson=dftojsondict.to_json(orient="columns")
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
-            add_to_database(str(now), dftojson, get_approved(), "New Species Addition", st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
+            add_to_database(str(now), dftojson, get_approved(), "New Species Addition", 
+                            st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], 
+                            "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
          
         except:
             st.warning("Please ensure all fields selected are populated")
-        
-
-            
-       
-
-    
+               
+  
     
     
 
