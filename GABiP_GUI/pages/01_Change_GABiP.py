@@ -734,6 +734,14 @@ def edit_species_information():
 
     add_bg_from_url()
 
+    @st.cache_data
+    def load_latest_not_cached():
+     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+     return current_db
+
+    current=load_latest_not_cached()
+
+
     existing_info_columns = []
     def get_existing_info_columns(results):
         for column in dbColumns:
@@ -831,8 +839,8 @@ def edit_species_information():
 
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest_not_cached()
+    headercol2.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
+   
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -911,19 +919,12 @@ def edit_species_information():
     sources_review_dataframe = pd.DataFrame(additional_info_sources, show_existing_info)
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
 
-    #checking that the value types are correct for numerical columns
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for idx, column_name in enumerate(show_existing_info):
-        if column_name in num_columns:
-            try:
-                user_input = user_missing_info[idx]
-                if user_input:
-                    try:
-                        float(user_input)
-                    except ValueError:
-                        st.warning(f"Please ensure {column_name} is a numerical value")
-            except IndexError:
-                st.warning("Please fill in all required fields")
+    for column_name, user_input in zip(show_existing_info, user_missing_info):
+            if column_name in num_columns:
+               if user_input and not user_input.isnumeric():
+                 st.warning(f"Please ensure {column_name} is a numerical value")
+            preview_sucess = False
     preview_sucess=False
     only_image=False
 
@@ -1001,7 +1002,7 @@ def edit_species_information():
     
         
 
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
     
 
@@ -1013,7 +1014,7 @@ def edit_species_information():
             add_to_database(str(now), "image only edit", "image only edit", "Information Edit", species_dropdown,  genus_dropdown, st.session_state["username"], image_source, "Pending", "n/a", "n/a", "n/a", latest_approved_ds, sources_review_json, st.session_state['image_ids'] )
             if 'image_ids' in st.session_state:
                 del st.session_state['image_ids']
-            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      IMAGE SUBMITTED FOR REVIEW        ***</strong></p>', unsafe_allow_html=True)
 
 
     if preview_sucess and not only_image:
@@ -1031,7 +1032,7 @@ def edit_species_information():
                  del st.session_state['image_ids']
                 
                 
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_existing_info) != len(user_missing_info) or len(show_existing_info) != len(additional_info_sources) or len(user_missing_info)==0:
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
