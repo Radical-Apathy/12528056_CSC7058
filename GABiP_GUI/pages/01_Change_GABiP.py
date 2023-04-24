@@ -404,6 +404,11 @@ def add_species_information():
         )
 
     add_bg_from_url()
+    @st.cache_data
+    def load_latest_not_cached():
+     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+     return current_db
+    
     current=load_latest_not_cached()
     missingInfoColumns = []
     def get_missing_info_columns(results):
@@ -517,7 +522,7 @@ def add_species_information():
     headercol1, headercol2, headercol3=st.columns(3)
     headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
     
-    current=load_latest_not_cached()
+    
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -598,19 +603,25 @@ def add_species_information():
     sources_review_json=sources_review_dataframe.to_json(orient="columns")
     
     
+    # num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
+    # for idx, column_name in enumerate(show_missing_info):
+    #     if column_name in num_columns:
+    #         try:
+    #             user_input = user_missing_info[idx]
+    #             if user_input:
+    #                 try:
+    #                     float(user_input)
+    #                 except ValueError:
+    #                     st.warning(f"Please ensure {column_name} is a numerical value")
+    #         except IndexError:
+    #             st.warning("Please fill in all required fields")
+    # preview_sucess=False
     num_columns = ['SVLMMx', 'SVLFMx', 'SVLMx', 'Longevity', 'ClutchMin', 'ClutchMax', 'Clutch', 'EggDiameter']
-    for idx, column_name in enumerate(show_missing_info):
-        if column_name in num_columns:
-            try:
-                user_input = user_missing_info[idx]
-                if user_input:
-                    try:
-                        float(user_input)
-                    except ValueError:
-                        st.warning(f"Please ensure {column_name} is a numerical value")
-            except IndexError:
-                st.warning("Please fill in all required fields")
-    preview_sucess=False
+    for column_name, user_input in zip(show_missing_info, user_missing_info):
+            if column_name in num_columns:
+               if user_input and not user_input.isnumeric():
+                st.warning(f"Please ensure {column_name} is a numerical value")
+                preview_success = False
     only_image=False
 
     if source_summary and len(image_ids)!=0 and not additional_info_sources:
