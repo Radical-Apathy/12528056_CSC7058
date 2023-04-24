@@ -504,7 +504,7 @@ def add_species_information():
    
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
+    headercol2.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><em><strong>Add Species Information</strong></em></p>', unsafe_allow_html=True)
     
     
     dbColumns=current.columns
@@ -570,9 +570,9 @@ def add_species_information():
     results_updated=update_missing_results(show_missing_info)
 
     sourcecol1,sourcecol2,sourcecol3=st.columns(3)
-    sourcecol1.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
-    sourcecol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
-    sourcecol3.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    sourcecol1.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
+    sourcecol2.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*Information Sources*</strong></p>', unsafe_allow_html=True)
+    sourcecol3.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>**************************</strong></p>', unsafe_allow_html=True)
     if len(image_ids) >0:
         image_source=st.text_input("Image(s) Source")
     create_source_fields(show_missing_info)
@@ -674,7 +674,7 @@ def add_species_information():
     
         
 
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
     
     
