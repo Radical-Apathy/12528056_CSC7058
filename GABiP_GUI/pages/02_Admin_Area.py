@@ -351,7 +351,6 @@ def new_species_review():
         
         def create_new_addition_dataset():
 
-            #newDataset=current.append(user_changes, ignore_index=True)
             newDataset = pd.concat([current, user_changes], ignore_index=True)
             newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
             with io.BytesIO() as csv_buffer:
@@ -370,11 +369,13 @@ def new_species_review():
         
         #updates the status, 
         def update_GABiP():
-            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], 
+                       "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
         
         def reject_new_addition():
-            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], 
+                       "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
 
