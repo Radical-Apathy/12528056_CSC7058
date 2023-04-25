@@ -161,11 +161,6 @@ def check_current_db_edits(genus, species):
 
 
 
-pending_edit_info=[]
-
-
-
-
 #------------------------------------------------------------IMAGES DATABASE CONNECTION-----------------------------------------------------------------------------------------#
 users_images=deta_connection.Base("user_images")
 
@@ -838,7 +833,7 @@ def information_edit_review():
     #loading background image
     add_new_info_bg()
     #current=load_latest()
-    
+    pending_edit_info=[]
     def get_pending_edit_info():
       for database in databases:
         
