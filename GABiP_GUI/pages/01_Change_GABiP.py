@@ -351,7 +351,7 @@ def add_entry_page():
             reviewdf = pd.DataFrame(userInfo, current.columns)
             review_col2.write(reviewdf, width=300) 
             
-            user_message=st.text_area("Please leave a comment citing the source for this addition", key='comment')
+            user_message=st.text_area("Please leave a comment citing the source for this addition")
 
             commit_changes=st.button("Submit for review")
 
@@ -373,7 +373,7 @@ def add_entry_page():
                 dftojson=dftojsondict.to_json(orient="columns")
                 st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
             add_to_database(str(now), dftojson, get_approved(), "New Species Addition", 
-                            st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], st.session_state["comment"], 
+                            st.session_state["Species"], st.session_state["Genus"], st.session_state["username"], user_message, 
                             "Pending", "n/a", "n/a", "n/a", get_approved(), "n/a", "n/a")
          
         except:
