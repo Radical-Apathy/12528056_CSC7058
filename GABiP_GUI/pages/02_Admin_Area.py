@@ -151,9 +151,12 @@ except Exception as error:
 def check_current_db(genus, species):
         current=load_latest_not_cached()
         if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-            st.warning(f"Data already exists for " +genus+ " " +species+ ". This means it has been added since this request. Check the Species Audit History for details") 
+            st.error(f"Data already exists for " +genus+ " " +species+ ". This means it has been added since this request. Check the Species Audit History for details. It is recommended that this addition is rejected") 
 
-
+def check_current_db_edits(genus, species):
+        current=load_latest_not_cached()
+        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+            st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details") 
 
 
 pending_new_info=[]
