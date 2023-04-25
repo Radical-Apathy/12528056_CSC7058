@@ -148,23 +148,16 @@ except Exception as error:
 
 
 
+def check_current_db(genus, species):
+        current=load_latest_not_cached()
+        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+            st.error(f"Data already exists for " +genus+ " " +species+ ". This means it has been added since this request. Check the Species Audit History for details. It is recommended that this addition is rejected") 
 
+def check_current_db_edits(genus, species):
+        current=load_latest_not_cached()
+        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+            st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details. It is recommended that this change request is rejected") 
 
-
-#gets dates for new species additions needing approval
-pending_new_rows=[]
-
-
-def get_pending_row_additions():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending_new_rows.append(database["key"])
-
-get_pending_row_additions()
-
-new_additions_submissions=sorted(pending_new_rows,reverse=True)
 
 pending_new_info=[]
 def get_pending_new_info():
@@ -260,15 +253,35 @@ def display_approved_users():
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
     #current=load_latest()
+        #gets dates for new species additions needing approval
+    pending_new_rows=[]
+
+
+    def get_pending_row_additions():
+        for database in databases:
+            
+                if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                    
+                 pending_new_rows.append(database["key"])
+
+    get_pending_row_additions()
+
+    new_additions_submissions=sorted(pending_new_rows,reverse=True)
+
 
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
     'Date submitted',
     (new_additions_submissions))
 
-
-
+   
     if datesubmitted:
+        for database in databases:
+         if database["key"]==datesubmitted:
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]          
+                
+        check_current_db(genus, species)
 
         tab1, tab2, tab3= st.tabs(["Species Added", "User Info", "User Source"])
 
@@ -276,6 +289,9 @@ def new_species_review():
         for database in databases:
                 if database["key"]==datesubmitted:
                     newAdd=database["Changes"]
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]
+                    
         
         user_changes= pd.read_json(newAdd)
         tab1.write(user_changes)
@@ -310,7 +326,7 @@ def new_species_review():
          tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{username}</em></p>', unsafe_allow_html=True)          
         
 
-        tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorusername}</em></p>', unsafe_allow_html=True) 
+        tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True) 
 
         
 
@@ -323,7 +339,7 @@ def new_species_review():
         def preview_addition(df1,df2):
             
             
-            proposed=df1.append(df2, ignore_index=True)
+            proposed = pd.concat([df1, df2], ignore_index=True)
             st.write(proposed)
             
 
@@ -332,14 +348,10 @@ def new_species_review():
         
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        #with io.BytesIO() as csv_buffer:
-                   # for chunk in pd.read_csv(newDataset, chunksize=1000):
-                    #    chunk.to_csv(csv_buffer, index=False)
-                    #csv_bytes = csv_buffer.getvalue()
-
+        
         def create_new_addition_dataset():
 
-            newDataset=current.append(user_changes, ignore_index=True)
+            newDataset = pd.concat([current, user_changes], ignore_index=True)
             newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
             with io.BytesIO() as csv_buffer:
                 csv_string = newDataset.to_csv(index=False)
@@ -357,11 +369,13 @@ def new_species_review():
         
         #updates the status, 
         def update_GABiP():
-            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], 
+                       "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
         
         def reject_new_addition():
-            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
+            updates = {"Status":"Denied", "Reason_Denied":reason, "Decided_By":st.session_state['username'], 
+                       "Decision_Date":str(now), "Dataset_In_Use":latest_approved_ds, "Dataset_Pre_Change":latest_approved_ds }
             metaData.update(updates, datesubmitted)
 
 
@@ -378,10 +392,12 @@ def new_species_review():
 
                         
                 if accept:
-                    create_new_addition_dataset()
-                    update_GABiP()
-                    st.write("GABiP updated!")
-                    
+                    try:
+                        create_new_addition_dataset()
+                        update_GABiP()
+                        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>GABiP Updated!</strong></em></p>', unsafe_allow_html=True)
+                    except:
+                         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
 
             
@@ -391,7 +407,7 @@ def new_species_review():
 
                 if reject and reason:           
                     reject_new_addition()
-                    col2.write("Addition rejected")
+                    col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Addition Rejected</strong></em></p>', unsafe_allow_html=True)
                 elif reject:
                     col2.warning("Please add a reason for rejection")
             except:
@@ -1905,11 +1921,12 @@ def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Data', 'Species Edit Requests', 'Data Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
-        st.write(latest_id)
-        st.write(latest_approved_ds)
-        current=load_latest_not_cached()
-        st.write(current)
-        #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
+        try:
+            current=load_latest_not_cached()
+            st.write(current)
+        except:
+         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
+       
         
 
     if options == "New Species Entry":
