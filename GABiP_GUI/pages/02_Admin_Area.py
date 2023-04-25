@@ -149,6 +149,7 @@ except Exception as error:
 
 
 def check_current_db(genus, species):
+        current=load_latest_not_cached()
         if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
             st.warning(f"Data already exists for " +genus+ " " +species+ ". This means it has been added since this request. Check the Species Audit History for details") 
 
@@ -270,9 +271,14 @@ def new_species_review():
     'Date submitted',
     (new_additions_submissions))
 
-
-
+   
     if datesubmitted:
+        for database in databases:
+         if database["key"]==datesubmitted:
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]          
+                
+        check_current_db(genus, species)
 
         tab1, tab2, tab3= st.tabs(["Species Added", "User Info", "User Source"])
 
@@ -280,6 +286,9 @@ def new_species_review():
         for database in databases:
                 if database["key"]==datesubmitted:
                     newAdd=database["Changes"]
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]
+                    
         
         user_changes= pd.read_json(newAdd)
         tab1.write(user_changes)
@@ -382,10 +391,12 @@ def new_species_review():
 
                         
                 if accept:
-                    create_new_addition_dataset()
-                    update_GABiP()
-                    st.write("GABiP updated!")
-                    
+                    try:
+                        create_new_addition_dataset()
+                        update_GABiP()
+                        st.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>GABiP Updated!</strong></em></p>', unsafe_allow_html=True)
+                    except:
+                         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
 
 
             
@@ -395,7 +406,7 @@ def new_species_review():
 
                 if reject and reason:           
                     reject_new_addition()
-                    col2.write("Addition rejected")
+                    col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Addition Rejected</strong></em></p>', unsafe_allow_html=True)
                 elif reject:
                     col2.warning("Please add a reason for rejection")
             except:
