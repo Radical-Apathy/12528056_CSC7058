@@ -1234,8 +1234,7 @@ def remove_species_data():
             if  not results[column].isna().any():
                 existing_info_columns.append(results[column].name)
         return existing_info_columns
-
-         
+  
         
     def convert_fields_to_none(show_existing_info):
         user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
