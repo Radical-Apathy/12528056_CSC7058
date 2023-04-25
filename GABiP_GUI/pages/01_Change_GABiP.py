@@ -1501,7 +1501,7 @@ def remove_species_data():
                  del st.session_state['image_ids']
                 
                 
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_existing_info)  or len(show_existing_info) != len(additional_info_sources):
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
