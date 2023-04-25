@@ -151,20 +151,7 @@ except Exception as error:
 
 
 
-#gets dates for new species additions needing approval
-pending_new_rows=[]
 
-
-def get_pending_row_additions():
-    for database in databases:
-        
-            if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
-                
-             pending_new_rows.append(database["key"])
-
-get_pending_row_additions()
-
-new_additions_submissions=sorted(pending_new_rows,reverse=True)
 
 pending_new_info=[]
 def get_pending_new_info():
@@ -260,6 +247,21 @@ def display_approved_users():
      #---------------------------------------------------------------NEW ADDITION REVIEW SCREEN -------------------------------------------------------------------------------------------------#
 def new_species_review():
     #current=load_latest()
+        #gets dates for new species additions needing approval
+    pending_new_rows=[]
+
+
+    def get_pending_row_additions():
+        for database in databases:
+            
+                if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Pending":
+                    
+                 pending_new_rows.append(database["key"])
+
+    get_pending_row_additions()
+
+    new_additions_submissions=sorted(pending_new_rows,reverse=True)
+
 
     st.write("New species additions in order of date submitted")
     datesubmitted = st.selectbox(
@@ -1905,11 +1907,10 @@ def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Data', 'Species Edit Requests', 'Data Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
-        st.write(latest_id)
-        st.write(latest_approved_ds)
+       
         current=load_latest_not_cached()
         st.write(current)
-        #currentstyled=current.style.set_properties(**{'background-color':'white', 'color':'black'})
+       
         
 
     if options == "New Species Entry":
