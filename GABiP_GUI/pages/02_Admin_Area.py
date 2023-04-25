@@ -323,7 +323,7 @@ def new_species_review():
          tab2_col2.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{username}</em></p>', unsafe_allow_html=True)          
         
 
-        tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorusername}</em></p>', unsafe_allow_html=True) 
+        tab3.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em>{authorComment}</em></p>', unsafe_allow_html=True) 
 
         
 
