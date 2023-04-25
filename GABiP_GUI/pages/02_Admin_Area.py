@@ -339,7 +339,6 @@ def new_species_review():
         def preview_addition(df1,df2):
             
             
-            #proposed=df1.append(df2, ignore_index=True)
             proposed = pd.concat([df1, df2], ignore_index=True)
             st.write(proposed)
             
@@ -349,11 +348,7 @@ def new_species_review():
         
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        #with io.BytesIO() as csv_buffer:
-                   # for chunk in pd.read_csv(newDataset, chunksize=1000):
-                    #    chunk.to_csv(csv_buffer, index=False)
-                    #csv_bytes = csv_buffer.getvalue()
-
+        
         def create_new_addition_dataset():
 
             newDataset=current.append(user_changes, ignore_index=True)
