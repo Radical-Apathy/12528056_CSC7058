@@ -156,7 +156,7 @@ def check_current_db(genus, species):
 def check_current_db_edits(genus, species):
         current=load_latest_not_cached()
         if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
-            st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details") 
+            st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details. It is recommended that this change request is rejected") 
 
 
 pending_new_info=[]
@@ -339,7 +339,8 @@ def new_species_review():
         def preview_addition(df1,df2):
             
             
-            proposed=df1.append(df2, ignore_index=True)
+            #proposed=df1.append(df2, ignore_index=True)
+            proposed = pd.concat([df1, df2], ignore_index=True)
             st.write(proposed)
             
 
