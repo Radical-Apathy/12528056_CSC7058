@@ -351,7 +351,8 @@ def new_species_review():
         
         def create_new_addition_dataset():
 
-            newDataset=current.append(user_changes, ignore_index=True)
+            #newDataset=current.append(user_changes, ignore_index=True)
+            newDataset = pd.concat([current, user_changes], ignore_index=True)
             newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
             with io.BytesIO() as csv_buffer:
                 csv_string = newDataset.to_csv(index=False)
