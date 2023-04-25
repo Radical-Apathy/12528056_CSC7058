@@ -1235,14 +1235,7 @@ def remove_species_data():
                 existing_info_columns.append(results[column].name)
         return existing_info_columns
 
-    user_removal_info = []
-    def get_remove_info():
-       for option in show_existing_info:
-        if st.session_state.get(option) is None:
-            user_removal_info.append(option)
-            st.session_state[option] = None
-        return user_removal_info
-       
+         
         
     def convert_fields_to_none(show_existing_info):
         user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
