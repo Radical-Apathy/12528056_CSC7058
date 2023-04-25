@@ -418,9 +418,9 @@ def information_addition_review():
             unsafe_allow_html=True
         )
 
-    #loading background image
+    
     add_new_info_bg()
-    #current=load_latest()
+    
     
     pending_new_info=[]
     def get_pending_new_info():
@@ -446,11 +446,8 @@ def information_addition_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-    
-    
-
-    
+      
+        
 
 
     if datesubmitted:
