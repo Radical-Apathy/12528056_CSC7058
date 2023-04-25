@@ -444,9 +444,7 @@ def information_addition_review():
     for database in databases:
                 if database["key"]==datesubmitted:
                     genus_added_to=database["Genus_Affected"]
-                    species_added_to=database["Species_Affected"]
-    
-      
+                    species_added_to=database["Species_Affected"]      
         
 
 
@@ -529,7 +527,7 @@ def information_addition_review():
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
           
             if species_after=="image only":
-                #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+              
                 if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Current Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 else:
