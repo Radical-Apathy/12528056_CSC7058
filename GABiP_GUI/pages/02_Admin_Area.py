@@ -159,17 +159,7 @@ def check_current_db_edits(genus, species):
             st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details. It is recommended that this change request is rejected") 
 
 
-pending_new_info=[]
-def get_pending_new_info():
-    for database in databases:
-        
-            if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
-                
-             pending_new_info.append(database["key"])
 
-get_pending_new_info()
-
-new_info_submissions=sorted(pending_new_info,reverse=True)
 
 pending_edit_info=[]
 
@@ -437,7 +427,17 @@ def information_addition_review():
     add_new_info_bg()
     #current=load_latest()
     
-    
+    pending_new_info=[]
+    def get_pending_new_info():
+        for database in databases:
+            
+                if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
+                    
+                 pending_new_info.append(database["key"])
+
+    get_pending_new_info()
+
+    new_info_submissions=sorted(pending_new_info,reverse=True)
 
 
 
