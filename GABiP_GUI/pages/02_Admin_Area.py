@@ -1920,9 +1920,11 @@ def admin_edit_options():
     options=st.sidebar.radio("Options", ('Show Current Database','New Species Entry', 'New Species Data', 'Species Edit Requests', 'Data Removal Requests', "Species Removal Requests" ), key='admin_current_option')
     if options == "Show Current Database":
         st.write("Current Database")
-       
-        current=load_latest_not_cached()
-        st.write(current)
+        try:
+            current=load_latest_not_cached()
+            st.write(current)
+        except:
+         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***   Due to high traffic, page is temporarily unavailable. Please try again in 20 minutes. Time of error    ***</strong></p>', unsafe_allow_html=True)
        
         
 
