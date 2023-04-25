@@ -148,7 +148,9 @@ except Exception as error:
 
 
 
-
+def check_current_db(genus, species):
+        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+            st.warning(f"Data already exists for " +genus+ " " +species+ ". This means it has been added since this request. Check the Species Audit History for details") 
 
 
 
