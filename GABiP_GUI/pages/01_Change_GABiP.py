@@ -1222,6 +1222,12 @@ def remove_species_data():
 
     add_bg_from_url()
 
+    def load_latest_not_cached():
+     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
+     return current_db
+
+    current=load_latest_not_cached()
+
     existing_info_columns = []
     def get_existing_info_columns(results):
         for column in dbColumns:
@@ -1229,18 +1235,8 @@ def remove_species_data():
                 existing_info_columns.append(results[column].name)
         return existing_info_columns
 
-    user_removal_info = []
-    def get_remove_info():
-       for option in show_existing_info:
-        if st.session_state.get(option) is None:
-            user_removal_info.append(option)
-            st.session_state[option] = None
-        return user_removal_info
-       
-    
-    
-
-
+         
+        
     def convert_fields_to_none(show_existing_info):
         user_changes_json = [{show_existing_info[i]: None} for i in range(len(show_existing_info))]
         return json.dumps(user_changes_json)
@@ -1306,8 +1302,8 @@ def remove_species_data():
 
    #-----------------------------------------------------------------ADD SPECIES INFO MAIN PAGE-------------------------------------------------#
     headercol1, headercol2, headercol3=st.columns(3)
-    headercol2.markdown('<p style="font-family:sans-serif; color:Green; font-size: 30px;"><em><strong>Edit Species Information</strong></em></p>', unsafe_allow_html=True)
-    current=load_latest_not_cached()
+    headercol2.markdown('<p style="font-family:sans-serif; color:white; font-size: 30px;"><em><strong>Remove Species Information</strong></em></p>', unsafe_allow_html=True)
+    
     dbColumns=current.columns
     create_session_states(dbColumns)
     all_genus=[]
@@ -1461,7 +1457,7 @@ def remove_species_data():
     
         
 
-    st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-family:sans-serif; color:white; font-size: 20px;"><strong>*****************************************************************************************</strong></p>', unsafe_allow_html=True)
 
     
 
@@ -1495,7 +1491,7 @@ def remove_species_data():
                  del st.session_state['image_ids']
                 
                 
-                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED        ***</strong></p>', unsafe_allow_html=True)
+                st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><strong>***      ADDITION SUBMITTED FOR REVIEW       ***</strong></p>', unsafe_allow_html=True)
         elif commit_addition and len(show_existing_info)  or len(show_existing_info) != len(additional_info_sources):
                 st.warning("Please check all fields selected and sources have been provided in order to submit")
 
