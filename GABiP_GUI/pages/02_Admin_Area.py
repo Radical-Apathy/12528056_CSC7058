@@ -146,7 +146,7 @@ except RefreshError:
 except Exception as error:
         st.write(f"An error occurred: {error}")
 
-
+#-------------------------------------------------------------METHODS FOR CHECKING LATEST GABiP FOR SPECIES EDIT REVIEWS--------------------------------------------------------#
 
 def check_current_db(genus, species):
         current=load_latest_not_cached()
