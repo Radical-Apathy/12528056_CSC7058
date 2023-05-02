@@ -1455,6 +1455,12 @@ def data_removal_review():
     
 
     if datesubmitted:
+        for database in databases:
+         if database["key"]==datesubmitted:
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]          
+                
+        check_current_db_edits(genus, species)
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
         def update_user_json(species_before, species_after):
             data = json.loads(species_before)
