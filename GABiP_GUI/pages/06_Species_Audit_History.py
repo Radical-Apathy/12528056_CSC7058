@@ -444,7 +444,7 @@ def species_audit_history():
                                 for key, value in data["0"].items():
                                     sources_value = sources_data["0"].get(key, "")
                                     original_value=original_data.get(key,"").get(str(species_index),"")
-                                    #original_value = original_data.get(key, {}).get(species_index, "")
+                                    
                                     rows.append([key, original_value, sources_value,])
                                 df = pd.DataFrame(rows, columns=['Properties Removed', 'Value Removed','Removal Reason', ])
                                 st.write(df)
