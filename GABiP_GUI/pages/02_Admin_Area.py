@@ -1350,14 +1350,7 @@ def remove_species_admin():
             media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             
-            # csv_bytes = io.StringIO()
-            # proposed_removal.to_csv(csv_bytes, index=False)
-            # csv_bytes = csv_bytes.getvalue().encode('utf-8')
-    
-            # # upload bytes to Google Drive
-            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-            # media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            
 
         
         #updates the status, 
