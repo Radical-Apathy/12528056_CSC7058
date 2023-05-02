@@ -582,7 +582,7 @@ def information_addition_review():
                             current_value=inner_value
                             current_values.append(current_value)
                     
-                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    df = pd.DataFrame({"Information": source_rows,"Previous Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
                     st.write(df)
@@ -681,18 +681,7 @@ def information_addition_review():
             
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        # def create_new_updated_dataset_google():
-        #         newDataset=updated_db
-        #         newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-        #         csv_bytes = io.StringIO()
-        #         newDataset.to_csv(csv_bytes, index=False)
-        #         csv_bytes = csv_bytes.getvalue().encode('utf-8')
-        
-        #         # upload bytes to Google Drive
-        #         file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-        #         media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-        #         file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
+       
         def create_new_updated_dataset_google():
                 newDataset=updated_db
                 newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
