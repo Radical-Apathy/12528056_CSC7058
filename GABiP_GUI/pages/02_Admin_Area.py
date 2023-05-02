@@ -849,11 +849,7 @@ def information_edit_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-    
-    
-
-    
+        
 
 
     if datesubmitted:
@@ -982,7 +978,7 @@ def information_edit_review():
                             current_value=inner_value
                             current_values.append(current_value)
                     
-                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    df = pd.DataFrame({"Information": source_rows,"Previous Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
                     st.write(df)
