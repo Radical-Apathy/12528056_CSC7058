@@ -1350,14 +1350,7 @@ def remove_species_admin():
             media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
             file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             
-            # csv_bytes = io.StringIO()
-            # proposed_removal.to_csv(csv_bytes, index=False)
-            # csv_bytes = csv_bytes.getvalue().encode('utf-8')
-    
-            # # upload bytes to Google Drive
-            # file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-            # media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-            # file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            
 
         
         #updates the status, 
@@ -1462,6 +1455,12 @@ def data_removal_review():
     
 
     if datesubmitted:
+        for database in databases:
+         if database["key"]==datesubmitted:
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]          
+                
+        check_current_db_edits(genus, species)
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
         def update_user_json(species_before, species_after):
             data = json.loads(species_before)
@@ -1588,7 +1587,7 @@ def data_removal_review():
                             current_value=inner_value
                             current_values.append(current_value)
                     
-                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    df = pd.DataFrame({"Information": source_rows,"Previous Value": current_values, "Proposed Values": new_values, "Removal Reason": source_values })
                     
                     
                     st.write(df)
