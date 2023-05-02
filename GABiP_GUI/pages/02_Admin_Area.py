@@ -146,7 +146,7 @@ except RefreshError:
 except Exception as error:
         st.write(f"An error occurred: {error}")
 
-
+#-------------------------------------------------------------METHODS FOR CHECKING LATEST GABiP FOR SPECIES EDIT REVIEWS--------------------------------------------------------#
 
 def check_current_db(genus, species):
         current=load_latest_not_cached()
@@ -155,23 +155,8 @@ def check_current_db(genus, species):
 
 def check_current_db_edits(genus, species):
         current=load_latest_not_cached()
-        if genus.lower() in current["Genus"].str.lower().values and species.lower() in current["Species"].str.lower().values:
+        if genus.lower() not in current["Genus"].str.lower().values and species.lower() not in current["Species"].str.lower().values:
             st.error(f"Data no longer exists for " +genus+ " " +species+ ". This means it has been removed since this request. Check the Species Audit History for details. It is recommended that this change request is rejected") 
-
-
-pending_new_info=[]
-def get_pending_new_info():
-    for database in databases:
-        
-            if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
-                
-             pending_new_info.append(database["key"])
-
-get_pending_new_info()
-
-new_info_submissions=sorted(pending_new_info,reverse=True)
-
-pending_edit_info=[]
 
 
 
@@ -433,11 +418,21 @@ def information_addition_review():
             unsafe_allow_html=True
         )
 
-    #loading background image
+    
     add_new_info_bg()
-    #current=load_latest()
     
     
+    pending_new_info=[]
+    def get_pending_new_info():
+        for database in databases:
+            
+                if database["Edit_Type"]=="Information Addition" and database["Status"] =="Pending":
+                    
+                 pending_new_info.append(database["key"])
+
+    get_pending_new_info()
+
+    new_info_submissions=sorted(pending_new_info,reverse=True)
 
 
 
@@ -449,16 +444,19 @@ def information_addition_review():
     for database in databases:
                 if database["key"]==datesubmitted:
                     genus_added_to=database["Genus_Affected"]
-                    species_added_to=database["Species_Affected"]
-    
-    #st.markdown('<p style="font-family:sans-serif; color:Green; font-size: 20px;"><em><strong>Information</strong></em></p>', unsafe_allow_html=True)
-    
-    
-
-    
+                    species_added_to=database["Species_Affected"]      
+        
 
 
     if datesubmitted:
+        for database in databases:
+         if database["key"]==datesubmitted:
+                    genus=database["Genus_Affected"]
+                    species = database["Species_Affected"]          
+                
+        check_current_db_edits(genus, species)
+
+
         st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px; border: 2px solid green;background-color: green; padding: 10px;"><em><strong>Genus: {genus_added_to}      Species: {species_added_to}</strong></em></p>', unsafe_allow_html=True)
         def update_user_json(species_before, species_after):
             data = json.loads(species_before)
@@ -529,7 +527,7 @@ def information_addition_review():
             tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Breakdown</strong></em></p>', unsafe_allow_html=True)
           
             if species_after=="image only":
-                #tab2_col2.markdown('<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>Current Image</strong></em></p>', unsafe_allow_html=True)
+              
                 if len(user_approved_images)==0:
                      st.markdown(f'<p style="font-family:sans-serif; color:White; font-size: 20px;"><em><strong>No Current Images for {genus_added_to} {species_added_to}</strong></em></p>', unsafe_allow_html=True)
                 else:
@@ -584,7 +582,7 @@ def information_addition_review():
                             current_value=inner_value
                             current_values.append(current_value)
                     
-                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    df = pd.DataFrame({"Information": source_rows,"Previous Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
                     st.write(df)
@@ -683,18 +681,7 @@ def information_addition_review():
             
         newPath=version+"-"+st.session_state['username']+"-approved"+".csv"
 
-        # def create_new_updated_dataset_google():
-        #         newDataset=updated_db
-        #         newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-        #         csv_bytes = io.StringIO()
-        #         newDataset.to_csv(csv_bytes, index=False)
-        #         csv_bytes = csv_bytes.getvalue().encode('utf-8')
-        
-        #         # upload bytes to Google Drive
-        #         file_metadata = {'name': newPath, 'parents': [folder_id], 'mimeType': 'text/csv'}
-        #         media = MediaIoBaseUpload(io.BytesIO(csv_bytes), mimetype='text/csv', resumable=True)
-        #         file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
+       
         def create_new_updated_dataset_google():
                 newDataset=updated_db
                 newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -838,7 +825,7 @@ def information_edit_review():
     #loading background image
     add_new_info_bg()
     #current=load_latest()
-    
+    pending_edit_info=[]
     def get_pending_edit_info():
       for database in databases:
         
