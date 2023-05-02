@@ -849,7 +849,6 @@ def information_edit_review():
                     genus_added_to=database["Genus_Affected"]
                     species_added_to=database["Species_Affected"]
     
-     
         
 
 
