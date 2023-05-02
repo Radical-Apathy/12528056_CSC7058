@@ -978,7 +978,7 @@ def information_edit_review():
                             current_value=inner_value
                             current_values.append(current_value)
                     
-                    df = pd.DataFrame({"Information": source_rows,"Current Value": current_values, "Proposed Values": new_values, "Sources": source_values })
+                    df = pd.DataFrame({"Information": source_rows,"Previous Value": current_values, "Proposed Values": new_values, "Sources": source_values })
                     
                     
                     st.write(df)
