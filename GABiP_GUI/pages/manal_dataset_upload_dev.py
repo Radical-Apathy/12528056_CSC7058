@@ -71,7 +71,7 @@ def manual_dataset_upload():
   def add_new_dataset():
             # updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], 
             #            "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":newPath }
-            metaData.put(str(now), "Manual upload", "n/a", "n/a", st.session_state['username'], str(now), "Manual upload",st.session_state['username'], "n/a", "n/a", "n/a","n/a","n/a","n/a","n/a" )
+            metaData.put({"key":str(now), "Changes":"Manual upload", "Dataset_In_Use":newPath, "Dataset_Pre_Change":"n/a","Decided_By": st.session_state['username'], "Decision_Date":str(now),"Edit_Type": "Manual upload","Edited_By":st.session_state['username'], "Genus_Affected":"n/a","Reason_Denied": "n/a","Species_Affected": "n/a", "Status":"Approved", "User_Comment":"n/a","User_Images":"n/a","User_Sources":"n/a"} )
  #-------------------------------------------------------------MANUAL UPLOAD UI---------------------------------------------------------#
   manual_upload_option=st.checkbox("Manually Upload a dataset")
   
