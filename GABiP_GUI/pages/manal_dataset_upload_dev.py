@@ -51,9 +51,9 @@ def manual_dataset_upload():
   version=now.strftime("%d.%m.%Y-%H.%M.%S")
   folder_id="1sXg0kEAHvRRmGTt-wq9BbMk_aAEhu1vN"          
   newPath=version+"-"+st.session_state['username']+"-manual uploaded"+".csv"
-  
+  date_now=str(now)
   def create_new_updated_dataset_google():
-                newDataset=dataset_uploader
+                newDataset=new_dataset
                 newDataset = newDataset.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
                 with io.BytesIO() as csv_buffer:
                     csv_string = newDataset.to_csv(index=False)
@@ -68,30 +68,34 @@ def manual_dataset_upload():
                 media = MediaIoBaseUpload(io.BytesIO(csv_string.encode('utf-8')), mimetype='text/csv', resumable=True)
                 file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-  def csv_converter(dataset_uploader):
-       st.write("converts excel to csv")
-
-  def data_cleaner():
-      st.write("cleans the data")
+  def add_new_dataset():
+            # updates = {"Status":"Approved", "Reason_Denied":"n/a", "Decided_By":st.session_state['username'], 
+            #            "Decision_Date":str(now), "Dataset_In_Use":newPath, "Dataset_Pre_Change":newPath }
+            metaData.put(str(now), "Manual upload", "n/a", "n/a", st.session_state['username'], str(now), "Manual upload",st.session_state['username'], "n/a", "n/a", "n/a","n/a","n/a","n/a","n/a" )
  #-------------------------------------------------------------MANUAL UPLOAD UI---------------------------------------------------------#
   manual_upload_option=st.checkbox("Manually Upload a dataset")
   
   if manual_upload_option:
    st.warning("Uploading a dataset will over-ride the current most recent dataset...Are you sure you want to proceed?")
-   dataset_uploader=st.file_uploader("Choose a CSV file", accept_multiple_files=True)
+   dataset_uploader=st.file_uploader("Choose a CSV file", type="csv")
 
    if dataset_uploader is not None:
     try:
         # Get the first file uploader object from the list
-        uploaded_file = dataset_uploader[0]
+        #uploaded_file = dataset_uploader[0]
         
         # Read the CSV file into a DataFrame
-        df = pd.read_excel(uploaded_file)
-        
+        new_dataset = pd.read_csv(dataset_uploader)
+       
         # Display the DataFrame in a Streamlit table
-        st.write(df)
+        st.write(new_dataset)
+        upload_dataset=st.button("Upload")
     except Exception as e:
         st.error(f'Error loading CSV file: {str(e)}')
+    if upload_dataset:
+         create_new_updated_dataset_google()
+         add_new_dataset()
+         st.write("Dataset uploaded!")
 
    
 
