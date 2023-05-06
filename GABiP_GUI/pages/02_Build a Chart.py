@@ -64,22 +64,12 @@ paths = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 
-#getting the most recent approved csv file
-#def get_latest():
- #   for database in databases:
-  #   for i in date_time:
-        
- #     if database["key"]== i and database["Status"] =="Approved":
- #       break
- #   return(database["Current Dataset"])
-
-#path=get_latest()
 
 approved=[]
 def get_approved():
     for database in databases:
         
-            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+        
                 if database["Status"] =="Approved":
                 
                  approved.append(database["key"])
@@ -116,7 +106,7 @@ def get_latest_file_id(latest_approved_ds):
 
 latest_id=get_latest_file_id(latest_approved_ds)
 
-@st.cache
+@st.cache_data
 def load_latest():
     current_db = pd.read_csv(f"https://drive.google.com/uc?id={latest_id}", encoding= 'unicode_escape')#, low_memory=False)
     return current_db
@@ -126,7 +116,24 @@ def add_changes(dataframe, dataframe2):
     return updated
 
 
+def background():
+        st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/frog2_orig.jpg");
+                        background-attachment: fixed;
+                        background-size: cover;
+                        background-position: 80% center;
+                        opacity: 0.1
+                        color: #ffffff; 
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
 
+background()
 
 current=load_latest()
 
@@ -138,11 +145,10 @@ chartOptions=st.selectbox("Choose a chart type",('Scatter Chart', 'Bar Chart', '
 
 x_axis=st.selectbox("Select X value", options=current.columns)
 y_axis=st.selectbox("Select Y value", options=current.columns)
-z_axis=st.selectbox("Select Z Value", options=current.columns)
+
 def dynamicChart(dataframe):
     if chartOptions == ('Scatter Chart'):
-       # x_axis=st.selectbox("Select Xx value", options=dfFull.columns)
-        #y_axis=st.selectbox("Select Yy value", options=dfFull.columns)
+       
         plot=px.scatter(dataframe, x=x_axis, y=y_axis)
         st.plotly_chart(plot)
     elif chartOptions==('Bar Chart'):

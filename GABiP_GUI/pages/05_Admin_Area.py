@@ -2076,17 +2076,7 @@ username, authentication_status, password = authenticator.login("Login", "main")
 
 if authentication_status == False:
      st.warning("**Username/password is not recognised**")
-     st.write("**Forgotten username/password? Enter your email below and we'll send a reminder**")
-
-     sendReminder = st.checkbox("Send Password Reminder")
-     if sendReminder:
-         email=st.text_input("Email address")
-         sendbutton=st.button("Send reminder")
-         if sendbutton and email:
-             sendEmail(email)
-             st.success("Email sent...please check your inbox for a password reset link")
-         elif sendbutton:
-             st.warning("Please enter an email address")
+     
 elif authentication_status == None:
      st.warning("Please enter username and password")
 else:
