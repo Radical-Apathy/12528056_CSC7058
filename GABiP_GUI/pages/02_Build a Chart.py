@@ -64,22 +64,12 @@ paths = [database["Dataset_In_Use"] for database in databases]
 edit_type=[database["Edit_Type"] for database in databases]
 changes=[database["Changes"] for database in databases]
 
-#getting the most recent approved csv file
-#def get_latest():
- #   for database in databases:
-  #   for i in date_time:
-        
- #     if database["key"]== i and database["Status"] =="Approved":
- #       break
- #   return(database["Current Dataset"])
-
-#path=get_latest()
 
 approved=[]
 def get_approved():
     for database in databases:
         
-            #if database["Edit_Type"]=="New Species Addition" and database["Status"] =="Approved":
+        
                 if database["Status"] =="Approved":
                 
                  approved.append(database["key"])
@@ -141,8 +131,7 @@ y_axis=st.selectbox("Select Y value", options=current.columns)
 
 def dynamicChart(dataframe):
     if chartOptions == ('Scatter Chart'):
-       # x_axis=st.selectbox("Select Xx value", options=dfFull.columns)
-        #y_axis=st.selectbox("Select Yy value", options=dfFull.columns)
+       
         plot=px.scatter(dataframe, x=x_axis, y=y_axis)
         st.plotly_chart(plot)
     elif chartOptions==('Bar Chart'):
