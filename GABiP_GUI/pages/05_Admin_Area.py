@@ -1989,6 +1989,8 @@ def admin_welcome_screen():
     adminOptions= st.selectbox(" Admin Options", ['Manually upload a new Database','View Access Requests', 'View Existing Users','See Edit Requests'  ])
     if adminOptions=="Click here to see Admin options":
         welcome_screen()
+    if adminOptions=="Manually upload a new Database":
+         manual_dataset_upload()
     if adminOptions=="View Access Requests":
          display_pending_users()
     if adminOptions=="View Existing Users":
