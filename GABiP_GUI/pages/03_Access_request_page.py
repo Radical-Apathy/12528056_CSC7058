@@ -127,7 +127,7 @@ with st.form("my_form"):
         st.error("username already in use")
         errors_present=True
       if submitted and password != confirmPassword:
-          st.write("passwords do not match")
+          
           errors_present=True
       if submitted and password =="":# or confirmPassword=="":
         st.warning("Fields can not be left blank")
