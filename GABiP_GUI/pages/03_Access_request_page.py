@@ -40,19 +40,6 @@ isApproved=[user["approved"]for user in users]
 isAdmin=[user["admin"] for user in users]
 
 
-#method to check that email and username are unique
-def duplication_alert(usertext):
-    for user in users:
-        if user["key"] == usertext:
-         st.warning("email already in use...please choose an alternative or await verification email")    
-         pass
-    
-        #st.write("email available")
-        if user["username"] ==usertext:
-         st.warning("username in use, please choose another")
-         pass
-        #st.write("username available")
-
 #final alert to user of duplicate username and or email to prevent insertion into the database
 def final_warning(userInput):
     for user in users:
@@ -110,11 +97,11 @@ headercol2.markdown('<p style="font-family:sans-serif; color:White; font-size: 3
 
 with st.form("my_form"):
       email =st.text_input("Email", "Enter your email address")
-      duplication_alert(email)
+      #duplication_alert(email)
       firstname =st.text_input("Firstname", "Enter your forename")
       surname =st.text_input("Surname", "Enter your surname")
       username= st.text_input("Username", "Enter a username")
-      duplication_alert(username)
+      #duplication_alert(username)
       usernameCaption=st.caption("Please enter a unique username...this will be used to login")
       password =st.text_input("password", type='password')
       confirmPassword =st.text_input("Re-type Password",  type='password')
@@ -131,18 +118,25 @@ with st.form("my_form"):
       removeclosebrack=removeopenbrack.replace("]", "")
       finalPass=removeclosebrack.replace("'","")
 
+      errors_present=False
+     
       if submitted and final_warning(email) :
         st.error("email address already in use")
+        errors_present=True
       if submitted and final_warning(username) :
-        st.error("username address already in use")
+        st.error("username already in use")
+        errors_present=True
       if submitted and password != confirmPassword:
-          st.write("passwords do not match")
+          
+          errors_present=True
       if submitted and password =="":# or confirmPassword=="":
-        st.warning("Fields can not be left blank") 
+        st.warning("Fields can not be left blank")
+        errors_present=True 
       errors = validate_input(email, firstname, surname, username, password, confirmPassword)
       if errors:
           st.error("\n".join(errors))
-      elif submitted and len(password)>0 and len(confirmPassword)>0: 
+          errors_present=True
+      if submitted and not errors_present: 
         insert_user(email,username, firstname, surname, admin, approved, finalPass)
         st.markdown('<p style="font-family:sans-serif; color:White; font-size: 30px;"><em><strong>Request submitted!</strong></em></p>', unsafe_allow_html=True)
 
