@@ -134,7 +134,7 @@ with st.form("my_form"):
       if submitted and final_warning(email) :
         st.error("email address already in use")
       if submitted and final_warning(username) :
-        st.error("username address already in use")
+        st.error("username already in use")
       if submitted and password != confirmPassword:
           st.write("passwords do not match")
       if submitted and password =="":# or confirmPassword=="":
