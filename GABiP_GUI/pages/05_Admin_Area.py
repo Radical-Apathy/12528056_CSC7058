@@ -1999,7 +1999,7 @@ def admin_welcome_screen():
         admin_edit_options()
 
 
-    #st.markdown("***")
+    
 
 #-------------------------------------------------------------------------SEND EMAIL METHOD---------------------------------------------------------------------------#
 def sendEmail(email_receiver):
