@@ -116,7 +116,24 @@ def add_changes(dataframe, dataframe2):
     return updated
 
 
+def background():
+        st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-image: url("https://www.amphibianbiodiversity.org/uploads/9/8/6/8/98687650/frog2_orig.jpg");
+                        background-attachment: fixed;
+                        background-size: cover;
+                        background-position: 80% center;
+                        opacity: 0.1
+                        color: #ffffff; 
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
 
+background()
 
 current=load_latest()
 
