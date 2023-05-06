@@ -138,7 +138,7 @@ chartOptions=st.selectbox("Choose a chart type",('Scatter Chart', 'Bar Chart', '
 
 x_axis=st.selectbox("Select X value", options=current.columns)
 y_axis=st.selectbox("Select Y value", options=current.columns)
-z_axis=st.selectbox("Select Z Value", options=current.columns)
+
 def dynamicChart(dataframe):
     if chartOptions == ('Scatter Chart'):
        # x_axis=st.selectbox("Select Xx value", options=dfFull.columns)
