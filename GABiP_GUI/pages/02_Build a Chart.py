@@ -139,7 +139,6 @@ current=load_latest()
 
 st.title("Interactive Chart")
 
-st.write("Choose a chart type")
 
 chartOptions=st.selectbox("Choose a chart type",('Scatter Chart', 'Bar Chart', 'Line Chart', 'Pie Chart'))
 
