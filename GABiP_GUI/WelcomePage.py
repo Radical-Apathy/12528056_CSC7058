@@ -20,6 +20,7 @@ def add_bg_from_url():
 
 add_bg_from_url() 
 welcol1,welcol2,welcol3 = st.columns(3)
-welcol3.header("Welcome Page")
-welcol3.markdown("**Future welcome note to go here and explain the purpose of this app and what the GABiP is**")
+welcol3.markdown("**Welcome to the GABiP App**")
+welcol3.markdown("**The Global Amphibian Biodiversity Project (GABiP) is an international scientific initiative aimed to advance knowledge on the diversity, distribution and declines of the world's amphibians.**")
+welcol3.markdown("**This app allows the exploration of our amphibian dataset that contains over 8000 species! Got information? Wish to make changes? Use our Access Request page to sign up as user. Happy exploring, amphibifans!**")
 
