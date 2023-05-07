@@ -22,13 +22,4 @@ add_bg_from_url()
 welcol1,welcol2,welcol3 = st.columns(3)
 welcol3.header("Welcome Page")
 welcol3.markdown("**Future welcome note to go here and explain the purpose of this app and what the GABiP is**")
-#st.sidebar.header("Sections")
-#st.sidebar.image('amphibs.jpeg', width=500)
 
-#uploaded_file= st.file_uploader("Upload a file")
-#dataframe=pd.read_csv(uploaded_file)
-#st.write(dataframe.head(10))
-
-#if uploaded_file is not None:
- #   dataFrame=pd.read_csv(uploaded_file)
-#return dataFrame
