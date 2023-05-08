@@ -13,4 +13,6 @@ allows users to easily access and interact with the GABiP dataset.
    This will open the project in the browser
 
 
+### Note
 
+Occasionally when the software is launched, the theme/colouring will not take effect. If this happens, simply close the browser and re-run 
