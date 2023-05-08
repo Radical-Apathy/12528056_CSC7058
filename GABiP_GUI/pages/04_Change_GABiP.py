@@ -82,15 +82,6 @@ date_time= sorted([database["key"] for database in databases], reverse=True)
 status=[database["Status"] for database in databases]
 path = [database["Dataset_In_Use"] for database in databases]
 
-#getting the most recent approved csv file
-#def get_latest():
-#    for database in databases:
-#     for i in date_time:
-        
-#      if database["key"]== i and database["Status"] =="Approved":
-#        break
-#    return(database["Current Dataset"])
-
 
 approved=[]
 def get_approved():
