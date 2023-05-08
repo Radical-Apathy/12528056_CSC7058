@@ -140,7 +140,7 @@ current=load_latest()
 st.title("Interactive Chart")
 
 
-chartOptions=st.selectbox("Choose a chart type",('Scatter Chart', 'Bar Chart', 'Line Chart', 'Pie Chart'))
+chartOptions=st.selectbox("Choose a chart type",('Scatter Chart', 'Bar Chart', 'Line Chart'))
 
 x_axis=st.selectbox("Select X value", options=current.columns)
 y_axis=st.selectbox("Select Y value", options=current.columns)
@@ -156,10 +156,7 @@ def dynamicChart(dataframe):
     elif chartOptions==('Line Chart'):
         plot=px.line(dataframe, x=x_axis, y=y_axis)
         st.plotly_chart(plot)
-    elif chartOptions==('Pie Chart'):
-        plot=px.pie(dataframe, x=x_axis, y=y_axis)
-        st.plotly_chart(plot)
-
+    
     
    
 (dynamicChart(current))

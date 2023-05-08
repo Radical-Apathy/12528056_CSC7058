@@ -1,8 +1,15 @@
 [theme]
 
 #primaryTextColour = "#000000"
-primaryColor ="#000000"
+#primaryColor ="#000000"
 #secondaryTextColor = "#ffffff"
+#backgroundColor="#000000" #this is the colour of dataframes etc
+#secondaryBackgroundColor="#006400"
+#textColor="#ffffff"
+#font="sans serif"
+
+primaryTextColour = "#000000"
+secondaryTextColor = "#ffffff"
 backgroundColor="#000000" #this is the colour of dataframes etc
 secondaryBackgroundColor="#006400"
 textColor="#ffffff"

@@ -253,7 +253,7 @@ species_results=current.loc[(current["Species"] == species_dropdown) & (current[
    
 col1, col2, col3 = st.columns(3)
 
-col3.markdown("**All Genea of** "+species_dropdown)
+col3.markdown("**All Genera of** "+species_dropdown)
 
 col3.dataframe(species_genus["Genus"])
 
